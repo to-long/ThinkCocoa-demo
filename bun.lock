@@ -14,11 +14,11 @@
       "dependencies": {
         "@aws-sdk/client-s3": "^3.1050.0",
         "@aws-sdk/s3-request-presigner": "^3.1075.0",
-        "@thinkcocoa/shared": "workspace:*",
         "@hono/node-server": "^1.19.12",
         "@hono/zod-openapi": "1.2.4",
         "@scalar/hono-api-reference": "0.10.6",
         "@sentry/bun": "^10.53.1",
+        "@thinkcocoa/shared": "workspace:*",
         "better-auth": "^1.5.6",
         "csv-stringify": "^6.8.0",
         "dotenv": "^17.3.1",
@@ -49,9 +49,9 @@
       "name": "fe",
       "version": "1.0.0",
       "dependencies": {
-        "@thinkcocoa/shared": "workspace:*",
         "@hookform/resolvers": "^5.4.0",
         "@sentry/react": "^10.53.1",
+        "@thinkcocoa/shared": "workspace:*",
         "@types/leaflet": "^1.9.21",
         "better-auth": "^1.5.6",
         "chart.js": "^4.5.1",
@@ -293,8 +293,6 @@
     "@biomejs/cli-win32-arm64": ["@biomejs/cli-win32-arm64@2.4.10", "", { "os": "win32", "cpu": "arm64" }, "sha512-umwQU6qPzH+ISTf/eHyJ/QoQnJs3V9Vpjz2OjZXe9MVBZ7prgGafMy7yYeRGnlmDAn87AKTF3Q6weLoMGpeqdQ=="],
 
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.4.10", "", { "os": "win32", "cpu": "x64" }, "sha512-aW/JU5GuyH4uxMrNYpoC2kjaHlyJGLgIa3XkhPEZI0uKhZhJZU8BuEyJmvgzSPQNGozBwWjC972RaNdcJ9KyJg=="],
-
-    "@thinkcocoa/shared": ["@thinkcocoa/shared@workspace:packages/shared"],
 
     "@csstools/color-helpers": ["@csstools/color-helpers@5.1.0", "", {}, "sha512-S11EXWJyy0Mz5SYvRmY8nJYTFFd1LCNV+7cXyAgQtOOuzb4EsgfqDufL+9esx72/eLhsRdGZwaldu/h+E4t4BA=="],
 
@@ -873,6 +871,8 @@
     "@testing-library/jest-dom": ["@testing-library/jest-dom@6.9.1", "", { "dependencies": { "@adobe/css-tools": "^4.4.0", "aria-query": "^5.0.0", "css.escape": "^1.5.1", "dom-accessibility-api": "^0.6.3", "picocolors": "^1.1.1", "redent": "^3.0.0" } }, "sha512-zIcONa+hVtVSSep9UT3jZ5rizo2BsxgyDYU7WFD5eICBE7no3881HGeb/QkGfsJs6JTkY1aQhT7rIPC7e+0nnA=="],
 
     "@testing-library/react": ["@testing-library/react@16.3.2", "", { "dependencies": { "@babel/runtime": "^7.12.5" }, "peerDependencies": { "@testing-library/dom": "^10.0.0", "@types/react": "^18.0.0 || ^19.0.0", "@types/react-dom": "^18.0.0 || ^19.0.0", "react": "^18.0.0 || ^19.0.0", "react-dom": "^18.0.0 || ^19.0.0" }, "optionalPeers": ["@types/react", "@types/react-dom"] }, "sha512-XU5/SytQM+ykqMnAnvB2umaJNIOsLF3PVv//1Ew4CTcpz0/BRyy/af40qqrt7SjKpDdT1saBMc42CUok5gaw+g=="],
+
+    "@thinkcocoa/shared": ["@thinkcocoa/shared@workspace:packages/shared"],
 
     "@tybys/wasm-util": ["@tybys/wasm-util@0.10.1", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg=="],
 
