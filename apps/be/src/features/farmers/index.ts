@@ -1,0 +1,1 @@
+export { farmersRoutes } from './routes';

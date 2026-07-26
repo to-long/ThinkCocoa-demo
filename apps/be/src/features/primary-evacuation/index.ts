@@ -1,0 +1,1 @@
+export { primaryEvacRoutes } from './routes';

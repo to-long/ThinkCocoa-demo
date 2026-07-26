@@ -1,0 +1,1 @@
+export { inspectionsRoutes } from './routes';

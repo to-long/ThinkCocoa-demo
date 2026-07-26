@@ -1,0 +1,102 @@
+# One-shot trigger to (re-)seed the Farmer Dataset 2025-2026 CSV
+# into a deployed environment's database.
+#
+# Why a separate workflow vs. baking SEED_FARMERS_FROM_CSV into
+# `deploy.yml`?
+#   - Seed shouldn't run on every routine deploy (it's slow and
+#     re-reads ~4K rows). Better to run on-demand when the dataset
+#     actually changes or when an environment is set up fresh.
+#   - Production gets a manual confirmation step via this workflow's
+#     `env` input, avoiding accidental seed runs on prod.
+#
+# Idempotent: seedFarmersFromCsv uses `ON CONFLICT DO NOTHING` for
+# every insert. Re-running on an already-seeded DB is a no-op
+# (besides reading the CSV and skipping rows).
+#
+# Usage:
+#   gh workflow run seed-farmers.yml -f env=staging
+#   gh workflow run seed-farmers.yml -f env=production
+
+name: Seed Farmers (CSV)
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'Target environment'
+        type: choice
+        required: true
+        options: [staging, production]
+      truncate:
+        description: 'TRUNCATE farmer/parcel tables before seed (destructive — wipes all existing rows)'
+        type: boolean
+        required: false
+        default: false
+
+concurrency:
+  group: seed-farmers-${{ inputs.env }}
+  cancel-in-progress: false
+
+jobs:
+  seed:
+    name: Run seedFarmersFromCsv on ${{ inputs.env }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.env }}
+    timeout-minutes: 10
+    steps:
+      - name: 🔑 Prep SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ vars.DROPLET_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: 💣 TRUNCATE existing rows (optional)
+        if: ${{ inputs.truncate }}
+        run: |
+          # Destructive — wipes farmer.farmers + gis.parcels (+ related
+          # via CASCADE: parcel_characteristics, parcel_geometries,
+          # eudr_status, inspection rows w/ FK). Use when refreshing a
+          # stale environment with the canonical CSV dataset.
+          ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<'EOF'
+            set -e
+            export PATH=/usr/local/bin:/root/.bun/bin:$PATH
+            cd /opt/impactcocoa/apps/be
+            bun -e "
+              import('./src/db/client').then(async ({ db }) => {
+                await db.execute('TRUNCATE TABLE farmer.farmers, gis.parcels, gis.parcel_characteristics, gis.parcel_geometries, gis.eudr_status, inspection.inspections, inspection.attachments CASCADE');
+                console.log('Truncated farmer + parcel + inspection tables.');
+                process.exit(0);
+              });
+            "
+          EOF
+
+      - name: 🌱 Seed farmers
+        run: |
+          # Reuses the already-deployed code in /opt/impactcocoa.
+          # The CSV ships with the deploy bundle (apps/be/db/seed/
+          # fixtures/farmers/farmer-dataset-2025-2026.csv) so no
+          # extra copy step needed.
+          ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<'EOF'
+            set -e
+            export PATH=/usr/local/bin:/root/.bun/bin:$PATH
+            cd /opt/impactcocoa/apps/be
+            SEED_FARMERS_FROM_CSV=true bun run db:seed
+          EOF
+
+      - name: ✅ Verify
+        run: |
+          ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<'EOF'
+            set -e
+            export PATH=/usr/local/bin:/root/.bun/bin:$PATH
+            cd /opt/impactcocoa/apps/be
+            bun -e "
+              import('./src/db/client').then(async ({ db }) => {
+                const farmers = await db.execute('SELECT COUNT(*) FROM farmer.farmers');
+                const parcels = await db.execute('SELECT COUNT(*) FROM gis.parcels');
+                console.log('farmers:', farmers.rows[0].count);
+                console.log('parcels:', parcels.rows[0].count);
+                process.exit(0);
+              });
+            "
+          EOF

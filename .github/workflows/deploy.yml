@@ -1,0 +1,610 @@
+# Deploy — single-branch (`main`) model.
+#
+#   Production  ← `prod-v*` tag push  (manual, human-approved)
+#   Staging     ← `stage-v*` tag push (manual, no approval)
+#               ← daily 00:00 UTC cron from main HEAD
+#               ← `workflow_dispatch` from GH UI / `gh workflow run`
+#
+# Production is ONLY deployable by tag — there is no scheduled prod
+# path. Cutting a `prod-v*` tag is the deliberate human signal that
+# "this commit is ready to ship to users." The workflow additionally
+# checks via `git merge-base --is-ancestor` that the tagged commit
+# lives on `main`, so a tag on a stray branch can't smuggle code in.
+#
+# Architecture (blue-green behind nginx):
+#   nginx :80/:443 ─┬─→ 127.0.0.1:8001  (blue slot)
+#                   └─→ 127.0.0.1:8002  (green slot)
+#   Exactly one slot is live at any time. Deploy starts NEW on the
+#   free slot, health-checks, then kills OLD. nginx passive failover
+#   (`max_fails=1 fail_timeout=5s` + `proxy_next_upstream`) handles
+#   the kill instant — at most ~50 ms retry penalty on 1–2 in-flight
+#   requests, no 502s.
+#
+# Pipeline (2 jobs to minimise billing):
+#   1. `ci`                — single consolidated lint + typecheck + E2E
+#                            job from ci.yml (reusable workflow).
+#   2. `build-and-deploy`  — build the BE bytecode + FE static AND ship
+#                            them in the same job, eliminating the
+#                            upload/download-artifact round-trip and
+#                            the duplicate build-verify step that used
+#                            to live in ci.yml.
+
+name: Deploy
+
+on:
+  push:
+    tags:
+      - 'prod-v*'
+      - 'stage-v*'
+
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'Target environment'
+        type: choice
+        required: true
+        options: [staging, production]
+
+# One deploy per environment at a time. Key on the resolved env (NOT
+# `github.ref_name`) so a staging-cron and a `prod-v*` tag deploy
+# don't share a lock. `cancel-in-progress: false` queues new requests
+# instead of killing an in-flight deploy.
+concurrency:
+  group: deploy-${{ inputs.env || (startsWith(github.ref_name, 'prod-v') && 'production' || 'staging') }}
+  cancel-in-progress: false
+
+env:
+  BUN_VERSION: '1.3.14'
+  # Opt JS actions (actions/checkout@v4, actions/cache@v4, etc.) into
+  # Node 24 instead of the deprecated Node 20. Removes the deprecation
+  # annotation from every workflow run; GH defaults flip in June 2026.
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+# Environment resolution — used at every site that needs it:
+#   - `push: tags: prod-v*`     → production
+#   - `push: tags: stage-v*`    → staging
+#   - `workflow_dispatch`       → inputs.env (production | staging)
+# No third arm is possible: tag filters and dispatch input choices
+# both guarantee a valid env.
+
+jobs:
+  # ── Gate: re-run CI on the deployed commit ───────────────────────
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  # ── Build + ship in one job (no artifact round-trip) ─────────────
+  build-and-deploy:
+    needs: [ci]
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.env || (startsWith(github.ref_name, 'prod-v') && 'production' || 'staging') }}
+      url: ${{ vars.PUBLIC_URL }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Enforce prod-v* tags come from main
+        if: github.event_name == 'push' && startsWith(github.ref_name, 'prod-v')
+        run: |
+          # A `prod-v*` tag pointing at a commit that isn't on `main`
+          # would deploy unreviewed code to production. Bail loudly.
+          set -e
+          git fetch --no-tags --depth=50 origin main
+          if git merge-base --is-ancestor "${{ github.sha }}" origin/main; then
+            echo "✓ tag commit ${{ github.sha }} is on main"
+          else
+            echo "::error::Tag ${{ github.ref_name }} points at ${{ github.sha }}, which is NOT on main."
+            echo "::error::Production deploys must originate from main. Move the tag and retry."
+            exit 1
+          fi
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      - name: Cache deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+            apps/*/node_modules
+            packages/*/node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            bun-${{ runner.os }}-
+
+      - name: Install deps
+        run: bun install --frozen-lockfile
+
+      # ── Build phase ────────────────────────────────────────────────
+      - name: Build BE
+        run: cd apps/be && bun run build
+
+      # Upload BE source maps so Sentry symbolicates backend stack traces
+      # (the build emits linked .map files via --sourcemap=linked). The
+      # release must match what main.ts reports (SENTRY_RELEASE = the git
+      # SHA, stamped into the Droplet .env on deploy). Bails loudly if the
+      # auth token is missing so it's not a silent no-op.
+      - name: Upload BE source maps to Sentry
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+          # BE Sentry project — the numeric project id the backend DSN posts
+          # events to. Must be THIS project (not the FE one) or the uploaded
+          # source maps live in the wrong project and never symbolicate the
+          # backend traces. (Was the guessed slug 'impact-cocoa-be', which
+          # pointed at the wrong project.)
+          SENTRY_PROJECT: '4511391320309840'
+        run: |
+          if [[ -z "$SENTRY_AUTH_TOKEN" ]]; then
+            echo "::warning::SENTRY_AUTH_TOKEN missing — skipping BE source map upload. Backend traces will stay minified in Sentry."
+            exit 0
+          fi
+          cd apps/be
+          # Non-fatal: a wrong SENTRY_PROJECT slug (or transient Sentry
+          # hiccup) must not break the deploy — the app doesn't depend on
+          # the upload. Warn loudly instead so it's visible + fixable.
+          bunx @sentry/cli sourcemaps inject ./dist || echo "::warning::sourcemaps inject failed"
+          bunx @sentry/cli sourcemaps upload ./dist --release "${{ github.sha }}" \
+            || echo "::warning::BE source map upload failed — check SENTRY_PROJECT slug ('impact-cocoa-be'?) / SENTRY_ORG. Deploy continues; BE traces stay minified until fixed."
+
+      - name: Build FE
+        env:
+          PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL }}
+          # Sentry vars are optional — if PUBLIC_SENTRY_DSN is empty,
+          # the SDK auto-disables itself at runtime via the `enabled:`
+          # guard in index.tsx. Letting an empty value inline is safe.
+          PUBLIC_SENTRY_DSN: ${{ vars.PUBLIC_SENTRY_DSN }}
+          PUBLIC_SENTRY_RELEASE: ${{ github.sha }}
+          # Tag bundled events as `production` or `staging` so Sentry
+          # can filter them apart. Both builds run with MODE=production,
+          # so without this var every event would be marked `production`.
+          PUBLIC_SENTRY_ENVIRONMENT: ${{ inputs.env || (startsWith(github.ref_name, 'prod-v') && 'production' || 'staging') }}
+        run: |
+          if [[ -z "$PUBLIC_API_URL" ]]; then
+            echo "::error::Missing vars.PUBLIC_API_URL for environment ${{ inputs.env || (startsWith(github.ref_name, 'prod-v') && 'production' || 'staging') }}"
+            echo "::error::Configure under Settings → Environments → <env> → Variables"
+            exit 1
+          fi
+          cd apps/fe && bun run build
+
+      # Upload FE source maps so Sentry can map minified stack traces
+      # back to the original source. Skipped silently when Sentry isn't
+      # configured for this environment.
+      - name: Upload FE source maps to Sentry
+        if: vars.PUBLIC_SENTRY_DSN != ''
+        env:
+          # `secrets.X` can't be referenced in `if:` directly, so we
+          # let the step run when the DSN is configured and bail
+          # inside the step if the auth token is missing — that way
+          # the message is loud and actionable, not silently skipped.
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+          SENTRY_PROJECT: impact-cocoa-fe
+        run: |
+          if [[ -z "$SENTRY_AUTH_TOKEN" ]]; then
+            echo "::warning::PUBLIC_SENTRY_DSN is set but SENTRY_AUTH_TOKEN secret is missing — skipping source map upload. Stack traces will be minified in Sentry."
+            exit 0
+          fi
+          cd apps/fe
+          bunx @sentry/cli sourcemaps inject ./dist
+          bunx @sentry/cli sourcemaps upload ./dist \
+            --release "${{ github.sha }}"
+
+      # Bundle exactly what the runtime needs. Skipped:
+      #   - node_modules → reinstalled on Droplet so platform-specific
+      #     deps (libpq, optional native bits) link against the right libc.
+      #   - apps/fe/src → bytecode/static in dist/ is the runtime.
+      #   - tests, docs, .git
+      # apps/be/src IS included because drizzle's `db/migrate.ts` imports
+      # `../src/db/client` to share the pool config.
+      - name: Package deploy bundle
+        run: |
+          tar czf deploy-bundle.tar.gz \
+            apps/be/dist \
+            apps/be/src \
+            apps/be/db \
+            apps/be/scripts \
+            apps/be/reports \
+            apps/be/package.json \
+            apps/be/drizzle.config.ts \
+            apps/be/tsconfig.json \
+            apps/fe/dist \
+            apps/fe/package.json \
+            packages \
+            ecosystem.config.cjs \
+            package.json \
+            bun.lock
+          ls -lh deploy-bundle.tar.gz
+
+      # ── Deploy phase ───────────────────────────────────────────────
+      - name: 🔑 Setup SSH key
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ vars.DROPLET_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: 🔍 Detect active slot
+        id: detect
+        run: |
+          # Find which blue-green port (8001 or 8002) is currently bound.
+          # Match on the Local-Address:Port column (4th col of `ss -tln`)
+          # regardless of bind host — 127.0.0.1, 0.0.0.0, or [::] all
+          # count as "occupied". If none → first deploy, default NEW=8001.
+          ACTIVE=$(ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
+            "ss -tln | awk 'NR>1 {print \$4}' | grep -oE ':80(01|02)\$' | head -1 | tr -d ':'" \
+            || echo "")
+          if [ "$ACTIVE" = "8001" ]; then NEW=8002
+          elif [ "$ACTIVE" = "8002" ]; then NEW=8001
+          else NEW=8001
+          fi
+          echo "active=$ACTIVE" >> "$GITHUB_OUTPUT"
+          echo "new=$NEW"       >> "$GITHUB_OUTPUT"
+          echo "::notice::🔵 OLD=${ACTIVE:-none}  🟢 NEW=$NEW"
+
+      - name: 📦 Upload bundle to Droplet
+        run: |
+          scp -i ~/.ssh/deploy_key deploy-bundle.tar.gz \
+            root@${{ vars.DROPLET_HOST }}:/tmp/deploy-bundle.tar.gz
+
+      - name: 📂 Extract bundle
+        run: |
+          ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<'EOF'
+            set -e
+            cd /opt/impactcocoa
+            tar xzf /tmp/deploy-bundle.tar.gz
+            rm /tmp/deploy-bundle.tar.gz
+          EOF
+
+      - name: 📁 Ensure persistent dirs exist
+        # TieredStorage hot tier + PM2 log dir. Both MUST live outside
+        # /opt/impactcocoa so the next deploy's `tar xzf` doesn't wipe
+        # them. Idempotent — `mkdir -p` is a no-op when the dir
+        # already exists. Running as root via the deploy SSH user, so
+        # ownership/permissions are root:root by default — fine
+        # because the BE PM2 process also runs as root (no privilege
+        # drop in current ecosystem).
+        run: |
+          ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<'EOF'
+            set -e
+            mkdir -p /var/lib/impact-cocoa/storage
+            mkdir -p /var/log/impact-cocoa
+          EOF
+
+      - name: 🏷️ Stamp release SHA + DSN + secrets into BE .env
+        env:
+          # Single DSN for both envs — Sentry UI splits events via the
+          # NODE_ENV tag (set per-Droplet in ecosystem.config.cjs).
+          # Leaving DSN blank keeps BE Sentry disabled (main.ts gates
+          # on `!!SENTRY_DSN`).
+          SENTRY_DSN_VAR: ${{ vars.SENTRY_DSN }}
+          # Kobo API token — env-scoped secret. Service.ts gates the
+          # sync HTTP fetch on `!!KOBO_API_KEY`; without it `runSync`
+          # throws "KOBO_API_KEY env var is required to call Kobo"
+          # and the inspection table stays empty. Inject per-env so
+          # staging and production can rotate independently.
+          KOBO_API_KEY_VAR: ${{ secrets.KOBO_API_KEY }}
+          # Public hostname for this env — used by better-auth to
+          # build callback URLs + validate sign-in origin, and by the
+          # BE to know where FE lives for redirects. Drives the
+          # session cookie's host scope. Source of truth is GH var
+          # `PUBLIC_URL` per env; both BETTER_AUTH_URL and FE_URL
+          # follow it so the BE keeps cookies on the right domain.
+          PUBLIC_URL_VAR: ${{ vars.PUBLIC_URL }}
+          # DigitalOcean Spaces credentials — used by the report
+          # generator to upload the built XLSX/CSV and by
+          # TieredStorage to archive rotated logs / kobo snapshots.
+          # KEY/SECRET are repo-level secrets (rotate = bump secret +
+          # redeploy). BUCKET/REGION are non-secret; kept as repo vars.
+          SPACES_KEY_VAR: ${{ secrets.SPACES_KEY }}
+          SPACES_SECRET_VAR: ${{ secrets.SPACES_SECRET }}
+          SPACES_BUCKET_VAR: ${{ vars.SPACES_BUCKET }}
+          SPACES_REGION_VAR: ${{ vars.SPACES_REGION }}
+          # Resend transactional-email credentials — powers better-auth
+          # password reset + magic-link sign-in via `apps/be/src/lib/
+          # email.ts`. Missing key ≠ boot failure (email.ts logs to
+          # stdout instead of throwing), but sign-in flows silently
+          # break. RESEND_API_KEY is env-scoped so staging + prod can
+          # rotate independently; EMAIL_FROM is a non-secret variable.
+          RESEND_API_KEY_VAR: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_FROM_VAR: ${{ vars.EMAIL_FROM }}
+          # Session lifetime (seconds). Local dev keeps the 7-day
+          # default via apps/be/.env; staging+prod pin to 1800 (30
+          # min idle timeout with sliding refresh — see auth.ts).
+          # auth.ts falls back to 7d if this var is missing, so a
+          # forgotten env var doesn't lock users out — it just makes
+          # the timeout too lax. Fixing here per-env keeps the
+          # security posture explicit.
+          SESSION_EXPIRES_SECONDS_VAR: ${{ vars.SESSION_EXPIRES_SECONDS }}
+        run: |
+          ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<EOF
+            set -e
+            cd /opt/impactcocoa/apps/be
+            # SENTRY_RELEASE = git SHA (overwritten each deploy).
+            if grep -q "^SENTRY_RELEASE=" .env 2>/dev/null; then
+              sed -i "s|^SENTRY_RELEASE=.*|SENTRY_RELEASE=${{ github.sha }}|" .env
+            else
+              echo "SENTRY_RELEASE=${{ github.sha }}" >> .env
+            fi
+            # SENTRY_DSN = repo-level GH variable. Same value on both
+            # Droplets; NODE_ENV (injected by PM2 from ecosystem
+            # `env_<staging|production>`) is what separates them on
+            # the Sentry UI. Empty value still gets written —
+            # main.ts's \`!!process.env.SENTRY_DSN\` gate keeps the
+            # SDK disabled until a real DSN lands.
+            if grep -q "^SENTRY_DSN=" .env 2>/dev/null; then
+              sed -i "s|^SENTRY_DSN=.*|SENTRY_DSN=$SENTRY_DSN_VAR|" .env
+            else
+              echo "SENTRY_DSN=$SENTRY_DSN_VAR" >> .env
+            fi
+            # Drop the legacy SENTRY_ENVIRONMENT line if it survived
+            # an earlier deploy — its value is no longer read.
+            sed -i '/^SENTRY_ENVIRONMENT=/d' .env || true
+            # KOBO_API_KEY = env-scoped GH secret. Service.ts reads
+            # this on every Kobo sync; missing/empty value = sync
+            # fails with a clear error. Stamping here means rotating
+            # the secret just requires bumping the GH secret + a
+            # redeploy — no manual SSH to the droplet.
+            if grep -q "^KOBO_API_KEY=" .env 2>/dev/null; then
+              sed -i "s|^KOBO_API_KEY=.*|KOBO_API_KEY=$KOBO_API_KEY_VAR|" .env
+            else
+              echo "KOBO_API_KEY=$KOBO_API_KEY_VAR" >> .env
+            fi
+            # BETTER_AUTH_URL + FE_URL = env-scoped GH variable
+            # PUBLIC_URL. better-auth uses BETTER_AUTH_URL to scope
+            # the session cookie and validate sign-in origin; a
+            # mismatch leaves the cookie on the wrong host and
+            # subsequent /api/* requests come back unauthenticated.
+            if grep -q "^BETTER_AUTH_URL=" .env 2>/dev/null; then
+              sed -i "s|^BETTER_AUTH_URL=.*|BETTER_AUTH_URL=$PUBLIC_URL_VAR|" .env
+            else
+              echo "BETTER_AUTH_URL=$PUBLIC_URL_VAR" >> .env
+            fi
+            if grep -q "^FE_URL=" .env 2>/dev/null; then
+              sed -i "s|^FE_URL=.*|FE_URL=$PUBLIC_URL_VAR|" .env
+            else
+              echo "FE_URL=$PUBLIC_URL_VAR" >> .env
+            fi
+            # DigitalOcean Spaces — 4 env vars fed to the S3-compatible
+            # SDK. Missing SPACES_KEY/SECRET makes the report exporter
+            # throw "SPACES_KEY and SPACES_SECRET env vars are required
+            # for DigitalOcean Spaces access." at upload time. KEY/SECRET
+            # are GH secrets (rotate per env); BUCKET/REGION are GH vars.
+            if grep -q "^SPACES_KEY=" .env 2>/dev/null; then
+              sed -i "s|^SPACES_KEY=.*|SPACES_KEY=$SPACES_KEY_VAR|" .env
+            else
+              echo "SPACES_KEY=$SPACES_KEY_VAR" >> .env
+            fi
+            if grep -q "^SPACES_SECRET=" .env 2>/dev/null; then
+              sed -i "s|^SPACES_SECRET=.*|SPACES_SECRET=$SPACES_SECRET_VAR|" .env
+            else
+              echo "SPACES_SECRET=$SPACES_SECRET_VAR" >> .env
+            fi
+            if grep -q "^SPACES_BUCKET=" .env 2>/dev/null; then
+              sed -i "s|^SPACES_BUCKET=.*|SPACES_BUCKET=$SPACES_BUCKET_VAR|" .env
+            else
+              echo "SPACES_BUCKET=$SPACES_BUCKET_VAR" >> .env
+            fi
+            if grep -q "^SPACES_REGION=" .env 2>/dev/null; then
+              sed -i "s|^SPACES_REGION=.*|SPACES_REGION=$SPACES_REGION_VAR|" .env
+            else
+              echo "SPACES_REGION=$SPACES_REGION_VAR" >> .env
+            fi
+            # RESEND_API_KEY = env-scoped GH secret. lib/email.ts gates
+            # the Resend client on \`!!process.env.RESEND_API_KEY\`;
+            # missing/empty falls back to stdout logging (dev-safe) but
+            # breaks real delivery. Stamping here keeps rotation to a
+            # single GH-secret bump + redeploy.
+            if grep -q "^RESEND_API_KEY=" .env 2>/dev/null; then
+              sed -i "s|^RESEND_API_KEY=.*|RESEND_API_KEY=$RESEND_API_KEY_VAR|" .env
+            else
+              echo "RESEND_API_KEY=$RESEND_API_KEY_VAR" >> .env
+            fi
+            # EMAIL_FROM = repo variable (public, non-secret). Domain
+            # portion must be a verified sender on Resend (DKIM/SPF
+            # records live on the impactcocoa.net zone). Same value on
+            # both envs unless staging vs prod use different domains.
+            # sed -i's | delimiter avoids escaping the < > angles in
+            # the display-name portion of "Name <mailbox@domain>".
+            if grep -q "^EMAIL_FROM=" .env 2>/dev/null; then
+              sed -i "s|^EMAIL_FROM=.*|EMAIL_FROM=$EMAIL_FROM_VAR|" .env
+            else
+              echo "EMAIL_FROM=$EMAIL_FROM_VAR" >> .env
+            fi
+            # SESSION_EXPIRES_SECONDS = env-scoped GH variable. auth.ts
+            # falls back to 7 days when unset, but staging+prod pin
+            # this to 1800 (30 min) to enforce idle timeout. Not
+            # secret, so kept as a variable (not a secret).
+            if grep -q "^SESSION_EXPIRES_SECONDS=" .env 2>/dev/null; then
+              sed -i "s|^SESSION_EXPIRES_SECONDS=.*|SESSION_EXPIRES_SECONDS=$SESSION_EXPIRES_SECONDS_VAR|" .env
+            else
+              echo "SESSION_EXPIRES_SECONDS=$SESSION_EXPIRES_SECONDS_VAR" >> .env
+            fi
+          EOF
+
+      - name: 📚 Install dependencies on Droplet
+        run: |
+          ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
+            'export PATH=/usr/local/bin:/root/.bun/bin:$PATH && cd /opt/impactcocoa && bun install --frozen-lockfile --production'
+
+      - name: ♻️ Force-release OLD BE DB pool
+        if: steps.detect.outputs.active != ''
+        run: |
+          # DO managed Postgres has a ~20-conn cap (staging tier) and
+          # OLD BE holds its full pool indefinitely — retries alone
+          # can't win the race because connections never idle out.
+          # Restart OLD via pm2 so its pool drops all connections at
+          # once, freeing slots for the migrate step. Users see a
+          # ~1-2s hiccup while OLD's node process re-establishes;
+          # that's cheaper than a failed deploy + manual re-tag.
+          OLD_PORT=${{ steps.detect.outputs.active }}
+          ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
+            "export PATH=/usr/local/bin:/root/.bun/bin:\$PATH && pm2 restart impact-cocoa-$OLD_PORT"
+          # Give pm2 a beat to actually kill sockets + let the DB
+          # register the drop before drizzle attempts to connect.
+          sleep 3
+
+      - name: 🗄️ Run database migrations
+        run: |
+          # Migrations are additive-only by convention (CREATE TABLE,
+          # ADD COLUMN NULLABLE, CREATE INDEX CONCURRENTLY). OLD code
+          # tolerates the new schema until we swap to NEW. Destructive
+          # changes need the expand-contract two-deploy dance.
+          #
+          # DO managed Postgres on the basic staging tier caps at ~20
+          # connections and OLD BE tends to reopen its pool the
+          # instant pm2 restart brings its process back — so `pm2
+          # restart` alone doesn't reliably free enough slots for
+          # drizzle to connect. Before each migrate attempt we
+          # actively kill the app role's idle + idle-in-transaction
+          # sessions via psql. Same-role callers can terminate
+          # same-role backends in Postgres, so no superuser needed
+          # and no separate admin DATABASE_URL. `pid != pg_backend_pid()`
+          # keeps the killer session alive during the query.
+          for attempt in 1 2 3 4 5; do
+            echo "🧹 attempt $attempt: kill idle app-role sessions before migrate"
+            # `<<'EOF'` (quoted) so \$DB_URL / \$killed are expanded by
+            # the REMOTE bash on the droplet (not by the GH runner).
+            # Heredoc closing marker must sit at column 0 after YAML
+            # strips the block's leading indent — that's the 10-space
+            # indent on `          EOF` below.
+            ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<'EOF' || true
+              set -e
+              cd /opt/impactcocoa/apps/be
+              DB_URL=$(grep -E '^DATABASE_URL=' .env | head -1 | cut -d= -f2-)
+              if [ -n "$DB_URL" ]; then
+                killed=$(psql "$DB_URL" -tA -c "SELECT count(pg_terminate_backend(pid)) FROM pg_stat_activity WHERE usename = session_user AND state IN ('idle', 'idle in transaction') AND pid != pg_backend_pid();" 2>/dev/null || echo 0)
+                echo "  → killed $killed idle connections"
+              fi
+          EOF
+            if ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
+              'export PATH=/usr/local/bin:/root/.bun/bin:$PATH && cd /opt/impactcocoa/apps/be && bun run db:migrate'; then
+              echo "✅ migrations applied on attempt $attempt"
+              exit 0
+            fi
+            if [ "$attempt" -lt 5 ]; then
+              echo "⚠️  migrate attempt $attempt failed — sleeping 60s before retry"
+              sleep 60
+            fi
+          done
+          echo "❌ migrations failed after 5 attempts"
+          exit 1
+
+      - name: 👥 Seed real staff accounts
+        run: |
+          # Idempotent seed of iam.users rows for the staff roster
+          # defined in `apps/be/db/seed/real-users.ts`. Existing users
+          # are left alone (marked `=` in the log); only new entries
+          # get created (`+`) with password `ImpactCocoa2026!`.
+          #
+          # Wiring here — rather than a manual SSH-and-run step after
+          # every deploy — means adding a name to REAL_USERS is a
+          # code-only change: commit + tag ships the account, no
+          # human step needed. Kobo/Spaces creds needed by the BE
+          # bundle are already stamped by the earlier .env step, so
+          # this script's `import { auth }` starts up cleanly.
+          #
+          # Runs BEFORE the NEW instance boots — the seed uses
+          # better-auth's server-side `signUpEmail` API against the
+          # DB directly (no HTTP call to the app), so it doesn't
+          # need a running BE. Placing it here also means a seed
+          # failure blocks the traffic swap.
+          # `cd apps/be` so `import "dotenv/config"` in the seed
+          # loads apps/be/.env (dotenv resolves from cwd). Running
+          # from repo root would silently fall back to the monorepo
+          # root where no .env lives → `DATABASE_URL is required`
+          # exit code 1 → deploy blocked.
+          ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
+            'export PATH=/usr/local/bin:/root/.bun/bin:$PATH && cd /opt/impactcocoa/apps/be && bun db/seed/real-users.ts'
+
+      - name: 🚀 Start NEW instance
+        env:
+          # Pick the right `env_<name>` block in ecosystem.config.cjs
+          # so PM2 boots the BE with NODE_ENV=staging | production.
+          # Mirrors the `environment:` block at the top of this job.
+          PM2_ENV: ${{ inputs.env || (startsWith(github.ref_name, 'prod-v') && 'production' || 'staging') }}
+        run: |
+          # `pm2 start ecosystem.config.cjs` runs the slot picker —
+          # auto-binds the FREE port (8001 or 8002) and registers under
+          # name `impact-cocoa-<NEW>`.
+          ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
+            "export PATH=/usr/local/bin:/root/.bun/bin:\$PATH && cd /opt/impactcocoa && pm2 start ecosystem.config.cjs --env $PM2_ENV && pm2 list"
+
+      - name: 🏥 Health check NEW (internal)
+        id: health-internal
+        run: |
+          NEW_PORT=${{ steps.detect.outputs.new }}
+          for i in $(seq 1 30); do
+            STATUS=$(ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
+              "curl -sS -o /dev/null --max-time 2 -w '%{http_code}' http://127.0.0.1:$NEW_PORT/health" \
+              || echo "000")
+            if [ "$STATUS" = "200" ]; then
+              echo "::notice::✓ :$NEW_PORT healthy after $i attempt(s)"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::NEW :$NEW_PORT failed health check after 30 attempts"
+          ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
+            "pm2 logs impact-cocoa-$NEW_PORT --err --nostream --lines 30" || true
+          exit 1
+
+      - name: 🛑 Stop OLD instance
+        if: steps.detect.outputs.active != ''
+        run: |
+          OLD_PORT=${{ steps.detect.outputs.active }}
+          ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<EOF
+            set -e
+            export PATH=/usr/local/bin:/root/.bun/bin:\$PATH
+            pm2 delete impact-cocoa-$OLD_PORT
+            pm2 save
+          EOF
+          echo "::notice::✓ Killed OLD :$OLD_PORT"
+
+      - name: 🌐 External health check (via Cloudflare)
+        run: |
+          # Give nginx + CF edge a moment to see NEW as the only healthy
+          # upstream after we killed OLD.
+          sleep 3
+          URL="${{ vars.PUBLIC_URL }}/health"
+          for i in 1 2 3 4 5; do
+            STATUS=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 10 "$URL" || echo '000')
+            echo "  attempt $i: $STATUS"
+            if [ "$STATUS" = "200" ]; then
+              echo "::notice::✓ Public $URL → 200"
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "::error::Public health check failed at $URL"
+          exit 1
+
+      - name: 🔄 Rollback on failure
+        if: failure()
+        run: |
+          NEW_PORT=${{ steps.detect.outputs.new }}
+          ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
+            "export PATH=/usr/local/bin:/root/.bun/bin:\$PATH && pm2 delete impact-cocoa-$NEW_PORT 2>/dev/null || true" || true
+          echo "::warning::Cleaned up NEW :$NEW_PORT. OLD (${{ steps.detect.outputs.active || 'none' }}) should still be serving."
+
+      - name: 📊 Deployment summary
+        if: always()
+        run: |
+          OUTCOME="${{ job.status }}"
+          if [ "$OUTCOME" = "success" ]; then ICON="✅"; else ICON="❌"; fi
+          {
+            echo "## $ICON Deploy → **${{ inputs.env || (startsWith(github.ref_name, 'prod-v') && 'production' || 'staging') }}**"
+            echo ""
+            echo "| Field | Value |"
+            echo "|---|---|"
+            echo "| Trigger | \`${{ github.event_name }}\` |"
+            echo "| Ref | \`${{ github.ref_name }}\` |"
+            echo "| Commit | \`${{ github.sha }}\` |"
+            echo "| OLD slot | \`${{ steps.detect.outputs.active || 'none' }}\` |"
+            echo "| NEW slot | \`${{ steps.detect.outputs.new }}\` |"
+            echo "| Public URL | ${{ vars.PUBLIC_URL }} |"
+            echo "| Triggered by | @${{ github.actor }} |"
+            echo "| Outcome | **$OUTCOME** |"
+          } >> "$GITHUB_STEP_SUMMARY"

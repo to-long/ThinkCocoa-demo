@@ -1,0 +1,133 @@
+# Scheduled deploy — daily staging from `main` HEAD.
+#
+# Cron: 00:00 UTC (= 00:00 Africa/Accra, no DST in Ghana). Cron jobs
+# can drift up to ~1 h during GH peak load — don't tie anything
+# time-sensitive downstream.
+#
+# Production is NOT scheduled. Prod deploys only when:
+#   - someone pushes a `prod-v*` tag, OR
+#   - someone clicks "Run workflow" on deploy.yml in the GH UI and
+#     selects env=production
+#
+# That keeps production releases a deliberate human action while
+# staging soaks the latest `main` HEAD overnight.
+#
+# Why `workflow_dispatch` instead of pushing a tag from cron: GitHub
+# blocks tag-push events authored by `GITHUB_TOKEN` from triggering
+# other workflows (anti-recursion guard). `gh workflow run` IS
+# allowed for the default token, given `actions: write` permission.
+
+name: Scheduled staging deploy
+
+on:
+  schedule:
+    - cron: '0 0 * * *'    # daily 00:00 UTC = 00:00 Africa/Accra
+
+  # Allow manual firing from the GH UI to test the wiring after
+  # editing this workflow.
+  workflow_dispatch:
+
+concurrency:
+  group: scheduled-staging
+  cancel-in-progress: false
+
+env:
+  # Opt JS actions into Node 24 instead of the deprecated Node 20.
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+permissions:
+  actions: write       # required to call `gh workflow run`
+  contents: read
+  # Needed by the skip-when-no-new-commits check below: querying
+  # `GET /repos/.../deployments` and `…/deployments/:id/statuses` with
+  # the default `GITHUB_TOKEN` returns 403 unless this scope is set.
+  deployments: read
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # Skip the dispatch when `main` HEAD already matches the SHA of
+      # the last *successful* staging deployment recorded on GitHub's
+      # Deployments API. Saves ~5 minutes of CI + Droplet cycle when
+      # nothing has merged in the last 24 h (the common case for a
+      # quiet day on `main`).
+      #
+      # Why GH Deployments API and not, e.g., SSHing into the Droplet
+      # to `cat /opt/impactcocoa/apps/be/.env | grep SENTRY_RELEASE`:
+      # the API is the canonical record (created automatically by the
+      # `environment:` block in deploy.yml's `build-and-deploy` job),
+      # there's no SSH key to manage here, and a drift between the
+      # API and the actual Droplet would itself be a deploy bug worth
+      # surfacing instead of hiding.
+      - name: Check if main HEAD already deployed to staging
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          CURRENT=$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)
+          echo "main HEAD = $CURRENT"
+
+          # Walk the most recent staging deployments and pick the
+          # first one whose latest status is `success`. In-flight or
+          # failed deployments are ignored — they're not what's
+          # actually running on the Droplet.
+          LAST=""
+          for ID in $(gh api "repos/$GITHUB_REPOSITORY/deployments?environment=staging&per_page=10" --jq '.[].id'); do
+            STATE=$(gh api "repos/$GITHUB_REPOSITORY/deployments/$ID/statuses?per_page=1" --jq '.[0].state // ""')
+            if [ "$STATE" = "success" ]; then
+              LAST=$(gh api "repos/$GITHUB_REPOSITORY/deployments/$ID" --jq .sha)
+              echo "last successful staging deploy = $LAST (deployment #$ID)"
+              break
+            fi
+          done
+
+          if [ -z "$LAST" ]; then
+            echo "::notice::No prior successful staging deploy on record — will deploy."
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          elif [ "$CURRENT" = "$LAST" ]; then
+            echo "::notice::staging already at $CURRENT — skipping cron deploy"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::main has moved ($LAST → $CURRENT) — will deploy"
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+          echo "current=$CURRENT" >> "$GITHUB_OUTPUT"
+          echo "last=$LAST"       >> "$GITHUB_OUTPUT"
+
+      - name: Fire deploy.yml against main HEAD
+        if: steps.check.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # `--repo` is required because we don't `actions/checkout`,
+          # so `gh` can't infer the repo from a local git remote.
+          gh workflow run deploy.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f env=staging
+          echo "::notice::✓ deploy.yml dispatched for env=staging on ref=main"
+
+      - name: Summary
+        if: always()
+        run: |
+          if [ "${{ steps.check.outputs.skip }}" = "true" ]; then
+            RESULT="⏭️ skipped (already at HEAD)"
+          else
+            RESULT="${{ job.status }}"
+          fi
+          {
+            echo "## ⏰ Scheduled staging deploy"
+            echo ""
+            echo "| Field | Value |"
+            echo "|---|---|"
+            echo "| Cron | \`${{ github.event.schedule || 'manual' }}\` |"
+            echo "| Target | **staging** |"
+            echo "| Ref | \`main\` |"
+            echo "| main HEAD | \`${{ steps.check.outputs.current }}\` |"
+            echo "| Last deployed | \`${{ steps.check.outputs.last || 'n/a' }}\` |"
+            echo "| Result | $RESULT |"
+            echo ""
+            echo "Watch the resulting deploy in the [Deploy workflow](../../actions/workflows/deploy.yml)."
+          } >> "$GITHUB_STEP_SUMMARY"

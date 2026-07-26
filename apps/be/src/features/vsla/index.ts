@@ -1,0 +1,1 @@
+export { vslaRoutes } from './routes';

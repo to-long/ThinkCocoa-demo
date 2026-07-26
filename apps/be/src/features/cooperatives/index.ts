@@ -1,0 +1,1 @@
+export { cooperativesRoutes } from './routes';

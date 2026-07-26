@@ -1,0 +1,134 @@
+# CI — runs on every push and PR. Acts as the deploy gate: branch
+# protection requires this to be green before a `prod-v*` tag can move
+# downstream into `deploy.yml`'s deploy job (which `needs: ci`).
+#
+# Single-job design — lint, typecheck, and the E2E suite all share the
+# same workspace install. GitHub Actions bills each job rounded UP to
+# the nearest minute, so splitting these into parallel jobs would burn
+# 3 billing minutes for ~90 seconds of work. Keeping them sequential
+# in one job costs ~2 billing minutes.
+#
+# We deliberately do NOT run a separate "build verify" here — the
+# real build happens in `deploy.yml`. If it breaks, the deploy fails
+# loudly with the bundler error. Pre-flighting the build twice would
+# be wasted compute.
+
+name: CI
+
+on:
+  push:
+    branches-ignore:
+      # main is deployed via tags; CI on direct push to main would be
+      # redundant with the per-PR run that landed those commits.
+      - main
+  pull_request:
+    branches: [main]
+  # Allow `deploy.yml` to call this workflow as a dependency check.
+  workflow_call:
+
+# Cancel older runs on the same branch — no need to keep CI burning
+# minutes on out-of-date commits when a fresher push lands.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  BUN_VERSION: '1.3.14'
+  # Opt JS actions (actions/checkout@v4, actions/cache@v4 etc.) into the
+  # Node 24 runtime instead of the deprecated Node 20. Silences the
+  # 'Node.js 20 actions are deprecated' annotation that lands on every
+  # run. GH defaults switch to Node 24 in June 2026; this just gets us
+  # there a bit early so we don't ship deprecation warnings in CI output.
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+jobs:
+  verify:
+    name: Lint + typecheck + E2E
+    runs-on: ubuntu-latest
+    services:
+      # Service container — GH spins it up on the same network as the
+      # job runner and binds 5432. The PostGIS image matches what
+      # `docker-compose.yml` uses locally so the schema (incl. geometry
+      # columns + extensions) loads identically.
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: impactcocoa
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/impactcocoa
+      DATABASE_SSL: 'false'
+      # Required by app.ts CORS validator + auth.ts trustedOrigins.
+      # Values don't matter — CI tests don't hit them — but they must
+      # be set or boot fails.
+      FE_URL: http://localhost:3030
+      BETTER_AUTH_URL: http://localhost:8000
+      BETTER_AUTH_SECRET: ci-secret-min-32-chars-this-is-fine
+      NODE_ENV: test
+      # TieredStorage hot tier — point at a writable tmp dir so the
+      # audit-diff offload during E2E doesn't try to mkdir under
+      # /var/lib (default in prod) and fail with EACCES.
+      STORAGE_ROOT: /tmp/impact-cocoa-storage
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      # Cache the bun install store + workspace node_modules. Keyed on
+      # bun.lock so a dep bump triggers a fresh install; everything else
+      # reuses the cache (~25 s saved per run).
+      - name: Cache deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+            apps/*/node_modules
+            packages/*/node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            bun-${{ runner.os }}-
+
+      - name: Install deps
+        run: bun install --frozen-lockfile
+
+      # ── Static checks first (fail fast on cheap errors) ────────────
+      - name: Biome lint
+        run: bun run lint
+
+      - name: Type-check BE
+        run: cd apps/be && bun run typecheck
+
+      # ── DB migrations (apply twice to enforce idempotency) ────────
+      - name: Wait for Postgres
+        run: |
+          for i in {1..30}; do
+            pg_isready -h localhost -U postgres && exit 0
+            sleep 1
+          done
+          echo "Postgres never came up"; exit 1
+
+      # First leg of the migration safety net: apply every migration on
+      # an empty DB. Catches typos, FK ordering, missing IF EXISTS.
+      - name: Apply migrations (clean run)
+        run: cd apps/be && bun run db:migrate
+
+      # Second leg: re-apply onto the now-seeded DB. Migrations + seed
+      # MUST be idempotent or this fails — mirrors the contract
+      # documented in CLAUDE.md.
+      - name: Apply migrations (idempotency check)
+        run: cd apps/be && bun run db:migrate
+
+      # ── E2E test suite ─────────────────────────────────────────────
+      - name: Run BE e2e suite
+        run: cd apps/be && bun test src/__tests__

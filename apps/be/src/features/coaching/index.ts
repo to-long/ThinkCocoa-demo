@@ -1,0 +1,1 @@
+export { coachingRoutes } from './routes';

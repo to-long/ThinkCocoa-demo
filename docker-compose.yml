@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: imresamu/postgis:17-3.5
+    container_name: impactcocoa-demo-postgres
+    ports:
+      - "5539:5432"
+    environment:
+      POSTGRES_DB: thinkcocoa
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  pgdata:

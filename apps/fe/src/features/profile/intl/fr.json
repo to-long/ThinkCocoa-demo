@@ -1,0 +1,28 @@
+{
+  "profile.breadcrumb": "Profil",
+  "profile.title": "Paramètres du profil",
+  "profile.subtitle": "Gérez les paramètres de votre compte et les préférences de sécurité",
+
+  "profile.accountInfo.title": "Informations du compte",
+  "profile.accountInfo.description": "Détails de votre compte et rôles attribués",
+  "profile.accountInfo.name": "Nom",
+  "profile.accountInfo.email": "Email",
+  "profile.accountInfo.roles": "Rôles",
+  "profile.accountInfo.submit": "Mettre à jour",
+  "profile.accountInfo.submitting": "Mise à jour...",
+  "profile.accountInfo.success": "Profil mis à jour avec succès",
+  "profile.accountInfo.error.generic": "Échec de la mise à jour du profil",
+
+  "profile.changePassword.title": "Changer le mot de passe",
+  "profile.changePassword.description": "Mettez à jour votre mot de passe pour sécuriser votre compte",
+  "profile.changePassword.currentPassword": "Mot de passe actuel",
+  "profile.changePassword.newPassword": "Nouveau mot de passe",
+  "profile.changePassword.confirmPassword": "Confirmer le nouveau mot de passe",
+  "profile.changePassword.submit": "Mettre à jour le mot de passe",
+  "profile.changePassword.submitting": "Mise à jour...",
+  "profile.changePassword.success": "Mot de passe mis à jour avec succès",
+  "profile.changePassword.error.generic": "Échec de la mise à jour du mot de passe",
+
+  "profile.notifications.title": "Notifications",
+  "profile.notifications.empty": "Aucun flux de notification — votre rôle n'accorde encore aucune permission :notification."
+}

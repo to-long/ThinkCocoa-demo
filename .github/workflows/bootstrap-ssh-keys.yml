@@ -1,0 +1,75 @@
+# One-shot bootstrap: append operator SSH public key(s) to a droplet's
+# /root/.ssh/authorized_keys so the operator can SSH directly (instead
+# of relying on the deploy_key stored in GitHub Secrets).
+#
+# Why a workflow instead of `doctl`? DO's API can add SSH keys to a
+# droplet ONLY at create time. For running droplets, the only path is
+# SSH-in-and-append. The deploy_key currently has the only foothold,
+# so we ride it once to install the operator's key, then never need
+# this workflow again.
+#
+# Usage:
+#   gh workflow run bootstrap-ssh-keys.yml \
+#     -f env=both \
+#     -f pubkey="ssh-ed25519 AAAA... long.to@APVN-Mac048.local"
+#
+# Idempotent: grep-then-append. Re-running with the same key is a
+# no-op. Multiple keys → run the workflow multiple times (one per key).
+
+name: Bootstrap Operator SSH Keys
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'Target environment'
+        type: choice
+        required: true
+        options: [staging, production, both]
+      pubkey:
+        description: 'Public SSH key to append (single line, e.g. `ssh-ed25519 AAAA... user@host`)'
+        type: string
+        required: true
+
+jobs:
+  bootstrap:
+    name: Append pubkey on ${{ matrix.env }}
+    runs-on: ubuntu-latest
+    environment: ${{ matrix.env }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Expand `both` → [staging, production]; otherwise just the
+        # single env the operator picked. The `fromJSON` trick lets us
+        # branch list values inside the matrix.
+        env: ${{ fromJSON(inputs.env == 'both' && '["staging","production"]' || format('["{0}"]', inputs.env)) }}
+    timeout-minutes: 5
+    steps:
+      - name: 🔑 Prep deploy key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ vars.DROPLET_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: 📝 Append operator pubkey
+        env:
+          PUBKEY: ${{ inputs.pubkey }}
+        run: |
+          # grep -qxF: line-exact, no regex. -x prevents partial-line
+          # matches like adding a key that's a suffix of an existing
+          # one. Re-running with the same key is a no-op.
+          ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<EOF
+            set -e
+            mkdir -p ~/.ssh
+            touch ~/.ssh/authorized_keys
+            chmod 600 ~/.ssh/authorized_keys
+            if grep -qxF '$PUBKEY' ~/.ssh/authorized_keys; then
+              echo "Key already present — no-op."
+            else
+              echo '$PUBKEY' >> ~/.ssh/authorized_keys
+              echo "Key appended."
+            fi
+            echo "--- current authorized_keys ---"
+            cat ~/.ssh/authorized_keys
+          EOF

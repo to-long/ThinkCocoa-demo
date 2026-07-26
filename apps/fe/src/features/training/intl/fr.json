@@ -1,0 +1,39 @@
+{
+  "training.title": "Formation Planteur",
+  "training.subtitle": "Sessions de formation de groupe pour planteurs, agents de terrain et personnel de coopérative",
+
+  "training.stats.sessions30d": "Sessions (30 j)",
+  "training.stats.sessionCount": "Nombre de sessions",
+  "training.stats.participants": "Participants",
+  "training.stats.consentRate": "Taux de consentement moyen",
+  "training.stats.avgAttendance": "Présence moyenne",
+
+  "training.filters.searchPlaceholder": "Rechercher session, formateur, lieu, société…",
+  "training.filters.programAll": "Programme : tous",
+  "training.filters.topicAll": "Sujet : tous",
+  "training.filters.societyAll": "Société : toutes",
+  "training.filters.dateRangeAll": "Toutes dates",
+  "training.filters.dateRangeToday": "Aujourd'hui",
+  "training.filters.dateRangeLast7d": "7 derniers jours",
+  "training.filters.dateRangeLast30d": "30 derniers jours",
+  "training.filters.dateRangeThisMonth": "Ce mois",
+  "training.filters.dateRangeThisYear": "Cette année",
+  "training.filters.reset": "Réinitialiser",
+
+  "training.col.date": "Date",
+  "training.col.program": "Programme",
+  "training.col.topics": "Sujets",
+  "training.col.location": "Lieu",
+  "training.col.trainer": "Formateur",
+  "training.col.attendance": "Présence",
+  "training.col.consent": "Consent.",
+  "training.col.actions": "Actions",
+
+  "training.action.open": "Ouvrir",
+  "training.empty": "Aucune session ne correspond aux filtres.",
+  "training.pagination.showing": "Affichage {from}-{to} sur {total} sessions",
+  "training.detail.notFound": "Session introuvable",
+  "training.detail.back": "Retour à Formation",
+  "training.detail.title": "Détail de la formation",
+  "training.detail.subtitle": "Détails de la session, présence et évaluation du formateur"
+}

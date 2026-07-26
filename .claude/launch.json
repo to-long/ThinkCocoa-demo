@@ -1,0 +1,20 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "fe",
+      "runtimeExecutable": "/bin/sh",
+      "runtimeArgs": ["-c", "cd apps/fe && bun run dev"],
+      "port": 3130,
+      "autoPort": false
+    },
+    {
+      "name": "be",
+      "runtimeExecutable": "/bin/sh",
+      "runtimeArgs": ["-c", "cd apps/be && bun run dev"],
+      "port": 8100,
+      "autoPort": false
+    }
+  ],
+  "autoVerify": false
+}

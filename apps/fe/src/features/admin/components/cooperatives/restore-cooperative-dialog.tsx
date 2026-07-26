@@ -1,0 +1,43 @@
+import { RotateCcw } from 'lucide-react';
+import { useIntl } from 'react-intl';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogFooter, DialogHeader } from '@/components/ui/dialog';
+import type { ApiCooperative } from '@/shared/api';
+
+interface Props {
+  target: ApiCooperative | null;
+  onCancel: () => void;
+  onConfirm: () => Promise<void> | void;
+}
+
+export function RestoreCooperativeDialog({ target, onCancel, onConfirm }: Props) {
+  const intl = useIntl();
+  return (
+    <Dialog open={!!target} onOpenChange={(o) => !o && onCancel()}>
+      <DialogContent>
+        <DialogHeader className="border-b-0">
+          <h3 className="font-semibold text-lg">
+            {intl.formatMessage({ id: 'cooperatives.restoreDialog.title' })}
+          </h3>
+          <p className="text-muted-foreground text-sm">
+            {target
+              ? intl.formatMessage(
+                  { id: 'cooperatives.restoreDialog.description' },
+                  { name: target.name },
+                )
+              : ''}
+          </p>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={onCancel}>
+            {intl.formatMessage({ id: 'cooperatives.restoreDialog.cancel' })}
+          </Button>
+          <Button onClick={() => void onConfirm()}>
+            <RotateCcw className="size-4" />
+            {intl.formatMessage({ id: 'cooperatives.restoreDialog.confirm' })}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}

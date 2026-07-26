@@ -1,0 +1,1146 @@
+{
+  "type": "FeatureCollection",
+  "name": "demo-import-parcel-polygons",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "SNK-9001-F1",
+        "Producer ID": "SNK-9001",
+        "Field": "Field 1",
+        "Area (ha)": 2.65,
+        "Captured At": "2026-06-10",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.675253,
+              6.130779
+            ],
+            [
+              -2.673742,
+              6.130745
+            ],
+            [
+              -2.673773,
+              6.132262
+            ],
+            [
+              -2.675272,
+              6.132281
+            ],
+            [
+              -2.675253,
+              6.130779
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "SNK-9001-F2",
+        "Producer ID": "SNK-9001",
+        "Field": "Field 2",
+        "Area (ha)": 4.07,
+        "Captured At": "2026-06-20",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.67215,
+              6.130599
+            ],
+            [
+              -2.670309,
+              6.130607
+            ],
+            [
+              -2.670441,
+              6.132447
+            ],
+            [
+              -2.672132,
+              6.132353
+            ],
+            [
+              -2.67215,
+              6.130599
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "SNK-9002-F1",
+        "Producer ID": "SNK-9002",
+        "Field": "Field 1",
+        "Area (ha)": 1.24,
+        "Captured At": "2026-04-19",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.668634,
+              6.131003
+            ],
+            [
+              -2.667563,
+              6.131041
+            ],
+            [
+              -2.667641,
+              6.131962
+            ],
+            [
+              -2.668581,
+              6.132012
+            ],
+            [
+              -2.668634,
+              6.131003
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "SNK-9003-F1",
+        "Producer ID": "SNK-9003",
+        "Field": "Field 1",
+        "Area (ha)": 3.98,
+        "Captured At": "2026-04-21",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.665812,
+              6.130644
+            ],
+            [
+              -2.663923,
+              6.130532
+            ],
+            [
+              -2.664007,
+              6.13235
+            ],
+            [
+              -2.665853,
+              6.132413
+            ],
+            [
+              -2.665812,
+              6.130644
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "SNK-9004-F1",
+        "Producer ID": "SNK-9004",
+        "Field": "Field 1",
+        "Area (ha)": 5.08,
+        "Captured At": "2026-04-28",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.662696,
+              6.130489
+            ],
+            [
+              -2.660633,
+              6.130533
+            ],
+            [
+              -2.660679,
+              6.132518
+            ],
+            [
+              -2.662705,
+              6.132589
+            ],
+            [
+              -2.662696,
+              6.130489
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "NKB-9001-F1",
+        "Producer ID": "NKB-9001",
+        "Field": "Field 1",
+        "Area (ha)": 3.26,
+        "Captured At": "2026-06-23",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.659284,
+              6.130677
+            ],
+            [
+              -2.657617,
+              6.130684
+            ],
+            [
+              -2.657741,
+              6.132338
+            ],
+            [
+              -2.65929,
+              6.132268
+            ],
+            [
+              -2.659284,
+              6.130677
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "NKB-9001-F2",
+        "Producer ID": "NKB-9001",
+        "Field": "Field 2",
+        "Area (ha)": 4.58,
+        "Captured At": "2026-05-27",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.675533,
+              6.138033
+            ],
+            [
+              -2.673464,
+              6.138076
+            ],
+            [
+              -2.673501,
+              6.140047
+            ],
+            [
+              -2.675394,
+              6.139942
+            ],
+            [
+              -2.675533,
+              6.138033
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "NKB-9002-F1",
+        "Producer ID": "NKB-9002",
+        "Field": "Field 1",
+        "Area (ha)": 4.04,
+        "Captured At": "2026-04-22",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.672245,
+              6.138126
+            ],
+            [
+              -2.670413,
+              6.138114
+            ],
+            [
+              -2.670338,
+              6.139863
+            ],
+            [
+              -2.672202,
+              6.139834
+            ],
+            [
+              -2.672245,
+              6.138126
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "NKB-9003-F1",
+        "Producer ID": "NKB-9003",
+        "Field": "Field 1",
+        "Area (ha)": 3.2,
+        "Captured At": "2026-04-11",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.66896,
+              6.138145
+            ],
+            [
+              -2.667255,
+              6.138167
+            ],
+            [
+              -2.667355,
+              6.139827
+            ],
+            [
+              -2.668969,
+              6.139854
+            ],
+            [
+              -2.66896,
+              6.138145
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "NKB-9004-F1",
+        "Producer ID": "NKB-9004",
+        "Field": "Field 1",
+        "Area (ha)": 4.06,
+        "Captured At": "2026-05-18",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.665874,
+              6.138144
+            ],
+            [
+              -2.663917,
+              6.138059
+            ],
+            [
+              -2.663956,
+              6.139948
+            ],
+            [
+              -2.665872,
+              6.139911
+            ],
+            [
+              -2.665874,
+              6.138144
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "ADW-9001-F1",
+        "Producer ID": "ADW-9001",
+        "Field": "Field 1",
+        "Area (ha)": 4.2,
+        "Captured At": "2026-05-18",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.662651,
+              6.138144
+            ],
+            [
+              -2.660816,
+              6.138142
+            ],
+            [
+              -2.660831,
+              6.139866
+            ],
+            [
+              -2.662629,
+              6.139938
+            ],
+            [
+              -2.662651,
+              6.138144
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "ADW-9001-F2",
+        "Producer ID": "ADW-9001",
+        "Field": "Field 2",
+        "Area (ha)": 1.48,
+        "Captured At": "2026-06-14",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.659073,
+              6.138416
+            ],
+            [
+              -2.65799,
+              6.138407
+            ],
+            [
+              -2.657941,
+              6.139594
+            ],
+            [
+              -2.659095,
+              6.139503
+            ],
+            [
+              -2.659073,
+              6.138416
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "ADW-9002-F1",
+        "Producer ID": "ADW-9002",
+        "Field": "Field 1",
+        "Area (ha)": 1.81,
+        "Captured At": "2026-05-26",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.675117,
+              6.145911
+            ],
+            [
+              -2.673944,
+              6.145838
+            ],
+            [
+              -2.673865,
+              6.147059
+            ],
+            [
+              -2.675148,
+              6.147154
+            ],
+            [
+              -2.675117,
+              6.145911
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "ADW-9003-F1",
+        "Producer ID": "ADW-9003",
+        "Field": "Field 1",
+        "Area (ha)": 4.99,
+        "Captured At": "2026-04-11",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.672331,
+              6.145409
+            ],
+            [
+              -2.670366,
+              6.145458
+            ],
+            [
+              -2.670216,
+              6.147573
+            ],
+            [
+              -2.672234,
+              6.147458
+            ],
+            [
+              -2.672331,
+              6.145409
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "ADW-9004-F1",
+        "Producer ID": "ADW-9004",
+        "Field": "Field 1",
+        "Area (ha)": 3.47,
+        "Captured At": "2026-04-17",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.668926,
+              6.14563
+            ],
+            [
+              -2.667192,
+              6.145671
+            ],
+            [
+              -2.667186,
+              6.147383
+            ],
+            [
+              -2.668904,
+              6.147273
+            ],
+            [
+              -2.668926,
+              6.14563
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "ABM-9001-F1",
+        "Producer ID": "ABM-9001",
+        "Field": "Field 1",
+        "Area (ha)": 3.11,
+        "Captured At": "2026-05-19",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.665689,
+              6.145765
+            ],
+            [
+              -2.664081,
+              6.14574
+            ],
+            [
+              -2.664101,
+              6.147272
+            ],
+            [
+              -2.665743,
+              6.147232
+            ],
+            [
+              -2.665689,
+              6.145765
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "ABM-9001-F2",
+        "Producer ID": "ABM-9001",
+        "Field": "Field 2",
+        "Area (ha)": 4.57,
+        "Captured At": "2026-05-25",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.662706,
+              6.145545
+            ],
+            [
+              -2.660681,
+              6.145555
+            ],
+            [
+              -2.66069,
+              6.147453
+            ],
+            [
+              -2.662704,
+              6.147492
+            ],
+            [
+              -2.662706,
+              6.145545
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "ABM-9002-F1",
+        "Producer ID": "ABM-9002",
+        "Field": "Field 1",
+        "Area (ha)": 2.23,
+        "Captured At": "2026-04-22",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.659215,
+              6.145816
+            ],
+            [
+              -2.657812,
+              6.14581
+            ],
+            [
+              -2.657783,
+              6.147217
+            ],
+            [
+              -2.659191,
+              6.147223
+            ],
+            [
+              -2.659215,
+              6.145816
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "ABM-9003-F1",
+        "Producer ID": "ABM-9003",
+        "Field": "Field 1",
+        "Area (ha)": 4.01,
+        "Captured At": "2026-06-15",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.675329,
+              6.153153
+            ],
+            [
+              -2.673616,
+              6.153045
+            ],
+            [
+              -2.673558,
+              6.154873
+            ],
+            [
+              -2.675362,
+              6.154833
+            ],
+            [
+              -2.675329,
+              6.153153
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "ABM-9004-F1",
+        "Producer ID": "ABM-9004",
+        "Field": "Field 1",
+        "Area (ha)": 2.32,
+        "Captured At": "2026-06-18",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.672005,
+              6.153333
+            ],
+            [
+              -2.670582,
+              6.153255
+            ],
+            [
+              -2.670639,
+              6.154712
+            ],
+            [
+              -2.672027,
+              6.154651
+            ],
+            [
+              -2.672005,
+              6.153333
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "AYK-9001-F1",
+        "Producer ID": "AYK-9001",
+        "Field": "Field 1",
+        "Area (ha)": 2.03,
+        "Captured At": "2026-04-12",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.668735,
+              6.15336
+            ],
+            [
+              -2.667418,
+              6.153316
+            ],
+            [
+              -2.667445,
+              6.154618
+            ],
+            [
+              -2.668711,
+              6.15461
+            ],
+            [
+              -2.668735,
+              6.15336
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "AYK-9001-F2",
+        "Producer ID": "AYK-9001",
+        "Field": "Field 2",
+        "Area (ha)": 4.65,
+        "Captured At": "2026-04-19",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.665912,
+              6.152938
+            ],
+            [
+              -2.663861,
+              6.153112
+            ],
+            [
+              -2.663909,
+              6.155
+            ],
+            [
+              -2.665924,
+              6.154955
+            ],
+            [
+              -2.665912,
+              6.152938
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "AYK-9002-F1",
+        "Producer ID": "AYK-9002",
+        "Field": "Field 1",
+        "Area (ha)": 1.31,
+        "Captured At": "2026-06-28",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.662213,
+              6.153491
+            ],
+            [
+              -2.661199,
+              6.153498
+            ],
+            [
+              -2.661152,
+              6.154534
+            ],
+            [
+              -2.662202,
+              6.154532
+            ],
+            [
+              -2.662213,
+              6.153491
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "AYK-9003-F1",
+        "Producer ID": "AYK-9003",
+        "Field": "Field 1",
+        "Area (ha)": 3.71,
+        "Captured At": "2026-04-14",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.659302,
+              6.153194
+            ],
+            [
+              -2.657661,
+              6.153132
+            ],
+            [
+              -2.657704,
+              6.154857
+            ],
+            [
+              -2.659347,
+              6.154812
+            ],
+            [
+              -2.659302,
+              6.153194
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "AYK-9004-F1",
+        "Producer ID": "AYK-9004",
+        "Field": "Field 1",
+        "Area (ha)": 3.14,
+        "Captured At": "2026-05-16",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.675248,
+              6.160726
+            ],
+            [
+              -2.673721,
+              6.160762
+            ],
+            [
+              -2.67372,
+              6.162342
+            ],
+            [
+              -2.675333,
+              6.162306
+            ],
+            [
+              -2.675248,
+              6.160726
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "NHY-9001-F1",
+        "Producer ID": "NHY-9001",
+        "Field": "Field 1",
+        "Area (ha)": 3.5,
+        "Captured At": "2026-04-18",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.672091,
+              6.1607
+            ],
+            [
+              -2.670521,
+              6.160623
+            ],
+            [
+              -2.670495,
+              6.162323
+            ],
+            [
+              -2.672216,
+              6.162421
+            ],
+            [
+              -2.672091,
+              6.1607
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "NHY-9001-F2",
+        "Producer ID": "NHY-9001",
+        "Field": "Field 2",
+        "Area (ha)": 1.55,
+        "Captured At": "2026-05-17",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.668661,
+              6.160906
+            ],
+            [
+              -2.667568,
+              6.160986
+            ],
+            [
+              -2.667528,
+              6.162034
+            ],
+            [
+              -2.668638,
+              6.162112
+            ],
+            [
+              -2.668661,
+              6.160906
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "NHY-9002-F1",
+        "Producer ID": "NHY-9002",
+        "Field": "Field 1",
+        "Area (ha)": 2.59,
+        "Captured At": "2026-05-10",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.665666,
+              6.160751
+            ],
+            [
+              -2.664144,
+              6.160778
+            ],
+            [
+              -2.664165,
+              6.162163
+            ],
+            [
+              -2.66564,
+              6.162169
+            ],
+            [
+              -2.665666,
+              6.160751
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "NHY-9003-F1",
+        "Producer ID": "NHY-9003",
+        "Field": "Field 1",
+        "Area (ha)": 2.83,
+        "Captured At": "2026-05-22",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.662502,
+              6.160764
+            ],
+            [
+              -2.660899,
+              6.160729
+            ],
+            [
+              -2.660951,
+              6.162211
+            ],
+            [
+              -2.66242,
+              6.162252
+            ],
+            [
+              -2.662502,
+              6.160764
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Parcel ID": "NHY-9004-F1",
+        "Producer ID": "NHY-9004",
+        "Field": "Field 1",
+        "Area (ha)": 2.85,
+        "Captured At": "2026-05-21",
+        "Source": "GPS walk (demo sample)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.659295,
+              6.160752
+            ],
+            [
+              -2.657781,
+              6.160732
+            ],
+            [
+              -2.657775,
+              6.162232
+            ],
+            [
+              -2.659285,
+              6.162262
+            ],
+            [
+              -2.659295,
+              6.160752
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+export { generalRoutes } from './routes';

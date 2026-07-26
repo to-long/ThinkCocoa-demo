@@ -1,0 +1,1 @@
+export { clmrsRoutes } from './routes';

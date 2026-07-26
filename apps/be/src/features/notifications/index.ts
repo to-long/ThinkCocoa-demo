@@ -1,0 +1,1 @@
+export { notificationsRoutes } from './routes';

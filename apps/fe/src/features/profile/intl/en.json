@@ -1,0 +1,28 @@
+{
+  "profile.breadcrumb": "Profile",
+  "profile.title": "Profile Settings",
+  "profile.subtitle": "Manage your account settings and security preferences",
+
+  "profile.accountInfo.title": "Account Information",
+  "profile.accountInfo.description": "Your account details and assigned roles",
+  "profile.accountInfo.name": "Name",
+  "profile.accountInfo.email": "Email",
+  "profile.accountInfo.roles": "Roles",
+  "profile.accountInfo.submit": "Update",
+  "profile.accountInfo.submitting": "Updating...",
+  "profile.accountInfo.success": "Profile updated successfully",
+  "profile.accountInfo.error.generic": "Failed to update profile",
+
+  "profile.changePassword.title": "Change Password",
+  "profile.changePassword.description": "Update your password to keep your account secure",
+  "profile.changePassword.currentPassword": "Current Password",
+  "profile.changePassword.newPassword": "New Password",
+  "profile.changePassword.confirmPassword": "Confirm New Password",
+  "profile.changePassword.submit": "Update Password",
+  "profile.changePassword.submitting": "Updating...",
+  "profile.changePassword.success": "Password updated successfully",
+  "profile.changePassword.error.generic": "Failed to update password",
+
+  "profile.notifications.title": "Notifications",
+  "profile.notifications.empty": "No notification streams available — your role doesn't grant any :notification permissions yet."
+}

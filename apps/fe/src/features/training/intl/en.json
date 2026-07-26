@@ -1,0 +1,39 @@
+{
+  "training.title": "Farmer Training",
+  "training.subtitle": "Group training sessions delivered to farmers, field officers and cooperative staff",
+
+  "training.stats.sessions30d": "Sessions (30d)",
+  "training.stats.sessionCount": "Session count",
+  "training.stats.participants": "Participants",
+  "training.stats.consentRate": "Avg consent rate",
+  "training.stats.avgAttendance": "Avg attendance",
+
+  "training.filters.searchPlaceholder": "Search session, trainer, venue, society…",
+  "training.filters.programAll": "Program: all",
+  "training.filters.topicAll": "Topic: all",
+  "training.filters.societyAll": "Society: all",
+  "training.filters.dateRangeAll": "All dates",
+  "training.filters.dateRangeToday": "Today",
+  "training.filters.dateRangeLast7d": "Last 7 days",
+  "training.filters.dateRangeLast30d": "Last 30 days",
+  "training.filters.dateRangeThisMonth": "This month",
+  "training.filters.dateRangeThisYear": "This year",
+  "training.filters.reset": "Reset",
+
+  "training.col.date": "Date",
+  "training.col.program": "Program",
+  "training.col.topics": "Topics",
+  "training.col.location": "Location",
+  "training.col.trainer": "Trainer",
+  "training.col.attendance": "Attendance",
+  "training.col.consent": "Consent",
+  "training.col.actions": "Actions",
+
+  "training.action.open": "Open",
+  "training.empty": "No training sessions match the current filters.",
+  "training.pagination.showing": "Showing {from}-{to} of {total} sessions",
+  "training.detail.notFound": "Training session not found",
+  "training.detail.back": "Back to training",
+  "training.detail.title": "Training Detail",
+  "training.detail.subtitle": "Session details, attendance and trainer evaluation"
+}
