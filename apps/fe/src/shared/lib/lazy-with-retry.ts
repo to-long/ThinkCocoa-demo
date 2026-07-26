@@ -27,7 +27,15 @@
 import { type ComponentType, type LazyExoticComponent, lazy } from 'react';
 
 const CHUNK_ERROR_RE =
-  /loading chunk|chunkloaderror|loading css chunk|failed to fetch dynamically imported module|error loading dynamically imported module|importing a module script failed|failed to fetch/i;
+  // Two families, both meaning "the build artefacts moved under this tab":
+  //   fetch failures  — the chunk request itself 404s / aborts
+  //   graph failures  — the chunk loads but its module id is gone, which
+  //                     rspack surfaces as `factory is undefined` and
+  //                     webpack as a missing module factory. These throw
+  //                     synchronously inside the module evaluation, so
+  //                     without them here they reached the error boundary
+  //                     as a generic crash with an unusable Retry.
+  /loading chunk|chunkloaderror|loading css chunk|failed to fetch dynamically imported module|error loading dynamically imported module|importing a module script failed|failed to fetch|factory is undefined|cannot read propert(?:y|ies) of undefined \(reading 'call'\)/i;
 
 const STAMP_KEY = 'thinkcocoa-chunk-reload-at';
 /** Two reloads closer together than this are a loop, not a retry. */
