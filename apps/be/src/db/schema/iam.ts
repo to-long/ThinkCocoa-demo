@@ -315,3 +315,24 @@ export const jwks = iamSchema.table('jwks', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   expiresAt: timestamp('expires_at', { withTimezone: true }),
 });
+
+/**
+ * Durable access-token blacklist (migration 0009). One row per user whose
+ * tokens were invalidated; `expires_at` is `revoked_at + ACCESS_TOKEN_TTL`,
+ * after which the row can do nothing and is deleted.
+ *
+ * The hot path reads an LRU cache, never this table — see
+ * `lib/token-revocation.ts`. The table exists so a restart or power loss
+ * doesn't silently re-validate tokens the cache had blacklisted.
+ */
+export const tokenRevocations = iamSchema.table(
+  'token_revocations',
+  {
+    userId: uuid('user_id')
+      .primaryKey()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    revokedAt: timestamp('revoked_at', { withTimezone: true }).notNull().defaultNow(),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  },
+  (t) => [index('token_revocations_expires_at_idx').on(t.expiresAt)],
+);

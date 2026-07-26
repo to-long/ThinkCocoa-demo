@@ -64,6 +64,13 @@
       "when": 1784913901000,
       "tag": "0008_jwks",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1784913902000,
+      "tag": "0009_token_revocations",
+      "breakpoints": true
     }
   ]
 }

@@ -13,18 +13,24 @@
  * either mints a token with the new scope or fails because the session /
  * account is gone.
  *
- * Why an in-process cache and not a table:
- *   - a per-request table lookup would undo the whole point of putting
- *     claims in the token;
- *   - entries are only useful for ONE access-token lifetime: the newest
- *     token a revocation can invalidate was issued at `revokedAt`, so it
- *     has expired by `revokedAt + ACCESS_TOKEN_TTL` and the entry can go.
- *     That bound is the cache TTL, so the set self-empties and needs no
- *     durability.
+ * Two layers, one lifetime:
+ *
+ *   - `LRUCache` is the READ path, so authorising a request never queries.
+ *     TTL per entry = `ACCESS_TOKEN_TTL`, the exact bound that matters: the
+ *     newest token a revocation can invalidate was issued at `revokedAt`,
+ *     so by `revokedAt + TTL` nothing it could reject is still valid.
+ *   - `iam.token_revocations` is the DURABLE copy. Without it a restart or
+ *     a power cut forgot the blacklist while the tokens themselves stayed
+ *     valid — a revoked user would silently regain their old scope for the
+ *     rest of the token lifetime. Hydrated into the cache at boot.
+ *
+ * The two stay in step through the cache's own disposal hook: whenever an
+ * entry leaves the cache — TTL expiry, LRU eviction, or an explicit clear
+ * after a refresh — the row is deleted. So "cache is empty" and "table is
+ * empty" mean the same thing, and the table needs no separate reaper.
  *
  * `LRUCache` is the cache this codebase already uses (rate-limit buckets,
- * farmer + user stats), so TTL expiry and the memory bound come for free
- * instead of being hand-rolled with a timer.
+ * farmer + user stats).
  *
  * Cross-process propagation rides the EXISTING `perm_changed` Postgres
  * NOTIFY channel (see `lib/perm-signal.ts`), which every permission
@@ -34,8 +40,10 @@
  * keeps that independent of whether any SSE client happens to be open.
  */
 
+import { and, gt, lte, sql } from 'drizzle-orm';
 import { LRUCache } from 'lru-cache';
-import { directPool } from '../db/client';
+import { db, directPool } from '../db/client';
+import { tokenRevocations } from '../db/schema/iam';
 import { accessTokenTtlSeconds } from './access-token';
 
 /**
@@ -50,7 +58,26 @@ const revokedAt = new LRUCache<string, number>({
   // most entries are never read again (the user simply refreshed), so
   // lazy expiry alone would keep them resident until the next lookup.
   ttlAutopurge: true,
+  // Runs AFTER the cache mutation completes, so the DB write never sits in
+  // the middle of a `set`/`get`. `reason` matters: on 'set' the entry is
+  // being replaced by a fresher revocation, and deleting the row would
+  // throw away the record we just wrote.
+  disposeAfter: (_value, userId, reason) => {
+    if (reason === 'set') return;
+    void deleteRevocationRow(userId);
+  },
 });
+
+/** Fire-and-forget row delete — the cache is already authoritative for
+ *  reads, so a failed cleanup only leaves a stale row that boot hydration
+ *  filters out by `expires_at` anyway. */
+async function deleteRevocationRow(userId: string): Promise<void> {
+  try {
+    await db.delete(tokenRevocations).where(sql`${tokenRevocations.userId} = ${userId}`);
+  } catch (err) {
+    console.error('[token-revocation] failed to delete row:', err);
+  }
+}
 
 /**
  * No skew allowance on purpose. `iat` has second granularity, so padding
@@ -76,7 +103,23 @@ export function revokeUserTokens(userId: string): void {
   // TTL read per call, not at module load: `ACCESS_TOKEN_TTL` is env-driven
   // and this module is imported by `access-token` (which owns the parser),
   // so evaluating it lazily also keeps the two out of an init-order trap.
-  revokedAt.set(userId, Date.now(), { ttl: accessTokenTtlSeconds() * 1000 });
+  const ttlMs = accessTokenTtlSeconds() * 1000;
+  const now = Date.now();
+  revokedAt.set(userId, now, { ttl: ttlMs });
+
+  // Persist without blocking the caller: the cache already enforces the
+  // revocation for this process, and the row only has to be there if we
+  // restart. Upsert, because re-revoking must push `expires_at` out rather
+  // than collide on the primary key.
+  const expiresAt = new Date(now + ttlMs);
+  void db
+    .insert(tokenRevocations)
+    .values({ userId, revokedAt: new Date(now), expiresAt })
+    .onConflictDoUpdate({
+      target: tokenRevocations.userId,
+      set: { revokedAt: new Date(now), expiresAt },
+    })
+    .catch((err) => console.error('[token-revocation] failed to persist:', err));
 }
 
 /**
@@ -114,9 +157,45 @@ export function revocationCount(): number {
  * boot. Failures are logged, not thrown — losing the listener degrades
  * revocation to "next token expiry", it must not stop the server booting.
  */
+/**
+ * Reload live revocations from the table into the cache, and drop rows that
+ * can no longer reject anything. Runs at boot, before the server accepts a
+ * request — otherwise the window between listen and first request is
+ * exactly the gap this table exists to close.
+ *
+ * Each entry keeps its REMAINING lifetime, not a fresh full TTL: a
+ * revocation from 14 minutes ago has one minute left to matter.
+ */
+export async function hydrateRevocations(): Promise<void> {
+  try {
+    const now = new Date();
+    const rows = await db
+      .select({ userId: tokenRevocations.userId, expiresAt: tokenRevocations.expiresAt })
+      .from(tokenRevocations)
+      .where(and(gt(tokenRevocations.expiresAt, now)));
+    for (const r of rows) {
+      const remaining = r.expiresAt.getTime() - now.getTime();
+      if (remaining <= 0) continue;
+      // `noDisposeOnSet`-equivalent: a plain set here can't fire a delete
+      // because the key isn't in the cache yet (reason would be 'set',
+      // which the disposer ignores).
+      revokedAt.set(r.userId, now.getTime(), { ttl: remaining });
+    }
+    // Backstop sweep for rows whose cache entry died in a process that
+    // crashed before its disposer ran.
+    await db.delete(tokenRevocations).where(lte(tokenRevocations.expiresAt, now));
+    if (rows.length > 0) {
+      console.log(`[token-revocation] hydrated ${rows.length} live revocation(s)`);
+    }
+  } catch (err) {
+    console.error('[token-revocation] hydrate failed:', err);
+  }
+}
+
 export async function startTokenRevocationListener(): Promise<void> {
   if (listening) return;
   listening = true;
+  await hydrateRevocations();
   try {
     const client = await directPool.connect();
     client.on('notification', (msg) => {
