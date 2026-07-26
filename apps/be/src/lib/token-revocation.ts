@@ -13,12 +13,18 @@
  * either mints a token with the new scope or fails because the session /
  * account is gone.
  *
- * Why in-memory and not a table:
+ * Why an in-process cache and not a table:
  *   - a per-request table lookup would undo the whole point of putting
  *     claims in the token;
- *   - entries are only useful for one access-token lifetime — after that
- *     no pre-revocation token can still validate — so the set stays tiny
- *     and needs no durability.
+ *   - entries are only useful for ONE access-token lifetime: the newest
+ *     token a revocation can invalidate was issued at `revokedAt`, so it
+ *     has expired by `revokedAt + ACCESS_TOKEN_TTL` and the entry can go.
+ *     That bound is the cache TTL, so the set self-empties and needs no
+ *     durability.
+ *
+ * `LRUCache` is the cache this codebase already uses (rate-limit buckets,
+ * farmer + user stats), so TTL expiry and the memory bound come for free
+ * instead of being hand-rolled with a timer.
  *
  * Cross-process propagation rides the EXISTING `perm_changed` Postgres
  * NOTIFY channel (see `lib/perm-signal.ts`), which every permission
@@ -28,17 +34,23 @@
  * keeps that independent of whether any SSE client happens to be open.
  */
 
+import { LRUCache } from 'lru-cache';
 import { directPool } from '../db/client';
-
-/** userId → epoch ms of the revocation. Tokens issued before are invalid. */
-const revokedAt = new Map<string, number>();
+import { accessTokenTtlSeconds } from './access-token';
 
 /**
- * How long an entry is kept. Must exceed the access-token lifetime, or a
- * token minted just before a revocation could outlive its own blacklist
- * entry. 30 min covers the default 15m TTL with room to spare.
+ * userId → epoch ms of the revocation. Tokens issued before that instant
+ * are invalid. Entries expire on their own after one access-token
+ * lifetime (see the module docblock); `max` is the memory backstop for a
+ * pathological burst of revocations.
  */
-const RETENTION_MS = 30 * 60 * 1000;
+const revokedAt = new LRUCache<string, number>({
+  max: 10_000,
+  // Sweep expired entries in the background instead of only on access —
+  // most entries are never read again (the user simply refreshed), so
+  // lazy expiry alone would keep them resident until the next lookup.
+  ttlAutopurge: true,
+});
 
 /**
  * No skew allowance on purpose. `iat` has second granularity, so padding
@@ -50,14 +62,7 @@ const RETENTION_MS = 30 * 60 * 1000;
  * itself re-reads the database, so the new token is authoritative.
  */
 
-let pruneTimer: ReturnType<typeof setInterval> | null = null;
-
-function prune(): void {
-  const cutoff = Date.now() - RETENTION_MS;
-  for (const [userId, at] of revokedAt) {
-    if (at < cutoff) revokedAt.delete(userId);
-  }
-}
+let listening = false;
 
 /**
  * Mark every access token issued to `userId` so far as invalid. Call from
@@ -68,7 +73,10 @@ function prune(): void {
  * processes; its listener calls back into here.
  */
 export function revokeUserTokens(userId: string): void {
-  revokedAt.set(userId, Date.now());
+  // TTL read per call, not at module load: `ACCESS_TOKEN_TTL` is env-driven
+  // and this module is imported by `access-token` (which owns the parser),
+  // so evaluating it lazily also keeps the two out of an init-order trap.
+  revokedAt.set(userId, Date.now(), { ttl: accessTokenTtlSeconds() * 1000 });
 }
 
 /**
@@ -77,6 +85,8 @@ export function revokeUserTokens(userId: string): void {
  */
 export function isTokenRevoked(userId: string, issuedAtSeconds: number): boolean {
   const at = revokedAt.get(userId);
+  // Absent OR expired — an expired entry means every token it could have
+  // invalidated is itself expired, so there is nothing left to reject.
   if (at == null) return false;
   // Strictly older-than: see the note on the removed skew constant above.
   return issuedAtSeconds * 1000 < at;
@@ -93,7 +103,7 @@ export function clearRevocation(userId: string): void {
   revokedAt.delete(userId);
 }
 
-/** Test seam / diagnostics. */
+/** Test seam / diagnostics — live (non-expired) entries. */
 export function revocationCount(): number {
   return revokedAt.size;
 }
@@ -105,12 +115,8 @@ export function revocationCount(): number {
  * revocation to "next token expiry", it must not stop the server booting.
  */
 export async function startTokenRevocationListener(): Promise<void> {
-  if (pruneTimer) return;
-  pruneTimer = setInterval(prune, RETENTION_MS);
-  // Node's timer keeps the event loop alive; the server is long-lived
-  // anyway, but tests that import this module shouldn't hang on it.
-  pruneTimer.unref?.();
-
+  if (listening) return;
+  listening = true;
   try {
     const client = await directPool.connect();
     client.on('notification', (msg) => {
