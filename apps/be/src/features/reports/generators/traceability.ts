@@ -56,7 +56,7 @@ const DATA_END_ROW = 10004;
  *  the same value the spec workbook stamps in column L row 5. */
 const MAX_YIELD_KG_PER_HA = 800;
 
-/** Planting year that flips the ImpactCocoa risk classification to
+/** Planting year that flips the Think!Cocoa risk classification to
  *  "HIGH RISK" (any parcel planted after this is past the EUDR cut-off
  *  for forest-conversion-free declarations). */
 const HIGH_RISK_PLANTING_YEAR = 2020;
@@ -247,7 +247,7 @@ const CSV_COLUMNS: ReadonlyArray<{ header: string; pick: (r: Row) => string | nu
   { header: 'Maximum Capacity (Kg)', pick: (r) => maxCapacityKg(r) },
   { header: 'Longitude (WGS84 DD)', pick: (r) => r.longitude },
   { header: 'Latitude (WGS84 DD)', pick: (r) => r.latitude },
-  { header: 'ImpactCocoa Risk', pick: (r) => riskLabel(r) },
+  { header: 'Think!Cocoa Risk', pick: (r) => riskLabel(r) },
 ];
 
 function buildCsv(rows: Row[]): Buffer {
