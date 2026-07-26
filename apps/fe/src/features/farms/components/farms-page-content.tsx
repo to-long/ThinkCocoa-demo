@@ -7,7 +7,7 @@
  * Filters: search (q), status, EUDR, crop. * direct-links + back-button work the same as the farmers list.
  */
 
-import type { CreateParcelInput, UpdateParcelInput } from '@cocoaimpact/shared';
+import type { CreateParcelInput, UpdateParcelInput } from '@thinkcocoa/shared';
 import {
   CircleDot,
   EllipsisVertical,

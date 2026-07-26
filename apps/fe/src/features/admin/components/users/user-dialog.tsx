@@ -3,7 +3,7 @@ import {
   isOrgWideRole,
   PASSWORD_POLICY_RULES,
   updateUserFormSchema,
-} from '@cocoaimpact/shared';
+} from '@thinkcocoa/shared';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, Eye, EyeOff } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';

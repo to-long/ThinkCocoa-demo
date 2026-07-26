@@ -15,7 +15,7 @@ import type {
   CreateRoleInput,
   SetRolePermissionsInput,
   UpdateRoleInput,
-} from '@cocoaimpact/shared';
+} from '@thinkcocoa/shared';
 import { asc, desc, sql as dsql, eq, ilike, inArray, or } from 'drizzle-orm';
 import { db } from '../../db/client';
 import { permissions, rolePermissions, roles, userRoles } from '../../db/schema/iam';

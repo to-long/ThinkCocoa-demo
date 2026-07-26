@@ -23,8 +23,8 @@ import type {
   ListUsersQuery,
   SetUserRolesInput,
   UpdateUserInput,
-} from '@cocoaimpact/shared';
-import { isOrgWideRole } from '@cocoaimpact/shared';
+} from '@thinkcocoa/shared';
+import { isOrgWideRole } from '@thinkcocoa/shared';
 import { and, asc, desc, sql as dsql, eq, ilike, inArray, isNull, or } from 'drizzle-orm';
 import { LRUCache } from 'lru-cache';
 import { auth } from '../../auth';

@@ -13,7 +13,7 @@
  * that need them load them into feature-local stores on mount.
  */
 
-import { getApiUsersMe } from '@cocoaimpact/shared/impact-cocoa-client';
+import { getApiUsersMe } from '@thinkcocoa/shared/impact-cocoa-client';
 import { useEffect } from 'react';
 import { unwrap } from '@/shared/api/fetcher';
 import type { ApiUserDetail } from '@/shared/api/types';

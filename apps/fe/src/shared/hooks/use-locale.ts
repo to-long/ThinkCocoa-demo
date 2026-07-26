@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 
 export type Locale = 'en' | 'fr' | 'vi';
 
-const STORAGE_KEY = 'cocoaimpact-locale';
+const STORAGE_KEY = 'thinkcocoa-locale';
 
 export const locales: Locale[] = ['en', 'fr', 'vi'];
 

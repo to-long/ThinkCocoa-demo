@@ -10,7 +10,7 @@
  * don't need to remember to fire `writeAudit` after each mutation.
  */
 
-import type { CreateFarmerInput, UpdateFarmerInput } from '@cocoaimpact/shared';
+import type { CreateFarmerInput, UpdateFarmerInput } from '@thinkcocoa/shared';
 import { and, asc, desc, sql as dsql, eq, ilike, inArray, isNull, or } from 'drizzle-orm';
 import type { Context } from 'hono';
 import { LRUCache } from 'lru-cache';

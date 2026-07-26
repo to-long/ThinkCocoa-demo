@@ -48,7 +48,7 @@ import {
   createFarmerSchema,
   type UpdateFarmerInput,
   updateFarmerSchema,
-} from '@cocoaimpact/shared';
+} from '@thinkcocoa/shared';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useMemo } from 'react';
 import { type Resolver, useForm } from 'react-hook-form';

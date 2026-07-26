@@ -8,7 +8,7 @@
  * shapes.
  */
 
-import type { CreateParcelInput, UpdateParcelInput } from '@cocoaimpact/shared';
+import type { CreateParcelInput, UpdateParcelInput } from '@thinkcocoa/shared';
 import useSWR, { mutate as globalMutate, preload } from 'swr';
 import { apiFetch, quietFetch } from './fetcher';
 

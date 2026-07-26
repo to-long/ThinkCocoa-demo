@@ -29,7 +29,7 @@ import { type ComponentType, type LazyExoticComponent, lazy } from 'react';
 const CHUNK_ERROR_RE =
   /loading chunk|chunkloaderror|loading css chunk|failed to fetch dynamically imported module|error loading dynamically imported module|importing a module script failed|failed to fetch/i;
 
-const STAMP_KEY = 'cocoaimpact-chunk-reload-at';
+const STAMP_KEY = 'thinkcocoa-chunk-reload-at';
 /** Two reloads closer together than this are a loop, not a retry. */
 const COOLDOWN_MS = 10_000;
 

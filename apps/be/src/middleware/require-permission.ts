@@ -9,7 +9,7 @@
  *   requirePermission('user:read', 'user:update')
  */
 
-import type { PermissionCode } from '@cocoaimpact/shared';
+import type { PermissionCode } from '@thinkcocoa/shared';
 import type { MiddlewareHandler } from 'hono';
 import type { AuthedContext } from './require-auth';
 

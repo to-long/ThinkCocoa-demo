@@ -1,4 +1,4 @@
-import { PERMISSION_CATALOG } from '@cocoaimpact/shared';
+import { PERMISSION_CATALOG } from '@thinkcocoa/shared';
 import { IdCard, KeyRound, Pencil, RotateCcw, Settings2, ShieldCheck, Trash2 } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';

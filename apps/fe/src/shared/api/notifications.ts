@@ -15,7 +15,7 @@ import {
   getApiNotificationsPreferences,
   getApiNotificationsUnreadCount,
   putApiNotificationsPreferences,
-} from '@cocoaimpact/shared/impact-cocoa-client';
+} from '@thinkcocoa/shared/impact-cocoa-client';
 import { useEffect } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
 import { ApiError, apiFetch, unwrap } from './fetcher';

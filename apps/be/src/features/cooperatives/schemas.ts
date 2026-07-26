@@ -5,12 +5,12 @@
  * the same Zod shape if it ever wants client-side validation, and so
  * the route handlers stay focused on HTTP wiring.
  *
- * The create/update body schemas live in `@cocoaimpact/shared` (so the
+ * The create/update body schemas live in `@thinkcocoa/shared` (so the
  * FE forms reuse them); we re-export them here registered with the
  * OpenAPI generator under stable component names.
  */
 
-import { createCooperativeSchema, updateCooperativeSchema } from '@cocoaimpact/shared';
+import { createCooperativeSchema, updateCooperativeSchema } from '@thinkcocoa/shared';
 import { z } from '@hono/zod-openapi';
 
 export const cooperativeCoreSchema = z

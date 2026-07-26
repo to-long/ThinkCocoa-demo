@@ -18,7 +18,7 @@ import {
   postApiPermissions,
   postApiPermissionsGroups,
   putApiPermissionsGroupsByResource,
-} from '@cocoaimpact/shared/impact-cocoa-client';
+} from '@thinkcocoa/shared/impact-cocoa-client';
 import useSWR, { mutate as globalMutate } from 'swr';
 import { unwrap } from './fetcher';
 import type { ApiPermission, CreatePermissionInput, UpdatePermissionInput } from './types';

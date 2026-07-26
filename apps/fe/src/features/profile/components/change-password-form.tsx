@@ -1,4 +1,4 @@
-import { type ChangePasswordInput, changePasswordSchema } from '@cocoaimpact/shared';
+import { type ChangePasswordInput, changePasswordSchema } from '@thinkcocoa/shared';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';

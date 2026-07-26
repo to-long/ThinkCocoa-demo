@@ -27,8 +27,8 @@ import {
   type CreateCooperativeInput,
   cooperativeFormSchema,
   type UpdateCooperativeInput,
-} from '@cocoaimpact/shared';
-import { getApiUsers } from '@cocoaimpact/shared/impact-cocoa-client';
+} from '@thinkcocoa/shared';
+import { getApiUsers } from '@thinkcocoa/shared/impact-cocoa-client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';

@@ -4,7 +4,7 @@
  * spec generation.
  */
 
-import { updateCorrectiveActionSchema } from '@cocoaimpact/shared';
+import { updateCorrectiveActionSchema } from '@thinkcocoa/shared';
 import { z } from '@hono/zod-openapi';
 
 export const errorResponse = z

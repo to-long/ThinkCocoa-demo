@@ -1,4 +1,4 @@
-import { type UpdateProfileInput, updateProfileSchema } from '@cocoaimpact/shared';
+import { type UpdateProfileInput, updateProfileSchema } from '@thinkcocoa/shared';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';

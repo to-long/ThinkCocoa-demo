@@ -14,7 +14,7 @@
       "dependencies": {
         "@aws-sdk/client-s3": "^3.1050.0",
         "@aws-sdk/s3-request-presigner": "^3.1075.0",
-        "@cocoaimpact/shared": "workspace:*",
+        "@thinkcocoa/shared": "workspace:*",
         "@hono/node-server": "^1.19.12",
         "@hono/zod-openapi": "1.2.4",
         "@scalar/hono-api-reference": "0.10.6",
@@ -49,7 +49,7 @@
       "name": "fe",
       "version": "1.0.0",
       "dependencies": {
-        "@cocoaimpact/shared": "workspace:*",
+        "@thinkcocoa/shared": "workspace:*",
         "@hookform/resolvers": "^5.4.0",
         "@sentry/react": "^10.53.1",
         "@types/leaflet": "^1.9.21",
@@ -101,7 +101,7 @@
       },
     },
     "packages/shared": {
-      "name": "@cocoaimpact/shared",
+      "name": "@thinkcocoa/shared",
       "version": "1.0.0",
       "dependencies": {
         "@hey-api/client-fetch": "0.13.1",
@@ -294,7 +294,7 @@
 
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.4.10", "", { "os": "win32", "cpu": "x64" }, "sha512-aW/JU5GuyH4uxMrNYpoC2kjaHlyJGLgIa3XkhPEZI0uKhZhJZU8BuEyJmvgzSPQNGozBwWjC972RaNdcJ9KyJg=="],
 
-    "@cocoaimpact/shared": ["@cocoaimpact/shared@workspace:packages/shared"],
+    "@thinkcocoa/shared": ["@thinkcocoa/shared@workspace:packages/shared"],
 
     "@csstools/color-helpers": ["@csstools/color-helpers@5.1.0", "", {}, "sha512-S11EXWJyy0Mz5SYvRmY8nJYTFFd1LCNV+7cXyAgQtOOuzb4EsgfqDufL+9esx72/eLhsRdGZwaldu/h+E4t4BA=="],
 

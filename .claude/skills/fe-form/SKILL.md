@@ -1,6 +1,6 @@
 ---
 name: fe-form
-description: ThinkCocoa FE convention for any create/update/edit form in a dialog or page. Use when adding a new form, refactoring an existing form, or reviewing form code. MANDATORY: react-hook-form + zod — no `useState` for form fields, no manual validation. Schemas reused from `@cocoaimpact/shared/validators` whenever possible.
+description: ThinkCocoa FE convention for any create/update/edit form in a dialog or page. Use when adding a new form, refactoring an existing form, or reviewing form code. MANDATORY: react-hook-form + zod — no `useState` for form fields, no manual validation. Schemas reused from `@thinkcocoa/shared/validators` whenever possible.
 ---
 
 # FE form — react-hook-form + zod, never `useState`
@@ -21,7 +21,7 @@ Reference: `apps/fe/src/features/farmers/components/farmer-dialog.tsx` (most fie
 
 1. **No `useState` for form fields.** The only state allowed is for non-form things (e.g. `showPassword` toggle, `isLoading` if not using `form.formState.isSubmitting`, `pageError` for API-level submit failures).
 2. **No manual validation.** Drop every `if (!field.trim()) errors.field = ...`. Use `zodResolver` and let zod do the work.
-3. **Reuse shared schemas.** Most forms map to a BE schema in `@cocoaimpact/shared/validators/*.ts`. Use them directly — don't duplicate. If the form needs to deviate (extra fields, omit fields), use zod's `.omit()` / `.extend()` / `.pick()`.
+3. **Reuse shared schemas.** Most forms map to a BE schema in `@thinkcocoa/shared/validators/*.ts`. Use them directly — don't duplicate. If the form needs to deviate (extra fields, omit fields), use zod's `.omit()` / `.extend()` / `.pick()`.
 4. **`mode: "onSubmit"`** (the RHF default — don't override). Validating on blur fires the regex error the moment the admin tabs out of an empty field, before they've typed anything. After the first submit, RHF's default `reValidateMode: "onChange"` keeps messages fresh as the user fixes.
 5. **`Form` wraps `<form>`.** Plumb `form.handleSubmit(onSubmit)` through `<form onSubmit={...}>`.
 
@@ -39,7 +39,7 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { createFooSchema } from "@cocoaimpact/shared";
+import { createFooSchema } from "@thinkcocoa/shared";
 
 type Input = z.infer<typeof createFooSchema>;
 

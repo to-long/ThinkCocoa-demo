@@ -8,7 +8,7 @@
  * already catches `ApiError` — working unchanged.
  */
 
-import type { ValidationErrorBody } from '@cocoaimpact/shared';
+import type { ValidationErrorBody } from '@thinkcocoa/shared';
 import { authClient } from '@/lib/auth-client';
 
 // `PUBLIC_API_URL` is baked at build time from apps/fe/.env. In dev

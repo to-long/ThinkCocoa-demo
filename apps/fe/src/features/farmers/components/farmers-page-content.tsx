@@ -14,7 +14,7 @@
  *   - Certification filter currently boolean (RA vs non-RA).
  */
 
-import type { CreateFarmerInput, UpdateFarmerInput } from '@cocoaimpact/shared';
+import type { CreateFarmerInput, UpdateFarmerInput } from '@thinkcocoa/shared';
 import {
   Building2,
   CircleDot,

@@ -22,7 +22,7 @@ import {
   parcelGeometrySchema,
   type UpdateParcelInput,
   updateParcelSchema,
-} from '@cocoaimpact/shared';
+} from '@thinkcocoa/shared';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Check,

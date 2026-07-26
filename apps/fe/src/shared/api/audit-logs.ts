@@ -11,7 +11,7 @@ import {
   getApiAuditLogs,
   getApiAuditLogsById,
   getApiAuditLogsStats,
-} from '@cocoaimpact/shared/impact-cocoa-client';
+} from '@thinkcocoa/shared/impact-cocoa-client';
 import useSWR from 'swr';
 import { unwrap } from './fetcher';
 

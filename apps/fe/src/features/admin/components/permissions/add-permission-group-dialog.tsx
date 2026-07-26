@@ -2,7 +2,7 @@
  * Permission-group create/edit dialog.
  *
  * Shares the same Zod schema (`createPermissionGroupFormSchema` in
- * `@cocoaimpact/shared`) + error codes with the BE `/api/permissions/groups`
+ * `@thinkcocoa/shared`) + error codes with the BE `/api/permissions/groups`
  * endpoint. Client-side validation runs through react-hook-form's
  * `zodResolver`; server-side validation errors (from a submit that reaches
  * the BE) are mapped back onto the same form fields so each failure lands
@@ -12,7 +12,7 @@
 import {
   type CreatePermissionGroupFormInput,
   createPermissionGroupFormSchema,
-} from '@cocoaimpact/shared';
+} from '@thinkcocoa/shared';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useRef } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';

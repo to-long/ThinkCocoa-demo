@@ -1,4 +1,4 @@
-import type { PermissionCode } from '@cocoaimpact/shared';
+import type { PermissionCode } from '@thinkcocoa/shared';
 import type { LucideIcon } from 'lucide-react';
 import {
   Building2,

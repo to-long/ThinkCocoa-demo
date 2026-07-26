@@ -77,7 +77,7 @@ DELETE FROM iam.roles WHERE code LIKE 'test_role_%';
 DELETE FROM iam.permissions WHERE code LIKE 'test_resource_%:%';
 ```
 
-## Validators — single source of truth in `@cocoaimpact/shared`
+## Validators — single source of truth in `@thinkcocoa/shared`
 
 **Hard rule**: every zod schema used by an FE form OR a BE route handler
 MUST live in `packages/shared/src/validators/*`. No exceptions.
@@ -95,7 +95,7 @@ Concretely:
   schema's expected shape (usually `null`) BEFORE the resolver sees them
   — not by loosening the schema.
 - ✅ Always `import { createXxxSchema, updateXxxSchema } from
-  '@cocoaimpact/shared'` and pass it directly to `zodResolver(...)` /
+  '@thinkcocoa/shared'` and pass it directly to `zodResolver(...)` /
   `validationHook(...)`.
 
 When you add a NEW UI-only field to a form (e.g. a permission picker

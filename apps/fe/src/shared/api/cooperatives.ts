@@ -6,14 +6,14 @@
  * after the server confirms so the list and detail caches stay in sync.
  */
 
-import type { CreateCooperativeInput, UpdateCooperativeInput } from '@cocoaimpact/shared';
+import type { CreateCooperativeInput, UpdateCooperativeInput } from '@thinkcocoa/shared';
 import {
   deleteApiCooperativesById,
   getApiCooperatives,
   getApiCooperativesById,
   patchApiCooperativesById,
   postApiCooperatives,
-} from '@cocoaimpact/shared/impact-cocoa-client';
+} from '@thinkcocoa/shared/impact-cocoa-client';
 import useSWR, { mutate as globalMutate } from 'swr';
 import { apiFetch, unwrap } from './fetcher';
 

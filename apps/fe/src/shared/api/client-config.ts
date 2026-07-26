@@ -15,7 +15,7 @@
  *     loudly rather than silently target localhost in production.
  */
 
-import { client } from '@cocoaimpact/shared/impact-cocoa-client';
+import { client } from '@thinkcocoa/shared/impact-cocoa-client';
 
 const isDev = import.meta.env.MODE === 'development';
 const publicApiUrl = import.meta.env.PUBLIC_API_URL as string | undefined;

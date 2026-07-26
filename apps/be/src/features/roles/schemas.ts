@@ -5,12 +5,12 @@
  * the same Zod shape if it ever wants client-side validation, and so
  * the route handlers stay focused on HTTP wiring.
  *
- * Request body schemas come from `@cocoaimpact/shared` (single source
+ * Request body schemas come from `@thinkcocoa/shared` (single source
  * of truth between BE + FE) and are re-exported here with OpenAPI
  * tags so the generated SDK gets nice names.
  */
 
-import { createRoleSchema, setRolePermissionsSchema, updateRoleSchema } from '@cocoaimpact/shared';
+import { createRoleSchema, setRolePermissionsSchema, updateRoleSchema } from '@thinkcocoa/shared';
 import { z } from '@hono/zod-openapi';
 
 // ── Response schemas ─────────────────────────────────────────

@@ -16,7 +16,7 @@
  * padding (`py-4 gap-3` + `px-4`) and a 2-col grid for paired fields.
  */
 
-import type { CreateCooperativeInput, UpdateCooperativeInput } from '@cocoaimpact/shared';
+import type { CreateCooperativeInput, UpdateCooperativeInput } from '@thinkcocoa/shared';
 import {
   Award,
   BadgeCheck,

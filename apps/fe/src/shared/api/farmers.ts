@@ -10,7 +10,7 @@
  *     "Deleted" badge + Restore action without an extra fetch.
  */
 
-import type { CreateFarmerInput, UpdateFarmerInput } from '@cocoaimpact/shared';
+import type { CreateFarmerInput, UpdateFarmerInput } from '@thinkcocoa/shared';
 import {
   deleteApiFarmersById,
   getApiFarmers,
@@ -20,7 +20,7 @@ import {
   patchApiFarmersById,
   postApiFarmers,
   postApiFarmersByIdRestore,
-} from '@cocoaimpact/shared/impact-cocoa-client';
+} from '@thinkcocoa/shared/impact-cocoa-client';
 import useSWR, { mutate as globalMutate, preload } from 'swr';
 import { API_BASE, quietFetch, unwrap } from './fetcher';
 

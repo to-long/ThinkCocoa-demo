@@ -9,7 +9,7 @@ import {
   createParcelSchema,
   listParcelsQuerySchema,
   updateParcelSchema,
-} from '@cocoaimpact/shared';
+} from '@thinkcocoa/shared';
 import { z } from '@hono/zod-openapi';
 
 // ── Response schemas ─────────────────────────────────────────
