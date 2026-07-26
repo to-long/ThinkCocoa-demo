@@ -3,7 +3,7 @@
  * Rainforest Alliance Annex S13 v1.3 spec, adapted for ImpactCocoa.
  *
  * Mirrors the Demo Cocoa Ghana template
- * `apps/be/reports/ImpactCocoa_GMR_Template.xlsx`. Three data sheets
+ * `apps/be/reports/ThinkCocoa_GMR_Template.xlsx`. Three data sheets
  * all keyed by `plot_id`:
  *   • Tab 1 "1. Farm Information"   — 28 cols, one row per parcel
  *   • Tab 2 "2. Certified Crop"     — 17 cols, one row per parcel
@@ -333,7 +333,7 @@ function writeDataSheet(
 }
 
 async function buildXlsx(rows: PlotRow[]): Promise<Buffer> {
-  const tplBuf = await readReportTemplate('ImpactCocoa_GMR_Template.xlsx');
+  const tplBuf = await readReportTemplate('ThinkCocoa_GMR_Template.xlsx');
   const wb = new ExcelJS.Workbook();
   // biome-ignore lint/suspicious/noExplicitAny: typedef bridge — see farmer-coaching-v3.ts
   await wb.xlsx.load(tplBuf as any);

@@ -7,7 +7,6 @@ call, or use to put the environment back the way it was.
 |---|---|
 | [`import-samples/`](import-samples/) | Ready-to-upload farmers / parcel-polygon / EUDR files + their column reference |
 | `demo-db-dump.sql.gz.enc` | Encrypted snapshot of the whole demo database (see below) |
-| `ImpactCocoa_Demo_Assignment_Brian.docx` | Original assignment brief |
 
 ## Where the BE config lives
 

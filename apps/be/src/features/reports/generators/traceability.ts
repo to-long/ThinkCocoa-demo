@@ -5,7 +5,7 @@
  * inside the selected season for the per-parcel harvest figures.
  *
  * Mirrors the Demo Cocoa Ghana template
- * `apps/be/reports/ImpactCocoa_Traceability_Report_Template.xlsx`:
+ * `apps/be/reports/ThinkCocoa_Traceability_Report_Template.xlsx`:
  *   • Row 1: title (preserved as-is)
  *   • Row 2: summary formulas — COUNTA / SUM / COUNTIF over the data range
  *   • Row 3: section headings (Geometry / Farmer / Location / Yield / GPS)
@@ -191,7 +191,7 @@ const CELL_MAP: ReadonlyArray<{ col: string; value: (row: Row) => unknown }> = [
 ];
 
 async function buildXlsx(rows: Row[]): Promise<Buffer> {
-  const tplBuf = await readReportTemplate('ImpactCocoa_Traceability_Report_Template.xlsx');
+  const tplBuf = await readReportTemplate('ThinkCocoa_Traceability_Report_Template.xlsx');
   const wb = new ExcelJS.Workbook();
   // biome-ignore lint/suspicious/noExplicitAny: typedef bridge — see farmer-coaching-v3.ts
   await wb.xlsx.load(tplBuf as any);

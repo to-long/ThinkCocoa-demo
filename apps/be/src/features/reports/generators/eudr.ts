@@ -7,7 +7,7 @@
  * volume + linked secondary waybill + sourcing partner).
  *
  * Mirrors the Demo Cocoa Ghana template
- * `apps/be/reports/ImpactCocoa_EUDR_Compliance_Report.xlsx` (columns
+ * `apps/be/reports/ThinkCocoa_EUDR_Compliance_Report.xlsx` (columns
  * A-S). Two columns stay blank in v1 because they need an external
  * GIS / Global Forest Watch raster analysis we don't yet import:
  *   M — Deforestation Status (post-2020 polygon overlap check)
@@ -341,7 +341,7 @@ const CELL_MAP: ReadonlyArray<{ col: string; value: (row: EudrRow) => unknown }>
 ];
 
 async function buildXlsx(rows: EudrRow[]): Promise<Buffer> {
-  const tplBuf = await readReportTemplate('ImpactCocoa_EUDR_Compliance_Report.xlsx');
+  const tplBuf = await readReportTemplate('ThinkCocoa_EUDR_Compliance_Report.xlsx');
   const wb = new ExcelJS.Workbook();
   // biome-ignore lint/suspicious/noExplicitAny: typedef bridge — see farmer-coaching-v3.ts
   await wb.xlsx.load(tplBuf as any);

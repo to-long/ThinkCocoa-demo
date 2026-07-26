@@ -2,7 +2,7 @@
  * Generator for `corrective_actions` — one row per corrective action
  * found in the active cooperative's inspections inside the selected
  * season. Mirrors the Demo Cocoa Ghana template
- * `apps/be/reports/ImpactCocoa_Corrective_Actions_Report.xlsx`:
+ * `apps/be/reports/ThinkCocoa_Corrective_Actions_Report.xlsx`:
  *   • Row 1: title
  *   • Row 2: summary formulas — Total CAs / Open / In Progress /
  *     Closed / Overdue / % Closed
@@ -246,7 +246,7 @@ const CELL_MAP: ReadonlyArray<{ col: string; value: (row: CARow) => unknown }> =
 ];
 
 async function buildXlsx(rows: CARow[]): Promise<Buffer> {
-  const tplBuf = await readReportTemplate('ImpactCocoa_Corrective_Actions_Report.xlsx');
+  const tplBuf = await readReportTemplate('ThinkCocoa_Corrective_Actions_Report.xlsx');
   const wb = new ExcelJS.Workbook();
   // biome-ignore lint/suspicious/noExplicitAny: typedef bridge — see farmer-coaching-v3.ts
   await wb.xlsx.load(tplBuf as any);

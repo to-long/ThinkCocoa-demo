@@ -74,7 +74,7 @@ const REPORTS: ReportType[] = [
     slug: 'certification',
     title: 'Certification Status Report',
     shortLabel: 'Certification',
-    filename: 'ImpactCocoa_Certification_Status_Report',
+    filename: 'ThinkCocoa_Certification_Status_Report',
     icon: BadgeCheck,
     description:
       'Certification status of farmers and societies — covers certificate validity, audit outcomes and pending renewals for the selected season.',
@@ -84,7 +84,7 @@ const REPORTS: ReportType[] = [
     slug: 'corrective-actions',
     title: 'Corrective Actions Report',
     shortLabel: 'Corrective Actions',
-    filename: 'ImpactCocoa_Corrective_Actions_Report',
+    filename: 'ThinkCocoa_Corrective_Actions_Report',
     icon: ClipboardList,
     description:
       'Outstanding corrective actions from inspection visits — grouped by parcel and farmer, with due dates and current status.',
@@ -94,7 +94,7 @@ const REPORTS: ReportType[] = [
     slug: 'eudr',
     title: 'EUDR Compliance Report',
     shortLabel: 'EUDR',
-    filename: 'ImpactCocoa_EUDR_Compliance_Report',
+    filename: 'ThinkCocoa_EUDR_Compliance_Report',
     icon: ShieldCheck,
     description:
       'EUDR due-diligence statement bundle — parcel-level geolocation, risk assessment outcomes and deforestation evidence per cooperative.',
@@ -104,7 +104,7 @@ const REPORTS: ReportType[] = [
     slug: 'farmer-coaching',
     title: 'Farmer Coaching Report (v3)',
     shortLabel: 'Farmer Coaching',
-    filename: 'ImpactCocoa_Farmer_Coaching_Report_v3',
+    filename: 'ThinkCocoa_Farmer_Coaching_Report_v3',
     icon: GraduationCap,
     description:
       'Coaching visits across the selected season — GAP, IPM, EUDR and CLMRS scores per farmer with follow-up flags.',
@@ -114,7 +114,7 @@ const REPORTS: ReportType[] = [
     slug: 'gmr',
     title: 'GMR Template',
     shortLabel: 'GMR',
-    filename: 'ImpactCocoa_GMR_Template',
+    filename: 'ThinkCocoa_GMR_Template',
     icon: FileSpreadsheet,
     description:
       'Group management record template — pre-filled with the active season, society and program rows ready for downstream submission.',
@@ -124,7 +124,7 @@ const REPORTS: ReportType[] = [
     slug: 'traceability',
     title: 'Traceability Report Template',
     shortLabel: 'Traceability',
-    filename: 'ImpactCocoa_Traceability_Report_Template',
+    filename: 'ThinkCocoa_Traceability_Report_Template',
     icon: RouteIcon,
     description:
       'End-to-end lot trace — primary + secondary evacuations linked to source farmers, with weight and grade reconciliation.',
@@ -134,7 +134,7 @@ const REPORTS: ReportType[] = [
     slug: 'training',
     title: 'Training Attendance Register',
     shortLabel: 'Training',
-    filename: 'ImpactCocoa_Training_Attendance_Report',
+    filename: 'ThinkCocoa_Training_Attendance_Report',
     icon: GraduationCap,
     description:
       'Training attendance — one row per participant per session, with program, trainer, topics, gender totals, consent and trainer evaluation.',
