@@ -40,7 +40,7 @@ import { startTokenRevocationListener } from './lib/token-revocation';
 // `PORT`. Dev: default 8100.
 //
 // nginx in front of the Droplet owns :80/:443 and load-balances
-// between the two slots (see /etc/nginx/sites-enabled/impact-cocoa).
+// between the two slots (see /etc/nginx/sites-enabled/think-cocoa).
 // One slot is always serving; deploys start the NEW slot, health-check,
 // then kill OLD. nginx's `max_fails=1 fail_timeout=5s` handles the
 // instant when OLD dies — new connections fall back to NEW automatically.

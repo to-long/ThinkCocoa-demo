@@ -55,7 +55,7 @@ jobs:
       # quiet day on `main`).
       #
       # Why GH Deployments API and not, e.g., SSHing into the Droplet
-      # to `cat /opt/impactcocoa/apps/be/.env | grep SENTRY_RELEASE`:
+      # to `cat /opt/thinkcocoa/apps/be/.env | grep SENTRY_RELEASE`:
       # the API is the canonical record (created automatically by the
       # `environment:` block in deploy.yml's `build-and-deploy` job),
       # there's no SSH key to manage here, and a drift between the

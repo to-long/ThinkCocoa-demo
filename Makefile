@@ -8,7 +8,7 @@
 .DEFAULT_GOAL := help
 
 help:
-	@echo "ImpactCocoa — available targets:"
+	@echo "ThinkCocoa — available targets:"
 	@echo ""
 	@echo "  Setup"
 	@echo "    make install      Install all workspace dependencies"
@@ -164,8 +164,8 @@ sync-permissions:
 # Print a private DO Spaces object by URL — authenticates with the
 # BE's SPACES_KEY/SECRET. Both syntaxes accepted (positional preferred
 # for ad-hoc debug, URL=… form for scripts):
-#   make s3 https://impact-cocoa.fra1.digitaloceanspaces.com/.../foo.json
-#   make s3 URL=https://impact-cocoa.fra1.cdn.digitaloceanspaces.com/...
+#   make s3 https://think-cocoa.fra1.digitaloceanspaces.com/.../foo.json
+#   make s3 URL=https://think-cocoa.fra1.cdn.digitaloceanspaces.com/...
 # Pipe to jq for filtering:
 #   make s3 https://... | jq '.["Member/PlotID"]'
 #

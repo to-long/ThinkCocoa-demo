@@ -1,7 +1,7 @@
 /**
  * SWR hooks + mutation helpers for `/api/users`.
  *
- * Every call flows through the generated `impact-cocoa-client` SDK — the SWR
+ * Every call flows through the generated `think-cocoa-client` SDK — the SWR
  * keys are tuples of the form `['/api/users', query]` so that every paginated
  * variant is cached independently.
  *
@@ -19,7 +19,7 @@ import {
   postApiUsers,
   postApiUsersByIdRestore,
   putApiUsersByIdRoles,
-} from '@thinkcocoa/shared/impact-cocoa-client';
+} from '@thinkcocoa/shared/think-cocoa-client';
 import useSWR, { mutate as globalMutate } from 'swr';
 import { unwrap } from './fetcher';
 import type {

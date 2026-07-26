@@ -133,7 +133,7 @@ jobs:
           # BE Sentry project — the numeric project id the backend DSN posts
           # events to. Must be THIS project (not the FE one) or the uploaded
           # source maps live in the wrong project and never symbolicate the
-          # backend traces. (Was the guessed slug 'impact-cocoa-be', which
+          # backend traces. (Was the guessed slug 'think-cocoa-be', which
           # pointed at the wrong project.)
           SENTRY_PROJECT: '4511391320309840'
         run: |
@@ -147,7 +147,7 @@ jobs:
           # the upload. Warn loudly instead so it's visible + fixable.
           bunx @sentry/cli sourcemaps inject ./dist || echo "::warning::sourcemaps inject failed"
           bunx @sentry/cli sourcemaps upload ./dist --release "${{ github.sha }}" \
-            || echo "::warning::BE source map upload failed — check SENTRY_PROJECT slug ('impact-cocoa-be'?) / SENTRY_ORG. Deploy continues; BE traces stay minified until fixed."
+            || echo "::warning::BE source map upload failed — check SENTRY_PROJECT slug ('think-cocoa-be'?) / SENTRY_ORG. Deploy continues; BE traces stay minified until fixed."
 
       - name: Build FE
         env:
@@ -181,7 +181,7 @@ jobs:
           # the message is loud and actionable, not silently skipped.
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ vars.SENTRY_ORG }}
-          SENTRY_PROJECT: impact-cocoa-fe
+          SENTRY_PROJECT: think-cocoa-fe
         run: |
           if [[ -z "$SENTRY_AUTH_TOKEN" ]]; then
             echo "::warning::PUBLIC_SENTRY_DSN is set but SENTRY_AUTH_TOKEN secret is missing — skipping source map upload. Stack traces will be minified in Sentry."
@@ -253,14 +253,14 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<'EOF'
             set -e
-            cd /opt/impactcocoa
+            cd /opt/thinkcocoa
             tar xzf /tmp/deploy-bundle.tar.gz
             rm /tmp/deploy-bundle.tar.gz
           EOF
 
       - name: 📁 Ensure persistent dirs exist
         # TieredStorage hot tier + PM2 log dir. Both MUST live outside
-        # /opt/impactcocoa so the next deploy's `tar xzf` doesn't wipe
+        # /opt/thinkcocoa so the next deploy's `tar xzf` doesn't wipe
         # them. Idempotent — `mkdir -p` is a no-op when the dir
         # already exists. Running as root via the deploy SSH user, so
         # ownership/permissions are root:root by default — fine
@@ -269,8 +269,8 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<'EOF'
             set -e
-            mkdir -p /var/lib/impact-cocoa/storage
-            mkdir -p /var/log/impact-cocoa
+            mkdir -p /var/lib/think-cocoa/storage
+            mkdir -p /var/log/think-cocoa
           EOF
 
       - name: 🏷️ Stamp release SHA + DSN + secrets into BE .env
@@ -321,7 +321,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<EOF
             set -e
-            cd /opt/impactcocoa/apps/be
+            cd /opt/thinkcocoa/apps/be
             # SENTRY_RELEASE = git SHA (overwritten each deploy).
             if grep -q "^SENTRY_RELEASE=" .env 2>/dev/null; then
               sed -i "s|^SENTRY_RELEASE=.*|SENTRY_RELEASE=${{ github.sha }}|" .env
@@ -404,7 +404,7 @@ jobs:
             fi
             # EMAIL_FROM = repo variable (public, non-secret). Domain
             # portion must be a verified sender on Resend (DKIM/SPF
-            # records live on the impactcocoa.net zone). Same value on
+            # records live on the thinkcocoa.net zone). Same value on
             # both envs unless staging vs prod use different domains.
             # sed -i's | delimiter avoids escaping the < > angles in
             # the display-name portion of "Name <mailbox@domain>".
@@ -427,7 +427,7 @@ jobs:
       - name: 📚 Install dependencies on Droplet
         run: |
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
-            'export PATH=/usr/local/bin:/root/.bun/bin:$PATH && cd /opt/impactcocoa && bun install --frozen-lockfile --production'
+            'export PATH=/usr/local/bin:/root/.bun/bin:$PATH && cd /opt/thinkcocoa && bun install --frozen-lockfile --production'
 
       - name: ♻️ Force-release OLD BE DB pool
         if: steps.detect.outputs.active != ''
@@ -441,7 +441,7 @@ jobs:
           # that's cheaper than a failed deploy + manual re-tag.
           OLD_PORT=${{ steps.detect.outputs.active }}
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
-            "export PATH=/usr/local/bin:/root/.bun/bin:\$PATH && pm2 restart impact-cocoa-$OLD_PORT"
+            "export PATH=/usr/local/bin:/root/.bun/bin:\$PATH && pm2 restart think-cocoa-$OLD_PORT"
           # Give pm2 a beat to actually kill sockets + let the DB
           # register the drop before drizzle attempts to connect.
           sleep 3
@@ -472,7 +472,7 @@ jobs:
             # indent on `          EOF` below.
             ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<'EOF' || true
               set -e
-              cd /opt/impactcocoa/apps/be
+              cd /opt/thinkcocoa/apps/be
               DB_URL=$(grep -E '^DATABASE_URL=' .env | head -1 | cut -d= -f2-)
               if [ -n "$DB_URL" ]; then
                 killed=$(psql "$DB_URL" -tA -c "SELECT count(pg_terminate_backend(pid)) FROM pg_stat_activity WHERE usename = session_user AND state IN ('idle', 'idle in transaction') AND pid != pg_backend_pid();" 2>/dev/null || echo 0)
@@ -480,7 +480,7 @@ jobs:
               fi
           EOF
             if ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
-              'export PATH=/usr/local/bin:/root/.bun/bin:$PATH && cd /opt/impactcocoa/apps/be && bun run db:migrate'; then
+              'export PATH=/usr/local/bin:/root/.bun/bin:$PATH && cd /opt/thinkcocoa/apps/be && bun run db:migrate'; then
               echo "✅ migrations applied on attempt $attempt"
               exit 0
             fi
@@ -517,7 +517,7 @@ jobs:
           # root where no .env lives → `DATABASE_URL is required`
           # exit code 1 → deploy blocked.
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
-            'export PATH=/usr/local/bin:/root/.bun/bin:$PATH && cd /opt/impactcocoa/apps/be && bun db/seed/real-users.ts'
+            'export PATH=/usr/local/bin:/root/.bun/bin:$PATH && cd /opt/thinkcocoa/apps/be && bun db/seed/real-users.ts'
 
       - name: 🚀 Start NEW instance
         env:
@@ -528,9 +528,9 @@ jobs:
         run: |
           # `pm2 start ecosystem.config.cjs` runs the slot picker —
           # auto-binds the FREE port (8001 or 8002) and registers under
-          # name `impact-cocoa-<NEW>`.
+          # name `think-cocoa-<NEW>`.
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
-            "export PATH=/usr/local/bin:/root/.bun/bin:\$PATH && cd /opt/impactcocoa && pm2 start ecosystem.config.cjs --env $PM2_ENV && pm2 list"
+            "export PATH=/usr/local/bin:/root/.bun/bin:\$PATH && cd /opt/thinkcocoa && pm2 start ecosystem.config.cjs --env $PM2_ENV && pm2 list"
 
       - name: 🏥 Health check NEW (internal)
         id: health-internal
@@ -548,7 +548,7 @@ jobs:
           done
           echo "::error::NEW :$NEW_PORT failed health check after 30 attempts"
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
-            "pm2 logs impact-cocoa-$NEW_PORT --err --nostream --lines 30" || true
+            "pm2 logs think-cocoa-$NEW_PORT --err --nostream --lines 30" || true
           exit 1
 
       - name: 🛑 Stop OLD instance
@@ -558,7 +558,7 @@ jobs:
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<EOF
             set -e
             export PATH=/usr/local/bin:/root/.bun/bin:\$PATH
-            pm2 delete impact-cocoa-$OLD_PORT
+            pm2 delete think-cocoa-$OLD_PORT
             pm2 save
           EOF
           echo "::notice::✓ Killed OLD :$OLD_PORT"
@@ -586,7 +586,7 @@ jobs:
         run: |
           NEW_PORT=${{ steps.detect.outputs.new }}
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
-            "export PATH=/usr/local/bin:/root/.bun/bin:\$PATH && pm2 delete impact-cocoa-$NEW_PORT 2>/dev/null || true" || true
+            "export PATH=/usr/local/bin:/root/.bun/bin:\$PATH && pm2 delete think-cocoa-$NEW_PORT 2>/dev/null || true" || true
           echo "::warning::Cleaned up NEW :$NEW_PORT. OLD (${{ steps.detect.outputs.active || 'none' }}) should still be serving."
 
       - name: 📊 Deployment summary

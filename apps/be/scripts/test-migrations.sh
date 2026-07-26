@@ -17,7 +17,7 @@
 # fails, so re-runs don't pile up containers.
 set -euo pipefail
 
-CONTAINER="impactcocoa-demo-migration-test"
+CONTAINER="thinkcocoa-demo-migration-test"
 PORT="5540"
 IMAGE="imresamu/postgis:17-3.5"
 

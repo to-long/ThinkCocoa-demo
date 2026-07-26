@@ -25,7 +25,7 @@ jest.mock('@/shared/api', () => ({
 
 // Chair candidates fetch goes through the generated client. Stub to
 // return zero candidates — the form schema doesn't require a chair.
-jest.mock('@thinkcocoa/shared/impact-cocoa-client', () => ({
+jest.mock('@thinkcocoa/shared/think-cocoa-client', () => ({
   getApiUsers: jest.fn(async () => ({ data: { items: [] } })),
 }));
 

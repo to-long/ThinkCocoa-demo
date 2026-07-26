@@ -121,7 +121,7 @@ packages/
   shared/                               # @thinkcocoa/shared
     src/validators/                     # Zod schemas reused on FE + BE
     src/constants/permissions.ts        # PERMISSION_CATALOG → PermissionCode union
-    src/openApi/impact-cocoa-client/    # auto-generated typed SDK
+    src/openApi/think-cocoa-client/    # auto-generated typed SDK
 
 docker-compose.yml · ecosystem.config.cjs (PM2) · Makefile · biome.json · CLAUDE.md (repo playbook)
 ```

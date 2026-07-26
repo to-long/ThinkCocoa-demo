@@ -31,7 +31,7 @@ cd "$(dirname "$0")/.."
 
 ENV_FILE=".env"
 OUT_FILE="../../docs/demo-db-dump.sql.gz.enc"
-CONTAINER="${DEMO_DB_CONTAINER:-impactcocoa-demo-postgres}"
+CONTAINER="${DEMO_DB_CONTAINER:-thinkcocoa-demo-postgres}"
 
 # Read ONE key out of .env. Deliberately not `source .env` — values like
 # `EMAIL_FROM=ThinkData <no-reply@…>` are unquoted and would be parsed as

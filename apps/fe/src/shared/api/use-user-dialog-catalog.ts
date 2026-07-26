@@ -23,7 +23,7 @@ import {
   getApiPermissions,
   getApiPermissionsGroups,
   getApiRoles,
-} from '@thinkcocoa/shared/impact-cocoa-client';
+} from '@thinkcocoa/shared/think-cocoa-client';
 import useSWR from 'swr';
 import { unwrap } from './fetcher';
 import type { ApiPermissionGroup } from './index';

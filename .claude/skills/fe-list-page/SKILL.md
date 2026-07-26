@@ -148,7 +148,7 @@ cd apps/fe && bun run build   # rsbuild + tsc
 
 If FE talks to a new BE endpoint, regenerate the SDK first:
 ```bash
-bun run impact-cocoa-client:refresh
+bun run think-cocoa-client:refresh
 ```
 
 ## Reference files (read before writing new pages)

@@ -55,7 +55,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: impactcocoa
+          POSTGRES_DB: thinkcocoa
         ports:
           - 5432:5432
         options: >-
@@ -64,7 +64,7 @@ jobs:
           --health-timeout=5s
           --health-retries=10
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/impactcocoa
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/thinkcocoa
       DATABASE_SSL: 'false'
       # Required by app.ts CORS validator + auth.ts trustedOrigins.
       # Values don't matter — CI tests don't hit them — but they must
@@ -76,7 +76,7 @@ jobs:
       # TieredStorage hot tier — point at a writable tmp dir so the
       # audit-diff offload during E2E doesn't try to mkdir under
       # /var/lib (default in prod) and fail with EACCES.
-      STORAGE_ROOT: /tmp/impact-cocoa-storage
+      STORAGE_ROOT: /tmp/think-cocoa-storage
     steps:
       - uses: actions/checkout@v4
 

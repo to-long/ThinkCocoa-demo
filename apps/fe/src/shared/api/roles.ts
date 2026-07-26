@@ -13,7 +13,7 @@ import {
   patchApiRolesById,
   postApiRoles,
   putApiRolesByIdPermissions,
-} from '@thinkcocoa/shared/impact-cocoa-client';
+} from '@thinkcocoa/shared/think-cocoa-client';
 import useSWR, { mutate as globalMutate } from 'swr';
 import { unwrap } from './fetcher';
 import type { ApiRole, ApiRoleDetail, CreateRoleInput, UpdateRoleInput } from './types';

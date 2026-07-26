@@ -23,7 +23,7 @@
 # the test run fails.
 set -euo pipefail
 
-CONTAINER="impactcocoa-demo-test-db"
+CONTAINER="thinkcocoa-demo-test-db"
 PORT="5541"
 IMAGE="imresamu/postgis:17-3.5"
 
@@ -68,7 +68,7 @@ cd "$SCRIPT_DIR/.."
 export DATABASE_URL="postgresql://postgres:postgres@localhost:${PORT}/thinkcocoa"
 # TieredStorage hot tier — use a tmp dir so audit-diff offload during
 # tests doesn't try to write under /var/lib (prod default).
-export STORAGE_ROOT="${STORAGE_ROOT:-/tmp/impact-cocoa-storage-test}"
+export STORAGE_ROOT="${STORAGE_ROOT:-/tmp/think-cocoa-storage-test}"
 
 echo "▶️  migrating + seeding test DB…"
 # SEED_TEST_USERS=true (default) creates the `system.admin@…` account

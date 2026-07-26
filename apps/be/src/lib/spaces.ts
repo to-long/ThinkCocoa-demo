@@ -50,7 +50,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 const SPACES_REGION = process.env.SPACES_REGION ?? 'fra1';
 const SPACES_ENDPOINT =
   process.env.S3_ENDPOINT_OVERRIDE ?? `https://${SPACES_REGION}.digitaloceanspaces.com`;
-export const SPACES_BUCKET = process.env.SPACES_BUCKET ?? 'impact-cocoa-bucket';
+export const SPACES_BUCKET = process.env.SPACES_BUCKET ?? 'think-cocoa-bucket';
 
 /**
  * Lazily construct the client so importing this module in code paths

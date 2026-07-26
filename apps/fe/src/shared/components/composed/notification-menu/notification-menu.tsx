@@ -18,7 +18,7 @@
  * + plug a real `last_read_audit_id` cursor into the unread flag.
  */
 
-import { getApiAuditLogs } from '@thinkcocoa/shared/impact-cocoa-client';
+import { getApiAuditLogs } from '@thinkcocoa/shared/think-cocoa-client';
 import { Bell, Loader2, Settings } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';

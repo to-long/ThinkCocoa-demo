@@ -11,7 +11,7 @@
  *   This script reads the DB → emits a fresh TS file. Commit the diff.
  *
  * Pattern precedent in this repo:
- *   - `packages/shared/openapi-ts.impact-cocoa-client.config.ts` → codegens
+ *   - `packages/shared/openapi-ts.think-cocoa-client.config.ts` → codegens
  *     TS from the BE's live OpenAPI spec. Same idea: runtime source → TS.
  *   - Drizzle-kit `pull` / `introspect` is the same pattern for DB schemas.
  *

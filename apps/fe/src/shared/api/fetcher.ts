@@ -1,7 +1,7 @@
 /**
  * Shared ApiError + helper used by every SWR hook in this folder.
  *
- * The HTTP layer is the generated `impact-cocoa-client` SDK (hey-api). Its
+ * The HTTP layer is the generated `think-cocoa-client` SDK (hey-api). Its
  * calls resolve to `{ data, error, response }` — this module provides
  * `unwrap()` which turns that shape into either a resolved value or an
  * `ApiError` throw. That keeps `useApiErrorMessage` — and every caller that

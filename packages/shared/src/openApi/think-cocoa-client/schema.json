@@ -3,7 +3,7 @@
   "info": {
     "title": "CocoaImpact API",
     "version": "1.0.0",
-    "description": "ImpactCocoa Data Management Platform API"
+    "description": "ThinkCocoa Data Management Platform API"
   },
   "servers": [
     {

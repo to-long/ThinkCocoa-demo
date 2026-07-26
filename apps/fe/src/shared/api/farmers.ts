@@ -20,7 +20,7 @@ import {
   patchApiFarmersById,
   postApiFarmers,
   postApiFarmersByIdRestore,
-} from '@thinkcocoa/shared/impact-cocoa-client';
+} from '@thinkcocoa/shared/think-cocoa-client';
 import useSWR, { mutate as globalMutate, preload } from 'swr';
 import { API_BASE, quietFetch, unwrap } from './fetcher';
 
@@ -257,7 +257,7 @@ export function useFarmerFullStats() {
     // Cast via `unknown` — the FE `FarmerFullStats` has fields that
     // haven't been picked up by the generated OpenAPI types yet.
     // Actual runtime shape matches (BE zod schema is canonical); regen
-    // via `bun run impact-cocoa-client:refresh` when the drift is due.
+    // via `bun run think-cocoa-client:refresh` when the drift is due.
     async () => unwrap(await getApiFarmersFullStats()) as unknown as FarmerFullStats,
     { revalidateOnFocus: false },
   );

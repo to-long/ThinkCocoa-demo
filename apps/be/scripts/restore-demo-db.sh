@@ -22,7 +22,7 @@ cd "$(dirname "$0")/.."
 
 ENV_FILE=".env"
 IN_FILE="../../docs/demo-db-dump.sql.gz.enc"
-CONTAINER="${DEMO_DB_CONTAINER:-impactcocoa-demo-postgres}"
+CONTAINER="${DEMO_DB_CONTAINER:-thinkcocoa-demo-postgres}"
 
 read_env() {
   [[ -f "$ENV_FILE" ]] || return 0

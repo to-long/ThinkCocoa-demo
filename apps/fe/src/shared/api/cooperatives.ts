@@ -13,7 +13,7 @@ import {
   getApiCooperativesById,
   patchApiCooperativesById,
   postApiCooperatives,
-} from '@thinkcocoa/shared/impact-cocoa-client';
+} from '@thinkcocoa/shared/think-cocoa-client';
 import useSWR, { mutate as globalMutate } from 'swr';
 import { apiFetch, unwrap } from './fetcher';
 

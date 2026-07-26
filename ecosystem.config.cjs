@@ -10,9 +10,9 @@
  *   1. Detects active port via `ss -tln` on the Droplet
  *   2. SSHs in and runs `pm2 start ecosystem.config.cjs --env production`
  *   3. THIS file's slot picker (below) auto-selects the FREE port
- *      → starts NEW under name `impact-cocoa-<NEW>`
+ *      → starts NEW under name `think-cocoa-<NEW>`
  *   4. Workflow health-checks NEW on 127.0.0.1:<NEW>/health
- *   5. Workflow does `pm2 delete impact-cocoa-<OLD>` once NEW is healthy
+ *   5. Workflow does `pm2 delete think-cocoa-<OLD>` once NEW is healthy
  *
  * nginx's `max_fails=1 fail_timeout=5s` + `proxy_next_upstream` means
  * the brief window where OLD is being killed costs at most ~50 ms of
@@ -57,7 +57,7 @@ if (!PORT) {
 module.exports = {
   apps: [
     {
-      name: `impact-cocoa-${PORT}`,
+      name: `think-cocoa-${PORT}`,
       cwd: './apps/be',
       script: 'bun',
       args: 'dist/main.js',
@@ -69,8 +69,8 @@ module.exports = {
       restart_delay: 2000,
       max_memory_restart: '500M',
 
-      out_file: `/var/log/impact-cocoa/${PORT}-out.log`,
-      error_file: `/var/log/impact-cocoa/${PORT}-error.log`,
+      out_file: `/var/log/think-cocoa/${PORT}-out.log`,
+      error_file: `/var/log/think-cocoa/${PORT}-error.log`,
       merge_logs: true,
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
 
@@ -110,7 +110,7 @@ module.exports = {
     // long-running process). The script tar+zstds yesterday's hot
     // folder, ships to Spaces, and deletes folders > STORAGE_HOT_DAYS.
     //
-    // Logs land in /var/log/impact-cocoa/storage-maintenance-*.log
+    // Logs land in /var/log/think-cocoa/storage-maintenance-*.log
     // and each run prints one NDJSON summary line, easy to grep.
     {
       name: 'storage-maintenance',
@@ -124,8 +124,8 @@ module.exports = {
       // Stagger with the BE cron schedulers so 02:00 isn't a thundering
       // herd of DB writes. Five-minute offset is plenty.
 
-      out_file: '/var/log/impact-cocoa/storage-maintenance-out.log',
-      error_file: '/var/log/impact-cocoa/storage-maintenance-error.log',
+      out_file: '/var/log/think-cocoa/storage-maintenance-out.log',
+      error_file: '/var/log/think-cocoa/storage-maintenance-error.log',
       merge_logs: true,
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
 

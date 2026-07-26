@@ -71,7 +71,7 @@ export type DateKey = string; // YYYY-MM-DD, always UTC
 
 export interface TieredStorageConfig {
   /** Local directory under which every day's folder lives.
-   *  e.g. `/var/lib/impact-cocoa/storage`. */
+   *  e.g. `/var/lib/think-cocoa/storage`. */
   root: string;
   /** S3 key prefix for archive tarballs. No trailing slash. The
    *  env-aware factory `tieredStorageFromEnv()` prepends the
@@ -88,7 +88,7 @@ export interface TieredStorageConfig {
  *
  *  Only ONE env var is read directly:
  *    STORAGE_ROOT — local disk root. Default
- *    `/var/lib/impact-cocoa/storage` (the deploy workflow creates it).
+ *    `/var/lib/think-cocoa/storage` (the deploy workflow creates it).
  *    Dev overrides to a writable path via `.env`.
  *
  *  Everything else is either inferred or hardcoded:
@@ -105,7 +105,7 @@ const HOT_DAYS = 30;
 const BASE_PREFIX = 'storage';
 
 export function tieredStorageFromEnv(): TieredStorage {
-  const root = process.env.STORAGE_ROOT ?? '/var/lib/impact-cocoa/storage';
+  const root = process.env.STORAGE_ROOT ?? '/var/lib/think-cocoa/storage';
   const envLabel = process.env.NODE_ENV ?? 'development';
   return new TieredStorage({
     root,

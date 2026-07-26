@@ -1,5 +1,5 @@
 /**
- * One-shot configuration for the generated `impact-cocoa-client` SDK.
+ * One-shot configuration for the generated `think-cocoa-client` SDK.
  *
  * Imported for side effect from `src/index.tsx` BEFORE any component is
  * rendered, so every SDK call goes out with the right `baseUrl` and
@@ -15,7 +15,7 @@
  *     loudly rather than silently target localhost in production.
  */
 
-import { client } from '@thinkcocoa/shared/impact-cocoa-client';
+import { client } from '@thinkcocoa/shared/think-cocoa-client';
 
 const isDev = import.meta.env.MODE === 'development';
 const publicApiUrl = import.meta.env.PUBLIC_API_URL as string | undefined;
