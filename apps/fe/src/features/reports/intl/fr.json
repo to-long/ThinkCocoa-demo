@@ -1,6 +1,6 @@
 {
   "reports.title": "Rapports",
-  "reports.subtitle": "Générer et exporter les rapports ImpactCocoa · choisissez un type, ajustez les filtres, puis exportez",
+  "reports.subtitle": "Générer et exporter les rapports ThinkCocoa · choisissez un type, ajustez les filtres, puis exportez",
   "reports.typeList.heading": "Type de rapport",
   "reports.filters.season": "Saison",
   "reports.filters.seasonPlaceholder": "Choisir la saison",

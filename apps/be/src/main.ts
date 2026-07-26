@@ -19,7 +19,7 @@ Sentry.init({
   enabled: !!process.env.SENTRY_DSN && process.env.NODE_ENV !== 'development',
   release: process.env.SENTRY_RELEASE, // = git SHA, set by deploy.yml
   // Trace 10% of requests — keeps us under the 10k spans/mo free-tier
-  // quota at realistic ImpactCocoa traffic.
+  // quota at realistic ThinkCocoa traffic.
   tracesSampleRate: 0.1,
   beforeSend(event) {
     // Skip 4xx — those are client errors, not bugs worth alerting on.

@@ -116,11 +116,11 @@ SQLite database stored in `data.db`. Tables:
 - **stacks**: id, name, cover_type, cover_value, created_at
 - **cards**: id, stack_id, name, cover, description, created_at
 
-## ImpactCocoa PostgreSQL/PostGIS skeleton
+## ThinkCocoa PostgreSQL/PostGIS skeleton
 
 The current runnable backend still uses the existing `sql.js` sample app.
 
-For the ImpactCocoa architecture work, a new PostgreSQL/PostGIS migration skeleton has been added under `apps/be/db/postgres/`.
+For the ThinkCocoa architecture work, a new PostgreSQL/PostGIS migration skeleton has been added under `apps/be/db/postgres/`.
 
 It includes:
 
@@ -137,8 +137,8 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5539/thinkcocoa bun run --
 See:
 
 - `apps/be/db/postgres/README.md`
-- `docs/impactcocoa-erd.en.md`
-- `docs/impactcocoa-erd.vi.md`
+- `docs/thinkcocoa-erd.en.md`
+- `docs/thinkcocoa-erd.vi.md`
 
 ## Environment Variables
 

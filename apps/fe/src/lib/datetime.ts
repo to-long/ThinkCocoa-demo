@@ -1,7 +1,7 @@
 /**
  * Date/time helpers pinned to Ghana's timezone, ISO-style output.
  *
- * ImpactCocoa's primary users operate in Ghana (UTC+0, no DST). Timestamps
+ * ThinkCocoa's primary users operate in Ghana (UTC+0, no DST). Timestamps
  * from the BE are stored as UTC (`TIMESTAMPTZ`) but render in the
  * farmer's / admin's local frame of reference, which for this product is
  * `Africa/Accra` regardless of where the user happens to be reading the

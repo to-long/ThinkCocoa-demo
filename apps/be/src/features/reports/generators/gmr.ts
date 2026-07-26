@@ -1,6 +1,6 @@
 /**
  * Generator for `gmr_template` — Group Member Registry export per the
- * Rainforest Alliance Annex S13 v1.3 spec, adapted for ImpactCocoa.
+ * Rainforest Alliance Annex S13 v1.3 spec, adapted for ThinkCocoa.
  *
  * Mirrors the Demo Cocoa Ghana template
  * `apps/be/reports/ThinkCocoa_GMR_Template.xlsx`. Three data sheets

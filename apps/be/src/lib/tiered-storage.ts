@@ -47,7 +47,7 @@
  *   - brotli q=6:   ~1100 MB/s compress, ~1500 MB/s decompress
  *   - gzip -9:      ~240 MB/s compress, ~1900 MB/s decompress
  * zstd wins both directions by 2-15× while staying within ~10% of
- * brotli's ratio. Storage cost savings of brotli at ImpactCocoa
+ * brotli's ratio. Storage cost savings of brotli at ThinkCocoa
  * scale (< $0.01/mo difference) are too small to justify slower
  * codecs. Built into node:zlib (Node 22.15+, Bun): no external dep.
  */

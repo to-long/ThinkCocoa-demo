@@ -1,6 +1,6 @@
 {
   "reports.title": "Reports",
-  "reports.subtitle": "Generate and export ImpactCocoa reports · select a report type, choose filters, then export",
+  "reports.subtitle": "Generate and export Think!Cocoa reports · select a report type, choose filters, then export",
   "reports.typeList.heading": "Report Type",
   "reports.filters.season": "Season",
   "reports.filters.seasonPlaceholder": "Select season",

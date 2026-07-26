@@ -1,6 +1,6 @@
 # Security
 
-Status snapshot of the ImpactCocoa platform. Lists controls in place,
+Status snapshot of the ThinkCocoa platform. Lists controls in place,
 known gaps, and the action plan for each. Updated whenever a security
 control lands or a new gap is found.
 
@@ -8,7 +8,7 @@ control lands or a new gap is found.
 
 ## Reporting a vulnerability
 
-Mail to admin with the subject `[ImpactCocoa security]`.
+Mail to admin with the subject `[ThinkCocoa security]`.
 Include reproduction steps, affected endpoints / commits, and the
 realistic blast radius. Do not file public issues for unpatched flaws.
 

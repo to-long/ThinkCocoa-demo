@@ -52,7 +52,7 @@ for (const c of choices) {
 // 2. Excel
 const wb = new ExcelJS.Workbook();
 await wb.xlsx.readFile(
-  '/Users/long.to/Documents/PRIVATE/ImpactCocoa-Project/docs/Internal_Inspection_Form updated 2026 - feedback Richard.xlsx',
+  '/Users/long.to/Documents/PRIVATE/ThinkCocoa-Project/docs/Internal_Inspection_Form updated 2026 - feedback Richard.xlsx',
 );
 const sheet = wb.worksheets[0];
 interface ExcelQ {

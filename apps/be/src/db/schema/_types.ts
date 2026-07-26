@@ -1,5 +1,5 @@
 /**
- * Shared custom column types for ImpactCocoa.
+ * Shared custom column types for ThinkCocoa.
  *
  * Drizzle doesn't ship built-in wrappers for PostGIS `geometry` or the
  * `citext` type, so we define them here and reuse across schemas.

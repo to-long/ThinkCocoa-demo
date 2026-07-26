@@ -1,5 +1,5 @@
 export const APP_NAME = 'CocoaImpact';
-export const APP_DESCRIPTION = 'ImpactCocoa Data Management Platform';
+export const APP_DESCRIPTION = 'Think!Cocoa Data Management Platform';
 
 export const LOCALES = ['en', 'fr'] as const;
 export const DEFAULT_LOCALE = 'en';

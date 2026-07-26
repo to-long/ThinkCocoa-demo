@@ -1,5 +1,5 @@
 /**
- * Idempotent IAM baseline — matches the ImpactCocoa product spec.
+ * Idempotent IAM baseline — matches the ThinkCocoa product spec.
  *
  * Roles (6):
  *   field_officer      — primary field data collection. Scope: own district.

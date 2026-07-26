@@ -1,6 +1,6 @@
 ---
 name: fe-list-page
-description: ImpactCocoa FE convention for any admin list page (users, farmers, cooperatives, roles, permissions, audit). Use when adding a new list page, refactoring an existing one, or reviewing one. Codifies the four mandatory pillars — stats cards, URL-backed pagination, multi-column sort, multi-select filters — plus the SWR + URL state pattern.
+description: ThinkCocoa FE convention for any admin list page (users, farmers, cooperatives, roles, permissions, audit). Use when adding a new list page, refactoring an existing one, or reviewing one. Codifies the four mandatory pillars — stats cards, URL-backed pagination, multi-column sort, multi-select filters — plus the SWR + URL state pattern.
 ---
 
 # FE list page — the four pillars

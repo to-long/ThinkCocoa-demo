@@ -1,7 +1,7 @@
 /**
  * Season → date-range mapping.
  *
- * ImpactCocoa follows the West African cocoa year, which starts 1 Oct
+ * ThinkCocoa follows the West African cocoa year, which starts 1 Oct
  * and ends 30 Sep of the following calendar year. The FE Reports page
  * surfaces seasons as `YYYY/YY` slugs (e.g., `2024/25` for the season
  * running 2024-10-01 → 2025-09-30).

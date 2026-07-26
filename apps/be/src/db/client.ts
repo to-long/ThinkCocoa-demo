@@ -1,5 +1,5 @@
 /**
- * Drizzle client for the ImpactCocoa Postgres database.
+ * Drizzle client for the ThinkCocoa Postgres database.
  *
  * Usage:
  *   import { db } from '@/db/client';

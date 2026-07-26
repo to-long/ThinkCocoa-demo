@@ -1,4 +1,4 @@
-# ImpactCocoa — Claude playbook
+# ThinkCocoa — Claude playbook
 
 Repo-specific conventions Claude needs to remember across sessions.
 
@@ -19,7 +19,7 @@ cd apps/be && bun run db:test-migrations
 
 What it does (`apps/be/scripts/test-migrations.sh`):
 
-1. Spins up a throwaway Postgres container (`impactcocoa-demo-migration-test`) on **port 5540** so it can't disturb the dev DB on 5539.
+1. Spins up a throwaway Postgres container (`thinkcocoa-demo-migration-test`) on **port 5540** so it can't disturb the dev DB on 5539.
 2. Applies every migration from scratch on the empty DB. Catches:
    - drizzle-generated SQL that doesn't actually apply (typos, FK
      ordering, wrong dialect bits)
@@ -47,7 +47,7 @@ Never commit a migration without seeing `✅ migrations apply cleanly + are idem
 
 What it does (`apps/be/scripts/run-tests.sh`):
 
-1. Spins up a throwaway Postgres container (`impactcocoa-demo-test-db`) on
+1. Spins up a throwaway Postgres container (`thinkcocoa-demo-test-db`) on
    **port 5541** — separate from dev (5539) and migration-test (5540).
 2. Migrates + seeds the test DB (default seeds + `system.admin@…`,
    skips farmers/audit-logs to keep startup fast).

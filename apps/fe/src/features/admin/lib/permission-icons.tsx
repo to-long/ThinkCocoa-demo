@@ -1,5 +1,5 @@
 /**
- * Icon mapping for ImpactCocoa permissions.
+ * Icon mapping for ThinkCocoa permissions.
  *
  * Keys mirror the 13 resources in `PERMISSION_CATALOG` (see
  * `packages/shared/src/constants/permissions.ts`). If the catalog grows

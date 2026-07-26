@@ -1,6 +1,6 @@
 ---
 name: fe-form
-description: ImpactCocoa FE convention for any create/update/edit form in a dialog or page. Use when adding a new form, refactoring an existing form, or reviewing form code. MANDATORY: react-hook-form + zod — no `useState` for form fields, no manual validation. Schemas reused from `@cocoaimpact/shared/validators` whenever possible.
+description: ThinkCocoa FE convention for any create/update/edit form in a dialog or page. Use when adding a new form, refactoring an existing form, or reviewing form code. MANDATORY: react-hook-form + zod — no `useState` for form fields, no manual validation. Schemas reused from `@cocoaimpact/shared/validators` whenever possible.
 ---
 
 # FE form — react-hook-form + zod, never `useState`

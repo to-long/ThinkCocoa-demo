@@ -1,4 +1,4 @@
-# CocoaImpact — ImpactCocoa Data Management Platform
+# CocoaImpact — ThinkCocoa Data Management Platform
 
 Full-stack cocoa supply-chain management platform: **React + Hono + PostgreSQL (PostGIS) + better-auth**, ingesting field data from **Kobo Toolbox** and covering the chain from farmer registration through inspections, purchases and evacuation to EUDR due-diligence.
 

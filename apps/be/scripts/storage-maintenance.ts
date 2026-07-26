@@ -11,7 +11,7 @@
  *   - `autorestart: false` so PM2 doesn't restart it between runs
  *
  * Manual run for ops debug:
- *   cd /opt/impactcocoa/apps/be && bun scripts/storage-maintenance.ts
+ *   cd /opt/thinkcocoa/apps/be && bun scripts/storage-maintenance.ts
  *
  * Reads env (via `tieredStorageFromEnv()`):
  *   STORAGE_ROOT, STORAGE_S3_PREFIX, STORAGE_HOT_DAYS,
