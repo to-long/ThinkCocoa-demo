@@ -296,7 +296,7 @@ if (process.env.NODE_ENV === 'development') {
     '/reference',
     apiReference({
       url: '/doc',
-      title: 'CocoaImpact API Reference',
+      title: 'ThinkCocoa API Reference',
       theme: 'kepler',
     }),
   );

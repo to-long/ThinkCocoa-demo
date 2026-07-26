@@ -29,7 +29,7 @@ const welcomeRoute = createRoute({
 
 app.openapi(welcomeRoute, (c) =>
   c.json({
-    message: 'Welcome to the CocoaImpact API',
+    message: 'Welcome to the ThinkCocoa API',
     timestamp: new Date().toISOString(),
     version: '1.0.0',
   }),

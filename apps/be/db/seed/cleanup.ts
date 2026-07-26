@@ -23,7 +23,7 @@ import { permissions, rolePermissions, roles } from '../../src/db/schema/index';
 
 /** Legacy `cooperatives.code` values to purge. `user_cooperative_assignments`
  *  cascade-deletes; `users.default_cooperative_id` falls back to NULL. */
-const LEGACY_COOPERATIVE_CODES = ['COCOAIMPACT-HQ'] as const;
+const LEGACY_COOPERATIVE_CODES = ['THINKCOCOA-HQ'] as const;
 
 /** Earlier role naming iteration — drop so the canonical set is the
  *  only source of truth in `iam.roles`. */

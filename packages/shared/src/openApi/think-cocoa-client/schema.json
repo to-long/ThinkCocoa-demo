@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "CocoaImpact API",
+    "title": "ThinkCocoa API",
     "version": "1.0.0",
     "description": "ThinkCocoa Data Management Platform API"
   },
