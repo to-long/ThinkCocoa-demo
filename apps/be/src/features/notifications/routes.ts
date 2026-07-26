@@ -25,7 +25,7 @@ import { streamSSE } from 'hono/streaming';
 import type pg from 'pg';
 import { db, directPool } from '../../db/client';
 import { userCooperativeAssignments } from '../../db/schema/iam';
-import { notifyPermChanged } from '../../lib/perm-signal';
+import { notifySubscriptionChanged } from '../../lib/perm-signal';
 import { type AuthedContext, requireAuth } from '../../middleware/require-auth';
 import {
   type AuditEventPayload,
@@ -288,9 +288,11 @@ notificationsRoutes.openapi(
     const requested = new Set(body.enabled);
     const disabled = Array.from(granted).filter((r) => !requested.has(r));
     await setDisabledResources(user.id, disabled);
-    // Drop any open SSE connection so its cached resource set
-    // rebuilds from the new prefs on reconnect.
-    await notifyPermChanged(user.id);
+    // Drop any open SSE connection so its cached resource set rebuilds
+    // from the new prefs on reconnect. Deliberately NOT `notifyPermChanged`
+    // — that channel also blacklists the user's access token, and a
+    // preference toggle changes nothing the token asserts.
+    await notifySubscriptionChanged(user.id);
     return c.json(
       {
         granted: Array.from(granted).sort(),
@@ -357,6 +359,7 @@ notificationsRoutes.get('/api/notifications/stream', async (c) => {
       Promise.allSettled([
         listener.query('UNLISTEN audit_events'),
         listener.query('UNLISTEN perm_changed'),
+        listener.query('UNLISTEN subscription_changed'),
       ]).finally(() => {
         listener.release();
         resolveDone();
@@ -381,7 +384,10 @@ notificationsRoutes.get('/api/notifications/stream', async (c) => {
       // client's EventSource auto-reconnects with a fresh perm set
       // (the old `resources` Set captured at connect time is now
       // stale).
-      if (msg.channel === 'perm_changed') {
+      // Both channels mean "your cached scope is stale, reconnect":
+      // `perm_changed` for real permission edits (which also revoke the
+      // access token), `subscription_changed` for preference toggles.
+      if (msg.channel === 'perm_changed' || msg.channel === 'subscription_changed') {
         if (msg.payload === user.id) cleanup();
         return;
       }
@@ -416,6 +422,8 @@ notificationsRoutes.get('/api/notifications/stream', async (c) => {
     // Second channel — fires from `setUserRoles` /
     // `setRolePermissions` / cooperative-assignment edits.
     await listener.query('LISTEN perm_changed');
+    // Third channel — notification-preference toggles (token stays valid).
+    await listener.query('LISTEN subscription_changed');
 
     // Race condition: if abort fired before we wired the listener
     // (instant client disconnect), short-circuit immediately.

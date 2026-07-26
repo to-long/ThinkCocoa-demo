@@ -33,6 +33,7 @@ import { serve } from '@hono/node-server';
 import { app } from './app';
 import { pool } from './db/client';
 import { recoverOrphanedRuns } from './features/reports';
+import { startTokenRevocationListener } from './lib/token-revocation';
 
 // Port + bind. Production: PM2's `ecosystem.config.cjs` picks a free
 // slot (8001 or 8002) from the blue-green pool and injects it as
@@ -47,6 +48,13 @@ const PORT = Number(process.env.PORT) || 8100;
 const HOST = process.env.HOST ?? '0.0.0.0';
 
 async function start() {
+  // Access tokens are verified from their claims, so a permission or
+  // status change has to invalidate tokens already in the wild. This
+  // LISTENs on `perm_changed` (fired by every perm mutation) and
+  // blacklists the affected user until their next refresh. Started before
+  // serve() so no request is ever handled without the blacklist active.
+  await startTokenRevocationListener();
+
   // Ping the Postgres pool so the app fails fast on bad DATABASE_URL.
   // Done BEFORE serve() binds so the health check in the deploy
   // workflow doesn't see a 200 from an instance that can't actually

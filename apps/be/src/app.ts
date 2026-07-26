@@ -10,6 +10,7 @@ import { OpenAPIHono } from '@hono/zod-openapi';
 import { apiReference } from '@scalar/hono-api-reference';
 import * as Sentry from '@sentry/bun';
 import { bodyLimit } from 'hono/body-limit';
+import { getCookie } from 'hono/cookie';
 import { cors } from 'hono/cors';
 import { secureHeaders } from 'hono/secure-headers';
 import { auth } from './auth';
@@ -33,6 +34,15 @@ import { shadeTreesRoutes } from './features/shade-trees/index';
 import { trainingRoutes } from './features/training/index';
 import { usersRoutes } from './features/users/index';
 import { vslaRoutes } from './features/vsla/index';
+import {
+  ACCESS_COOKIE,
+  accessCookie,
+  accessTokenTtlSeconds,
+  clearedAccessCookie,
+  mintAccessToken,
+  verifyAccessToken,
+} from './lib/access-token';
+import { notifyPermChanged } from './lib/perm-signal';
 import { accessLog } from './middleware/access-log';
 import { rateLimit } from './middleware/rate-limit';
 import { validationHook } from './middleware/validation-hook';
@@ -162,11 +172,77 @@ app.use(
 );
 app.use('/api/auth/magic-link', rateLimit({ keyPrefix: 'auth-magic', limit: 5, windowMs: 60_000 }));
 
+// ── Token refresh ────────────────────────────────────────────────────
+// Registered BEFORE the better-auth catch-all below, or the wildcard
+// would swallow it. Exchanges the session cookie (the refresh credential)
+// for a fresh access token: the session is checked against the DB, so a
+// signed-out, deleted or deactivated user cannot renew, and the new token
+// carries the CURRENT permission set — which is how a revoked token turns
+// back into a working one after a role change.
+app.post('/api/auth/refresh', async (c) => {
+  const token = await mintAccessToken(c.req.raw.headers);
+  if (!token) {
+    // Refresh credential is gone/invalid → the client must sign in again.
+    // Clear the stale access cookie so it stops being sent.
+    c.header('Set-Cookie', clearedAccessCookie(), { append: true });
+    return c.json({ error: 'Unauthorized', code: 'refresh_failed' }, 401);
+  }
+  c.header('Set-Cookie', accessCookie(token), { append: true });
+  return c.json({ ok: true, expiresIn: accessTokenTtlSeconds() }, 200);
+});
+
 // Better Auth routes — use Hono's wildcard matcher (`*`) not `**`; the
 // double-star is a different framework convention and silently produces
 // no matches in Hono's regex router after the tsconfig `module: ESNext`
 // switch.
-app.on(['POST', 'GET'], '/api/auth/*', (c) => auth.handler(c.req.raw));
+//
+// Wrapped rather than passed straight through so the access token rides
+// along with better-auth's own cookies:
+//   sign-in / magic-link callback → mint + set the access cookie, so the
+//     very first authenticated request already has one
+//   sign-out                      → expire it, otherwise a signed-out tab
+//     keeps a valid (still-signature-checking) token until it lapses
+app.on(['POST', 'GET'], '/api/auth/*', async (c) => {
+  const res = await auth.handler(c.req.raw);
+  const path = new URL(c.req.url).pathname;
+
+  if (path.startsWith('/api/auth/sign-out')) {
+    // Clearing the cookie only stops THIS browser from sending the token —
+    // a copy lifted from devtools would still verify until it expires. So
+    // blacklist the user too, which also drops their SSE connections.
+    // Verified (not just decoded) so a forged cookie can't be used to
+    // blacklist somebody else.
+    const token = getCookie(c, ACCESS_COOKIE);
+    if (token) {
+      const verified = await verifyAccessToken(token);
+      if (verified.ok) await notifyPermChanged(verified.claims.sub);
+    }
+    const out = new Response(res.body, res);
+    out.headers.append('Set-Cookie', clearedAccessCookie());
+    return out;
+  }
+
+  // Only mint when better-auth actually issued a session on this response.
+  // `getSetCookie()` is the only reliable signal — the same handler serves
+  // ~20 endpoints and most of them must not touch the access cookie.
+  const issuedSession = res.headers
+    .getSetCookie()
+    .some((ck) => ck.startsWith('better-auth.session_token=') && !/session_token=;/.test(ck));
+  if (!res.ok || !issuedSession) return res;
+
+  // Mint against the session that was just issued: it exists in the
+  // RESPONSE, not the request, so hand its cookie pair to the mint call.
+  const sessionCookie = res.headers
+    .getSetCookie()
+    .map((ck) => ck.split(';')[0])
+    .join('; ');
+  const token = await mintAccessToken(new Headers({ cookie: sessionCookie }));
+  if (!token) return res;
+
+  const out = new Response(res.body, res);
+  out.headers.append('Set-Cookie', accessCookie(token));
+  return out;
+});
 
 // Feature routes
 app.route('/', generalRoutes);

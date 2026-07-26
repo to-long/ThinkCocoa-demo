@@ -811,6 +811,11 @@ export async function updateUser(
     },
   });
 
+  // Claims in any access token this user already holds still say the
+  // account is live with its old scope — invalidate them so the next
+  // request is forced through a refresh (which re-reads the DB).
+  await notifyPermChanged(id);
+
   return { ok: true, payload: toUserResponse(updated) };
 }
 
@@ -861,6 +866,11 @@ export async function softDeleteUser(id: string, actor: Actor): Promise<SoftDele
     },
   });
 
+  // Claims in any access token this user already holds still say the
+  // account is live with its old scope — invalidate them so the next
+  // request is forced through a refresh (which re-reads the DB).
+  await notifyPermChanged(id);
+
   return { ok: true };
 }
 
@@ -906,6 +916,11 @@ export async function restoreUser(id: string, actor: Actor): Promise<RestoreUser
       sessionId: actor.sessionId,
     },
   });
+
+  // Claims in any access token this user already holds still say the
+  // account is live with its old scope — invalidate them so the next
+  // request is forced through a refresh (which re-reads the DB).
+  await notifyPermChanged(id);
 
   return { ok: true, payload: profile };
 }

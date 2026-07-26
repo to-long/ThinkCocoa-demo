@@ -1,11 +1,12 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { APIError } from 'better-auth/api';
-import { magicLink } from 'better-auth/plugins';
+import { jwt, magicLink } from 'better-auth/plugins';
 import { eq } from 'drizzle-orm';
 import { db } from './db/client';
-import { accounts, sessions, users, verifications } from './db/schema/iam';
+import { accounts, jwks, sessions, users, verifications } from './db/schema/iam';
 import { renderMagicLinkEmail, renderResetPasswordEmail, sendEmail } from './lib/email';
+import { resolvePermissionCodes } from './lib/permission-set';
 
 /**
  * better-auth configured against our domain `iam.*` schema.
@@ -32,6 +33,11 @@ export const auth = betterAuth({
       sessions,
       accounts,
       verifications,
+      // `usePlural: true` pluralises every model name, and the jwt
+      // plugin's model is already called `jwks` — so the adapter looks up
+      // `jwkss`. Register the table under the key better-auth actually
+      // asks for; the exported table stays `iam.jwks`.
+      jwkss: jwks,
     },
   }),
 
@@ -93,6 +99,52 @@ export const auth = betterAuth({
   },
 
   plugins: [
+    // ── Access tokens ────────────────────────────────────────────────
+    // The session cookie is the REFRESH credential (DB-backed, so it can
+    // be revoked); this plugin mints the short-lived ACCESS token that
+    // `requireAuth` verifies on every request. Signing keys live in
+    // `iam.jwks` (migration 0008) so a deploy doesn't invalidate every
+    // token in flight.
+    //
+    // `definePayload` is what makes stateless verification possible: the
+    // permission set travels in the token, so a request costs a signature
+    // check instead of a 4-table join. The cost is staleness — a
+    // permission or status change only lands on the next mint — which is
+    // what `lib/token-revocation.ts` closes by blacklisting the user
+    // until their next refresh.
+    jwt({
+      jwt: {
+        // Short enough that a revoked/downgraded user can only keep their
+        // old scope for a few minutes, long enough that the refresh round
+        // trip is rare. Env-tunable for demos that want to SHOW a refresh.
+        expirationTime: process.env.ACCESS_TOKEN_TTL ?? '15m',
+        definePayload: async ({ user }) => {
+          const [row] = await db
+            .select({
+              status: users.status,
+              deletedAt: users.deletedAt,
+              isAllCooperative: users.isAllCooperative,
+              name: users.name,
+            })
+            .from(users)
+            .where(eq(users.id, user.id))
+            .limit(1);
+          const codes = await resolvePermissionCodes(user.id);
+          return {
+            // `sub` is set by the plugin from `getSubject`; everything here
+            // is a claim `requireAuth` reads instead of hitting the DB, so
+            // it must cover every field a handler pulls off `c.get('user')`
+            // — including `isAllCooperative`, which drives coop scoping.
+            email: user.email,
+            name: row?.name ?? user.name ?? null,
+            status: row?.status ?? 'active',
+            deleted: row?.deletedAt != null,
+            isAllCooperative: row?.isAllCooperative ?? false,
+            perms: codes,
+          };
+        },
+      },
+    }),
     magicLink({
       // Existing users only. Without this, better-auth's magic-link
       // plugin auto-creates a user row when the email isn't found —

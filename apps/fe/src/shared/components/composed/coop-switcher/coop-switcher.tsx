@@ -136,7 +136,11 @@ export function CoopSwitcher() {
     return (
       <div
         className="flex h-8 w-[160px] items-center gap-1.5 rounded-md border border-border bg-accent px-2.5 text-foreground"
-        title={isDetailPage ? 'Go back to the list to switch cooperative' : undefined}
+        // One title on the wrapper, not one per element: a title on the
+        // inner span would win the hover and swallow the "why is this
+        // locked" hint. The name is included either way because the label
+        // truncates inside the fixed 160px box.
+        title={isDetailPage ? `${label} — go back to the list to switch cooperative` : label}
       >
         <Building2 className="size-3.5 shrink-0" style={{ color: COOP_TINT }} />
         <span className="truncate text-[13px] font-medium leading-none">{label}</span>
@@ -151,7 +155,10 @@ export function CoopSwitcher() {
         aria-label={`Cooperative: ${label}`}
       >
         <Building2 className="size-3.5 shrink-0" style={{ color: COOP_TINT }} />
-        <span className="flex-1 truncate text-left text-[13px] font-medium leading-none">
+        <span
+          className="flex-1 truncate text-left text-[13px] font-medium leading-none"
+          title={label}
+        >
           {label}
         </span>
         <ChevronDown className="size-3 shrink-0 text-muted-foreground" />
@@ -171,6 +178,7 @@ export function CoopSwitcher() {
               type="button"
               className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm font-light text-foreground transition-colors hover:bg-accent"
               onClick={() => switchCoop(o)}
+              title={o.cooperativeName}
             >
               <Building2 className="size-3.5 shrink-0" style={{ color: COOP_TINT }} />
               <span className="truncate">{o.cooperativeName}</span>

@@ -155,18 +155,73 @@ export function toApiError(error: unknown, response?: Response): ApiError {
  * Always sends `credentials: 'include'` so the better-auth cookie + the
  * `active-coop-id` cookie travel with the request.
  */
+// ── Access-token refresh ─────────────────────────────────────────────
+// Auth is an access token (short-lived, signed, httpOnly cookie) plus the
+// session cookie acting as the refresh credential. A 401 carrying one of
+// these codes means "the access token is stale, not the login" — so try a
+// single refresh and replay the request instead of bouncing to /login.
+//
+// One shared in-flight promise: a dashboard fires a dozen requests at once
+// and they all fail together, so they must all await the SAME refresh
+// rather than each minting a token and racing to overwrite the cookie.
+const REFRESHABLE_CODES = new Set(['token_expired', 'token_revoked', 'no_access_token']);
+let refreshInFlight: Promise<boolean> | null = null;
+
+function isRefreshable(body: unknown): boolean {
+  const code = (body as { code?: unknown } | null)?.code;
+  return typeof code === 'string' && REFRESHABLE_CODES.has(code);
+}
+
+async function refreshAccessToken(): Promise<boolean> {
+  refreshInFlight ??= (async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/refresh`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      return res.ok;
+    } catch {
+      return false;
+    } finally {
+      // Cleared in `finally` so the NEXT expiry gets a fresh attempt
+      // rather than reusing this resolved promise forever.
+      refreshInFlight = null;
+    }
+  })();
+  return refreshInFlight;
+}
+
 export async function apiFetch<TData = unknown>(
   path: string,
   init: RequestInit = {},
 ): Promise<TData> {
-  const res = await fetch(`${API_BASE}${path}`, {
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init.headers ?? {}),
-    },
-    ...init,
-  });
+  const send = () =>
+    fetch(`${API_BASE}${path}`, {
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(init.headers ?? {}),
+      },
+      ...init,
+    });
+
+  let res = await send();
+
+  if (res.status === 401) {
+    let body: unknown;
+    try {
+      body = await res.clone().json();
+    } catch {
+      // non-JSON 401 — not refreshable, fall through to the throw below
+    }
+    // Retried exactly once: if the replay also 401s, `toApiError` runs the
+    // shared sign-out path, which is the correct end state for a dead
+    // refresh credential.
+    if (isRefreshable(body) && (await refreshAccessToken())) {
+      res = await send();
+    }
+  }
+
   if (!res.ok) {
     let body: unknown;
     try {

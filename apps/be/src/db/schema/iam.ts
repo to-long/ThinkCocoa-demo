@@ -296,3 +296,22 @@ export const userNotificationReads = iamSchema.table('user_notification_reads', 
   lastReadAuditId: bigint('last_read_audit_id', { mode: 'number' }).notNull().default(0),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
+
+/**
+ * JWKS keypairs for the better-auth `jwt` plugin — one row per signing
+ * key, private half encrypted at rest by better-auth with
+ * `BETTER_AUTH_SECRET`. The plugin creates the first key lazily on the
+ * first token mint and serves the public half at `/api/auth/jwks`, which
+ * is what verifies access tokens.
+ *
+ * Rows are NOT demo data: losing them invalidates every issued access
+ * token (users just refresh), so the table sits in `iam` alongside
+ * sessions and is never truncated by the demo reset.
+ */
+export const jwks = iamSchema.table('jwks', {
+  id: uuid().primaryKey().defaultRandom(),
+  publicKey: text('public_key').notNull(),
+  privateKey: text('private_key').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  expiresAt: timestamp('expires_at', { withTimezone: true }),
+});
