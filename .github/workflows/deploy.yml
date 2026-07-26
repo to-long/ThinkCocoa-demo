@@ -497,7 +497,7 @@ jobs:
           # Idempotent seed of iam.users rows for the staff roster
           # defined in `apps/be/db/seed/real-users.ts`. Existing users
           # are left alone (marked `=` in the log); only new entries
-          # get created (`+`) with password `ImpactCocoa2026!`.
+          # get created (`+`) with password `<demo password — see apps/be/db/seed/test-users.ts>`.
           #
           # Wiring here — rather than a manual SSH-and-run step after
           # every deploy — means adding a name to REAL_USERS is a
