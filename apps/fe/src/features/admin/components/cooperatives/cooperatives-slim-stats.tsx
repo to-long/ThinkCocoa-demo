@@ -1,9 +1,14 @@
 /**
- * Cooperatives KPI strip — 4-card layout matching the shared standard
- * (Farmer Training). Counts derived client-side from the loaded list.
+ * Cooperatives KPI strip — 3 cards, counts derived client-side from the
+ * loaded list.
+ *
+ * No "Inactive" card: cooperatives are always created active (the dialog has
+ * no control for it), so the tile sat permanently at 0. Deactivating one is
+ * still possible from its detail page, and that shows in the row's Status
+ * column where it's actionable.
  */
 
-import { Building2, MapPin, PowerOff, Trash2 } from 'lucide-react';
+import { Building2, MapPin, Trash2 } from 'lucide-react';
 import type { ComponentType } from 'react';
 import { useIntl } from 'react-intl';
 import { StatusTag, type StatusTone } from '@/components/ui/status-tag';
@@ -30,7 +35,6 @@ export function CooperativesSlimStats({ cooperatives, filteredCount }: Props) {
     cooperatives.map((c) => c.districtName).filter((d): d is string => !!d),
   );
   const active = cooperatives.filter((c) => !c.deletedAt && c.isActive).length;
-  const inactive = cooperatives.filter((c) => !c.deletedAt && !c.isActive).length;
   const deleted = cooperatives.filter((c) => c.deletedAt).length;
 
   const cards: StatCard[] = [
@@ -49,12 +53,6 @@ export function CooperativesSlimStats({ cooperatives, filteredCount }: Props) {
       tone: 'success',
     },
     {
-      label: t('cooperatives.status.inactive'),
-      value: num(inactive),
-      Icon: PowerOff,
-      tone: 'danger',
-    },
-    {
       label: t('cooperatives.status.deleted'),
       value: num(deleted),
       Icon: Trash2,
@@ -64,7 +62,7 @@ export function CooperativesSlimStats({ cooperatives, filteredCount }: Props) {
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 lg:grid-cols-3">
         {cards.map((c) => (
           <div
             key={c.label}

@@ -19,7 +19,7 @@ const messages = { ...sharedMessages, ...farmersMessages } as Record<string, str
 // Stable references — avoid the "Maximum update depth exceeded" loop
 // that happens when SWR-style mocks return new objects every render.
 var MOCK_COOPS = [
-  { id: '00000000-0000-0000-0000-000000000001', name: 'Sankofa Cocoa Cooperative', code: 'SANKOFA' },
+  { id: '00000000-0000-0000-0000-000000000001', name: 'Sankofa Cocoa', code: 'SANKOFA' },
 ];
 
 jest.mock('@/shared/api', () => ({

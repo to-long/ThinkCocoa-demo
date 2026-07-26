@@ -148,6 +148,14 @@ async function ensureUser(tu: TestUser, coopId: string): Promise<{ id: string; c
     // Without this backfill, email/password sign-in stays 401 forever
     // for that account even though the user "exists". Idempotent.
     await ensureCredential(existing.id);
+    // Per-coop display names are built from the cooperative name
+    // (`${c.name} Field Officer`), so renaming a cooperative leaves them
+    // stale — and because this branch used to return without touching the
+    // row, not even a re-seed or a demo reset could repair them. Refresh
+    // when it drifted; no-op otherwise.
+    if (existing.name !== tu.name) {
+      await db.update(users).set({ name: tu.name }).where(eq(users.id, existing.id));
+    }
     return { id: existing.id, created: false };
   }
 

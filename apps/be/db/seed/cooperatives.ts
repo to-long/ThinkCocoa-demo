@@ -31,7 +31,7 @@ interface SeedCooperative {
 export const DEMO_COOPERATIVES: SeedCooperative[] = [
   {
     code: 'SANKOFA',
-    name: 'Sankofa Cocoa Cooperative',
+    name: 'Sankofa Cocoa',
     description:
       'Fictional smallholder cocoa cooperative in the demo Western Zone. Operates approx. 750 active producers.',
     districtCode: 'WZ-01',
@@ -42,7 +42,7 @@ export const DEMO_COOPERATIVES: SeedCooperative[] = [
   },
   {
     code: 'NKABOM',
-    name: 'Nkabom Farmers Cooperative',
+    name: 'Nkabom Farmers',
     description:
       'Fictional cocoa farmer cooperative in the demo Central Zone. ~929 producers; used to showcase Rainforest Alliance certified production.',
     districtCode: 'CZ-02',
@@ -64,7 +64,7 @@ export const DEMO_COOPERATIVES: SeedCooperative[] = [
   },
   {
     code: 'ABOMA',
-    name: 'Aboma Cocoa Cooperative',
+    name: 'Aboma Cocoa',
     description:
       'Fictional cocoa cooperative in the demo Southern Zone. ~1,039 producers; used to demo mining-affected smallholder coordination.',
     districtCode: 'SZ-04',
@@ -75,7 +75,7 @@ export const DEMO_COOPERATIVES: SeedCooperative[] = [
   },
   {
     code: 'AYEKOO',
-    name: 'Ayekoo Cocoa Cooperative',
+    name: 'Ayekoo Cocoa',
     description:
       'Fictional cocoa cooperative in the demo Northern Zone. Newest of the demo cooperatives; showcases onboarding a fresh coop.',
     districtCode: 'NZ-05',
@@ -86,7 +86,7 @@ export const DEMO_COOPERATIVES: SeedCooperative[] = [
   },
   {
     code: 'NHYIRA',
-    name: 'Nhyira Farmers Cooperative',
+    name: 'Nhyira Farmers',
     description:
       'Fictional cocoa farmer cooperative in the demo Volta Zone. Mid-sized coop used to demo cross-zone reporting.',
     districtCode: 'VZ-06',
