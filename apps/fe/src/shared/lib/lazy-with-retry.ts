@@ -14,14 +14,23 @@
  * Plain `lazy()` handles this badly: it records a rejected payload
  * permanently, so the error boundary's "Retry" re-renders the same
  * component and hits the same rejection — the route stays dead until a
- * manual refresh. A reload IS the fix, so do it automatically:
+ * manual refresh. Recovery is therefore staged, cheapest first:
  *
- *   1. Reload once. A `sessionStorage` stamp + cooldown keeps a chunk that
- *      is genuinely gone (broken build) from putting the tab in a reload
- *      loop — the second failure falls through to the error boundary.
- *   2. While the reload is in flight, return a promise that never settles
- *      so Suspense keeps showing its fallback. Otherwise the error UI
- *      flashes for the moment before the document is replaced.
+ *   1. RE-IMPORT in place. A dropped request, a connection reset on
+ *      tab-resume, a chunk still being written — all recover by simply
+ *      asking again, and the user sees nothing but the Suspense fallback.
+ *      This is the case worth optimising for: no reload, no lost form state,
+ *      no scroll position thrown away.
+ *   2. Only if the second attempt fails too is the artefact genuinely gone
+ *      (redeploy renamed it, or its module id no longer exists in this
+ *      compilation). Nothing in-page can fix that, so reload once — with a
+ *      `sessionStorage` stamp + cooldown so a broken build can't loop.
+ *   3. While that reload is in flight, return a promise that never settles
+ *      so Suspense keeps its fallback instead of flashing the error UI.
+ *
+ * In dev the step-2 case is designed out rather than handled: lazy
+ * compilation is off (see `rsbuild.config.ts`), so module ids don't go
+ * missing under a running tab in the first place.
  */
 
 import { type ComponentType, type LazyExoticComponent, lazy } from 'react';
@@ -77,12 +86,26 @@ type AnyComp = ComponentType<any>;
 export function lazyWithRetry<T extends AnyComp>(
   factory: () => Promise<{ default: T }>,
 ): LazyExoticComponent<T> {
-  return lazy(() =>
-    factory().catch((err: unknown) => {
-      if (!reloadOnceForChunkError(err)) throw err;
-      // Reload is underway — never resolve, so Suspense holds its
-      // fallback instead of flashing the error boundary.
-      return new Promise<{ default: T }>(() => {});
-    }),
-  );
+  return lazy(async () => {
+    try {
+      return await factory();
+    } catch (err) {
+      if (!isChunkLoadError(err)) throw err;
+
+      // Step 1 — ask again. Short pause so a chunk that is mid-write, or a
+      // connection that just dropped, has a moment to settle; long enough to
+      // matter, short enough that the user reads it as loading.
+      await new Promise((r) => setTimeout(r, 300));
+      try {
+        return await factory();
+      } catch (retryErr) {
+        if (!isChunkLoadError(retryErr)) throw retryErr;
+        // Step 2 — the artefact really is gone. Reload, or surface it if we
+        // already tried that recently.
+        if (!reloadOnceForChunkError(retryErr)) throw retryErr;
+        // Step 3 — hold the Suspense fallback while the document is replaced.
+        return new Promise<{ default: T }>(() => {});
+      }
+    }
+  });
 }

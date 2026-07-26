@@ -108,4 +108,19 @@ export default defineConfig({
   output: {
     manifest: true,
   },
+  dev: {
+    // Lazy compilation OFF. It is the direct cause of the
+    // `factory is undefined` class of runtime error: a route's module is
+    // only compiled when first imported, and a rebuild then invalidates the
+    // module ids an already-loaded tab is holding — the chunk downloads but
+    // its factory is no longer registered, so the import throws while
+    // evaluating and no in-page retry can fix it (the id is simply gone from
+    // this compilation).
+    //
+    // Compiling every route up front costs a few seconds on the first dev
+    // build and removes the failure mode outright, which is the trade this
+    // codebase wants: the alternative was a page reload on every rebuild
+    // that happened to touch a lazily-built route.
+    lazyCompilation: false,
+  },
 });
