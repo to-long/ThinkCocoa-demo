@@ -356,35 +356,3 @@ export async function importEudrCsv(
   await revalidateParcels();
   return (await res.json()) as EudrCsvImportResponse;
 }
-
-// ── Full-screen map ──────────────────────────────────────────────
-export interface ParcelMapResponse {
-  /** GeoJSON FeatureCollection — one feature per mapped parcel. */
-  parcels: GeoJsonFeatureCollection | null;
-  /** GeoJSON FeatureCollection — deforestation / protected-area zones. */
-  riskZones: GeoJsonFeatureCollection | null;
-}
-
-export interface GeoJsonFeatureCollection {
-  type: 'FeatureCollection';
-  features: {
-    type: 'Feature';
-    properties: Record<string, unknown>;
-    geometry: unknown;
-  }[];
-}
-
-export const PARCEL_MAP_KEY = ['/api/parcels/map'] as const;
-
-/**
- * Every mapped plot in one payload. `revalidateOnFocus: false` — this is
- * ~1k polygons and nothing about it changes while the user pans around;
- * refetching on every tab switch would just stall the map.
- */
-export function useParcelMap() {
-  return useSWR<ParcelMapResponse>(
-    PARCEL_MAP_KEY,
-    () => apiFetch<ParcelMapResponse>('/api/parcels/map'),
-    { revalidateOnFocus: false, keepPreviousData: true },
-  );
-}

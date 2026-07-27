@@ -132,16 +132,5 @@
   "farms.restoreDialog.description": "Restore \"{name}\"? The farm will reappear in lists and become editable again.",
   "farms.restoreDialog.cancel": "Cancel",
   "farms.restoreDialog.confirm": "Restore",
-  "farms.table.parcel": "Lô đất",
-  "farmMap.title": "Bản đồ vườn",
-  "farmMap.subtitle": "Toàn bộ thửa đã có toạ độ của hợp tác xã này, tô màu theo trạng thái EUDR, chồng trên các vùng mất rừng và khu bảo tồn.",
-  "farmMap.legend.total": "{count} thửa có bản đồ",
-  "farmMap.legend.compliant": "{count} đạt",
-  "farmMap.legend.needsReview": "{count} cần rà soát",
-  "farmMap.legend.nonCompliant": "{count} không đạt",
-  "farmMap.legend.flagged": "{count} bị đánh dấu gần rừng",
-  "farmMap.layer.riskZones": "Vùng mất rừng / khu bảo tồn",
-  "farmMap.popup.deforestation": "Vùng mất rừng",
-  "farmMap.popup.protectedArea": "Khu bảo tồn",
-  "farmMap.popup.flagged": "Đánh dấu — rủi ro mất rừng cao"
+  "farms.table.parcel": "Lô đất"
 }

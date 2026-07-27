@@ -104,11 +104,3 @@ export const parcelStatsSchema = z
     }),
   })
   .openapi('ParcelStats');
-
-/** Full-screen map payload — two GeoJSON FeatureCollections. `z.any()`
- *  for the same reason the detail schema uses it: GeoJSON is a recursive
- *  shape that zod-openapi would blow up on, and it is read-only output. */
-export const parcelMapSchema = z.object({
-  parcels: z.any().nullable(),
-  riskZones: z.any().nullable(),
-});
