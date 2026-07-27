@@ -41,7 +41,7 @@ import { eq } from 'drizzle-orm';
 import type { Context } from 'hono';
 import { db } from '../db/client';
 import { auditAttachment, auditLogs } from '../db/schema/audit';
-import { tiered, toDateKey } from './tiered-storage';
+import { readAuditChanges, toDateKey, writeAuditChanges } from './audit-changes';
 
 /** SHA-256 hex digest — used as the per-event content hash that
  *  goes into the `audit_attachment.sha256` column and as a key
@@ -206,7 +206,7 @@ export async function writeAudit(params: AuditWriteParams): Promise<number | nul
       const relPath = `audit/${inserted.id}/${sha.slice(0, 16)}`;
       const key = `${day}/${relPath}.json`;
       try {
-        await tiered().write(day, relPath, diffs);
+        await writeAuditChanges(day, relPath, diffs);
         const [att] = await db
           .insert(auditAttachment)
           .values({
@@ -215,7 +215,7 @@ export async function writeAudit(params: AuditWriteParams): Promise<number | nul
             mimeType: 'application/json',
             sizeBytes: Buffer.byteLength(json, 'utf-8'),
             sha256: sha,
-            storageBackend: 'tiered',
+            storageBackend: 'local',
             storageKey: key,
           })
           .returning({ id: auditAttachment.id });
@@ -306,5 +306,5 @@ export async function readAuditDiff(storageKey: string): Promise<AuditDiffEntry[
   const m = storageKey.match(/^(\d{4}-\d{2}-\d{2})\/(.+?)(?:\.json)?$/);
   if (!m) return null;
   const [, date, relPath] = m;
-  return (await tiered().read<AuditDiffEntry[]>(date!, relPath!)) ?? null;
+  return (await readAuditChanges<AuditDiffEntry[]>(date!, relPath!)) ?? null;
 }

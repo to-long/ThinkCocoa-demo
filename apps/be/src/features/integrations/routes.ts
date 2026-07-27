@@ -114,6 +114,7 @@ integrationsRoutes.openapi(
 // ability to wipe the database.
 const resetSummarySchema = z.object({
   tablesTruncated: z.number().int(),
+  storageEntriesRemoved: z.number().int(),
   undeleted: z.object({
     users: z.number().int(),
     cooperatives: z.number().int(),

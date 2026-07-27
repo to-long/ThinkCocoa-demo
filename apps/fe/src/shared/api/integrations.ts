@@ -88,6 +88,8 @@ export async function updateSyncSettings(
 
 export interface ResetDemoDataSummary {
   tablesTruncated: number;
+  /** Entries removed from the storage root (audit diffs, report files). */
+  storageEntriesRemoved: number;
   /** Soft-deleted users / cooperatives brought back by the reset. */
   undeleted: { users: number; cooperatives: number };
   durationMs: number;

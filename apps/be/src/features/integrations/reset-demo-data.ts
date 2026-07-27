@@ -46,6 +46,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { sql } from 'drizzle-orm';
 import type { Db } from '../../db/client';
+import { clearStorageContents } from '../../lib/audit-changes';
 
 /** Schemas whose every table is demo/operational data owned by the seed. */
 const WIPE_SCHEMAS = [
@@ -73,6 +74,8 @@ const SEED_ENV = { SEED_FARMERS_FROM_CSV: 'true' } as const;
 
 export interface ResetDemoDataSummary {
   tablesTruncated: number;
+  /** Top-level entries removed from `STORAGE_ROOT` (audit diffs, reports). */
+  storageEntriesRemoved: number;
   /** Soft-deleted `iam` rows brought back (0 on an undamaged demo). */
   undeleted: { users: number; cooperatives: number };
   durationMs: number;
@@ -185,6 +188,11 @@ export async function resetDemoData(db: Db): Promise<ResetDemoDataSummary> {
         updated_at = now()
   `);
 
+  // Wipe the storage root's contents. Audit field-diffs live there as JSON
+  // files keyed by audit-log id, and `audit.audit_logs` was just truncated —
+  // leaving the blobs behind would accumulate orphans nothing can reach.
+  const storageEntriesRemoved = await clearStorageContents();
+
   await runSeedScript(script);
 
   // Un-delete anything the demo soft-deleted. Scoped to `deleted_at IS NOT
@@ -227,6 +235,7 @@ export async function resetDemoData(db: Db): Promise<ResetDemoDataSummary> {
 
   return {
     tablesTruncated: qualified.length,
+    storageEntriesRemoved,
     undeleted: {
       users: usersRestored.rowCount ?? 0,
       cooperatives: coopsRestored.rowCount ?? 0,
