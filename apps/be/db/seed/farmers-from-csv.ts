@@ -320,8 +320,25 @@ function toFarmerInsert(row: Record<string, string>, cooperativeId: string): Far
     householdSize: toCount(row.Hhsize),
     childrenCount: toCount(row.NumberChildren),
     certificationStatus: 'unknown',
+    // Membership start date — the list's "Start Date" column reads this and
+    // showed "—" for every farmer because nothing ever wrote it. Derived
+    // from the producer id so it survives a re-seed unchanged, and anchored
+    // to 1 Oct (the West African cocoa year, same convention as
+    // `reports/lib/season.ts`) so cohorts line up with season boundaries
+    // instead of scattering mid-month.
+    registrationDate: membershipStart(code),
     isActive: true,
   };
+}
+
+/** Deterministic membership date: a 1 Oct season start between 2016 and
+ *  2025, plus a few days so a cohort isn't one identical date. */
+function membershipStart(code: string): string {
+  const rng = rngFor(`membership:${code}`);
+  const year = 2016 + Math.floor(rng() * 10);
+  const dayOffset = Math.floor(rng() * 28);
+  const d = new Date(Date.UTC(year, 9, 1 + dayOffset));
+  return d.toISOString().slice(0, 10);
 }
 
 function toParcelInsert(
@@ -451,6 +468,7 @@ export async function seedFarmersFromCsv(db: Db): Promise<void> {
             householdSize: sql`excluded.household_size`,
             childrenCount: sql`excluded.children_count`,
             certificationStatus: sql`excluded.certification_status`,
+            registrationDate: sql`excluded.registration_date`,
             isActive: sql`excluded.is_active`,
             producerId: sql`excluded.producer_id`,
             externalSource: sql`excluded.external_source`,
