@@ -549,7 +549,7 @@ function PrimaryLotRow({
                 {p.matched ? (
                   <Link
                     to={`/purchases/${encodeURIComponent(p.purchaseId)}`}
-                    className="truncate font-mono text-primary hover:underline"
+                    className="truncate font-mono hover:underline"
                   >
                     {p.purchaseId}
                   </Link>

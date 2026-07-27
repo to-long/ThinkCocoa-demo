@@ -9,6 +9,17 @@
   }
 }
 
+@layer base {
+  /* Links are body-coloured by default. The affordance is the underline on
+     hover, not a colour — a blue link inside a dense table reads as noise
+     next to the StatusTag palette, and every ID column is a link.
+     A utility class still wins, so `text-destructive` / `text-muted-
+     foreground` links keep their colour deliberately. */
+  a {
+    color: inherit;
+  }
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
@@ -60,11 +71,11 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  /* Brand action colour = the `info` StatusTag family (Tailwind blue), so
-     `text-primary` links, selected calendar days and checked checkboxes
-     sit in the same blue as the info chips instead of reading as
-     near-black. blue-600 / blue-500. (Primary BUTTONS use the tag's soft
-     sky palette directly — see `components/ui/button.tsx`.) */
+  /* Brand action colour = the `info` StatusTag family (Tailwind blue).
+     Now used by selected calendar days, checked checkboxes and badges —
+     NOT by links, which are body-coloured via the base rule above.
+     blue-600 / blue-500. (Primary BUTTONS use the tag's soft sky palette
+     directly — see `components/ui/button.tsx`.) */
   --primary: oklch(0.546 0.245 262.881);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);

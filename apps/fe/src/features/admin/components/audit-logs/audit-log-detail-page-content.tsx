@@ -315,7 +315,7 @@ export function AuditLogDetailPageContent() {
                   return entityHref ? (
                     <Link
                       to={entityHref}
-                      className="text-primary hover:underline"
+                      className=" hover:underline"
                       title={data.entityId}
                     >
                       {label}

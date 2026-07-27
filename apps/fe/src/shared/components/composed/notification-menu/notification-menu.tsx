@@ -326,7 +326,7 @@ export function NotificationMenu() {
         <button
           type="button"
           onClick={handleViewAll}
-          className="w-full rounded p-1 text-center text-[12px] font-medium text-primary hover:underline"
+          className="w-full rounded p-1 text-center text-[12px] font-medium hover:underline"
         >
           View all notifications
         </button>

@@ -225,7 +225,7 @@ export function PrimaryEvacDetailPageContent() {
                   key={c.id}
                   className="grid grid-cols-[200px_minmax(160px,1fr)_120px_100px_80px] items-center gap-3 border-b bg-card py-2 text-sm last:border-b-0"
                 >
-                  <span className="sticky left-0 z-10 inline-flex items-center gap-1.5 bg-card pl-4 font-mono text-primary text-xs">
+                  <span className="sticky left-0 z-10 inline-flex items-center gap-1.5 bg-card pl-4 font-mono text-xs">
                     {c.matched && c.purchaseId ? (
                       <Link
                         to={`/purchases/${encodeURIComponent(c.purchaseId)}`}

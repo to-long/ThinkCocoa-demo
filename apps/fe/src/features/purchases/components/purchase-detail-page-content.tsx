@@ -296,7 +296,7 @@ function KV({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-1 text-primary hover:underline"
+      className="inline-flex items-center gap-1 hover:underline"
     >
       {display}
       <ExternalLink className="size-3 shrink-0" />
