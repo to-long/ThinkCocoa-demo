@@ -233,5 +233,6 @@
   "farmers.certExpiry.expired": "Expiré",
   "farmers.certExpiry.none": "Sans certificat",
   "farmers.certExpiry.lapsed": "expiré",
-  "farmers.certExpiry.inDays": "dans {n} j"
+  "farmers.certExpiry.inDays": "dans {n} j",
+  "farmers.certExpiry.stillValid": "valide"
 }

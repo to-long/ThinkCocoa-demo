@@ -105,25 +105,30 @@ const RENEWAL_WINDOW_DAYS = 90;
 
 /**
  * The certificate's expiry, as the second line of the certificate cell.
- * Calls out the two states someone has to act on — lapsed, and lapsing
- * inside the renewals window. A certificate with a year left is just a
- * date: no colour, nothing to do.
+ *
+ * The date keeps `RefCell`'s muted code tone — same grey as the farmer
+ * code above it, because it is a fact, not a verdict. Only the word after
+ * it carries colour: red once lapsed, amber inside the renewals window,
+ * green while there is nothing to do. Colouring the date too made a valid
+ * certificate shout as loudly as an expired one.
  */
 function CertificateExpiry({ farmer }: { farmer: ApiFarmer }) {
   const intl = useIntl();
   if (!farmer.raExpiryDate) return <span className="text-muted-foreground">—</span>;
   const days = Math.ceil((new Date(farmer.raExpiryDate).getTime() - Date.now()) / 86_400_000);
-  const tone = days < 0 ? 'text-destructive' : days <= RENEWAL_WINDOW_DAYS ? 'text-amber-600' : '';
-  const suffix =
+  const verdict =
     days < 0
-      ? intl.formatMessage({ id: 'farmers.certExpiry.lapsed' })
+      ? { key: 'farmers.certExpiry.lapsed', tone: 'text-destructive' }
       : days <= RENEWAL_WINDOW_DAYS
-        ? intl.formatMessage({ id: 'farmers.certExpiry.inDays' }, { n: days })
-        : '';
+        ? { key: 'farmers.certExpiry.inDays', tone: 'text-amber-600 dark:text-amber-400' }
+        : { key: 'farmers.certExpiry.stillValid', tone: 'text-emerald-600 dark:text-emerald-400' };
   return (
-    <span className={tone} title={farmer.raCertificateNumber ?? undefined}>
+    <span title={farmer.raCertificateNumber ?? undefined}>
       {formatGhanaDate(farmer.raExpiryDate)}
-      {suffix ? ` · ${suffix}` : ''}
+      <span className="text-muted-foreground"> · </span>
+      <span className={verdict.tone}>
+        {intl.formatMessage({ id: verdict.key }, { n: Math.max(days, 0) })}
+      </span>
     </span>
   );
 }

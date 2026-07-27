@@ -242,6 +242,7 @@
   "farmers.certExpiry.expiring": "Expiring in 90 days",
   "farmers.certExpiry.expired": "Expired",
   "farmers.certExpiry.none": "No certificate",
-  "farmers.certExpiry.lapsed": "lapsed",
-  "farmers.certExpiry.inDays": "in {n}d"
+  "farmers.certExpiry.lapsed": "expired",
+  "farmers.certExpiry.inDays": "in {n}d",
+  "farmers.certExpiry.stillValid": "valid"
 }

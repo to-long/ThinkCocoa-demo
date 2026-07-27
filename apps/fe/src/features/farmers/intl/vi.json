@@ -233,5 +233,6 @@
   "farmers.certExpiry.expired": "Đã hết hạn",
   "farmers.certExpiry.none": "Chưa có chứng chỉ",
   "farmers.certExpiry.lapsed": "đã hết hạn",
-  "farmers.certExpiry.inDays": "còn {n} ngày"
+  "farmers.certExpiry.inDays": "còn {n} ngày",
+  "farmers.certExpiry.stillValid": "còn hiệu lực"
 }
