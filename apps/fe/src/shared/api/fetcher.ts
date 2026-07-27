@@ -165,26 +165,59 @@ export function toApiError(error: unknown, response?: Response): ApiError {
 // and they all fail together, so they must all await the SAME refresh
 // rather than each minting a token and racing to overwrite the cookie.
 const REFRESHABLE_CODES = new Set(['token_expired', 'token_revoked', 'no_access_token']);
-let refreshInFlight: Promise<boolean> | null = null;
+
+/**
+ * Three outcomes, NOT two. Collapsing them into a boolean is what made a
+ * backend restart look identical to an expired session: the refresh `fetch`
+ * threw, the caller read `false` as "you are logged out", and the tab was
+ * kicked to /login while its 7-day session sat perfectly valid in the
+ * database.
+ *
+ *   ok          — new token issued, replay the request
+ *   rejected    — the server said no (401/403): the session really is gone,
+ *                 so the caller falls through to the shared sign-out
+ *   unavailable — we never got an answer (server restarting, connection
+ *                 dropped, 5xx). Says nothing about the session, so the
+ *                 caller must surface a plain error and leave the user
+ *                 signed in.
+ */
+type RefreshOutcome = 'ok' | 'rejected' | 'unavailable';
+
+let refreshInFlight: Promise<RefreshOutcome> | null = null;
 
 function isRefreshable(body: unknown): boolean {
   const code = (body as { code?: unknown } | null)?.code;
   return typeof code === 'string' && REFRESHABLE_CODES.has(code);
 }
 
-async function refreshAccessToken(): Promise<boolean> {
+async function attemptRefresh(): Promise<RefreshOutcome> {
+  try {
+    const res = await fetch(`${API_BASE}/api/auth/refresh`, {
+      method: 'POST',
+      credentials: 'include',
+    });
+    if (res.ok) return 'ok';
+    // Only the refresh endpoint's own rejection proves the credential is
+    // dead. A 500 or a proxy error does not.
+    return res.status === 401 || res.status === 403 ? 'rejected' : 'unavailable';
+  } catch {
+    return 'unavailable';
+  }
+}
+
+async function refreshAccessToken(): Promise<RefreshOutcome> {
+  // One shared attempt: a dashboard fires a dozen requests that all expire
+  // together, and they must await the SAME refresh rather than racing to
+  // overwrite the cookie.
   refreshInFlight ??= (async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/auth/refresh`, {
-        method: 'POST',
-        credentials: 'include',
-      });
-      return res.ok;
-    } catch {
-      return false;
+      const first = await attemptRefresh();
+      if (first !== 'unavailable') return first;
+      // A dev-server restart takes about a second; one short retry swallows
+      // it instead of bouncing the user to the login screen.
+      await new Promise((r) => setTimeout(r, 500));
+      return await attemptRefresh();
     } finally {
-      // Cleared in `finally` so the NEXT expiry gets a fresh attempt
-      // rather than reusing this resolved promise forever.
       refreshInFlight = null;
     }
   })();
@@ -214,11 +247,19 @@ export async function apiFetch<TData = unknown>(
     } catch {
       // non-JSON 401 — not refreshable, fall through to the throw below
     }
-    // Retried exactly once: if the replay also 401s, `toApiError` runs the
-    // shared sign-out path, which is the correct end state for a dead
-    // refresh credential.
-    if (isRefreshable(body) && (await refreshAccessToken())) {
-      res = await send();
+    if (isRefreshable(body)) {
+      const outcome = await refreshAccessToken();
+      if (outcome === 'ok') {
+        // Retried exactly once: if the replay also 401s, `toApiError` runs
+        // the shared sign-out, the correct end state for a dead credential.
+        res = await send();
+      } else if (outcome === 'unavailable') {
+        // Deliberately NOT an ApiError: `toApiError` triggers the global
+        // 401 → sign-out. The backend is unreachable, which says nothing
+        // about whether the user is still logged in.
+        throw new Error('Auth refresh unavailable — backend unreachable');
+      }
+      // 'rejected' falls through to the throw below, i.e. sign out.
     }
   }
 
