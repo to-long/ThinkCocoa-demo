@@ -26,6 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { truncateMiddle } from '@/lib/truncate-middle';
 import type { ApiAuditLog, ApiAuditLogChangePreviewEntry, AuditStatus } from '@/shared/api';
 import { RefCell } from '@/shared/components/composed/entity-ref-cell';
@@ -200,20 +201,26 @@ interface Props {
  */
 function ApplyFilterButton({ onClick, label }: { onClick: () => void; label: string }) {
   return (
-    <button
-      type="button"
-      onClick={(e) => {
-        // The row navigates to the audit detail — filtering must not also
-        // open it.
-        e.stopPropagation();
-        onClick();
-      }}
-      title={label}
-      aria-label={label}
-      className="inline-flex size-5 shrink-0 cursor-pointer items-center justify-center rounded text-muted-foreground opacity-0 transition-opacity hover:bg-accent hover:text-foreground focus-visible:opacity-100 group-hover/row:opacity-100"
-    >
-      <ArrowUp className="size-3.5" />
-    </button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          onClick={(e) => {
+            // The row navigates to the audit detail — filtering must not
+            // also open it.
+            e.stopPropagation();
+            onClick();
+          }}
+          // No `title`: it would double up with the tooltip, one styled
+          // and one the browser's, on a ~1s delay apart.
+          aria-label={label}
+          className="inline-flex size-5 shrink-0 cursor-pointer items-center justify-center rounded text-muted-foreground opacity-0 transition-opacity hover:bg-accent hover:text-foreground focus-visible:opacity-100 group-hover/row:opacity-100"
+        >
+          <ArrowUp className="size-3.5" />
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="top">{label}</TooltipContent>
+    </Tooltip>
   );
 }
 
