@@ -323,6 +323,11 @@ jobs:
           # so a missing variable never locks anyone out.
           ACCESS_TOKEN_TTL_VAR: ${{ vars.ACCESS_TOKEN_TTL }}
           REFRESH_TOKEN_TTL_VAR: ${{ vars.REFRESH_TOKEN_TTL }}
+          # Headless LibreOffice, for the Reports page's PDF format. The
+          # Debian package puts it at /usr/bin/soffice; a GH variable can
+          # override for a different install. Nothing else uses it, and
+          # XLSX/CSV exports keep working if it is missing.
+          SOFFICE_BIN_VAR: ${{ vars.SOFFICE_BIN || '/usr/bin/soffice' }}
         run: |
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<EOF
             set -e
@@ -437,6 +442,13 @@ jobs:
                 sed -i "s|^ACCESS_TOKEN_TTL=.*|ACCESS_TOKEN_TTL=$ACCESS_TOKEN_TTL_VAR|" .env
               else
                 echo "ACCESS_TOKEN_TTL=$ACCESS_TOKEN_TTL_VAR" >> .env
+              fi
+            fi
+            if [ -n "$SOFFICE_BIN_VAR" ]; then
+              if grep -q "^SOFFICE_BIN=" .env 2>/dev/null; then
+                sed -i "s|^SOFFICE_BIN=.*|SOFFICE_BIN=$SOFFICE_BIN_VAR|" .env
+              else
+                echo "SOFFICE_BIN=$SOFFICE_BIN_VAR" >> .env
               fi
             fi
             if [ -n "$REFRESH_TOKEN_TTL_VAR" ]; then

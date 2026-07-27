@@ -13,8 +13,11 @@
  *   1. PAGE SETUP. The templates carry none, so Calc slices 19 columns
  *      into vertical strips and repeats the whole table for each —
  *      1091 pages for 1008 rows. We stamp landscape + fit-to-width onto
- *      every sheet before converting. Only on the PDF path; the XLSX
- *      download keeps the template exactly as authored.
+ *      every sheet before converting, and a print area that stops at the
+ *      last row with data: the templates style a fixed-height data area,
+ *      so without it Calc prints every leftover bordered-but-empty row.
+ *      Only on the PDF path; the XLSX download keeps the template exactly
+ *      as authored.
  *
  *   2. RECALCULATION. ExcelJS writes `=COUNTA(...)` with no cached
  *      result, and LibreOffice does not recalculate xlsx on load by
@@ -48,13 +51,52 @@ function sofficeBin(): string {
 const TIMEOUT_MS = 60_000;
 
 /**
- * Landscape, one page wide, header rows repeated. Applied to a COPY of
- * the workbook — see the note above about leaving the xlsx untouched.
+ * Last row and column that actually carry something.
+ *
+ * `rowCount` / `columnCount` count anything the template TOUCHED, which
+ * includes the borders and fills painted down an empty data area — that is
+ * how a 178-row report printed 116 pages. A cell counts as content when it
+ * has a value or a formula; styling alone does not.
+ */
+function contentExtent(ws: ExcelJS.Worksheet): { lastRow: number; lastCol: number } {
+  let lastRow = 0;
+  let lastCol = 0;
+  ws.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+    let rowHasContent = false;
+    row.eachCell({ includeEmpty: false }, (cell, colNumber) => {
+      const v = cell.value;
+      const empty = v === null || v === undefined || v === '';
+      if (empty) return;
+      rowHasContent = true;
+      if (colNumber > lastCol) lastCol = colNumber;
+    });
+    if (rowHasContent && rowNumber > lastRow) lastRow = rowNumber;
+  });
+  return { lastRow, lastCol };
+}
+
+/** 1 → A, 27 → AA. */
+function columnLetter(n: number): string {
+  let s = '';
+  let x = n;
+  while (x > 0) {
+    const rem = (x - 1) % 26;
+    s = String.fromCharCode(65 + rem) + s;
+    x = Math.floor((x - 1) / 26);
+  }
+  return s;
+}
+
+/**
+ * Landscape, one page wide, print area clipped to the content. Applied to
+ * a COPY of the workbook — see the note above about leaving the xlsx
+ * untouched.
  */
 async function withPrintLayout(xlsx: Buffer): Promise<Buffer> {
   const wb = new ExcelJS.Workbook();
   await wb.xlsx.load(xlsx as unknown as ArrayBuffer);
   for (const ws of wb.worksheets) {
+    const { lastRow, lastCol } = contentExtent(ws);
     ws.pageSetup = {
       ...ws.pageSetup,
       orientation: 'landscape',
@@ -64,6 +106,9 @@ async function withPrintLayout(xlsx: Buffer): Promise<Buffer> {
       fitToHeight: 0,
       paperSize: 9, // A4
       margins: { left: 0.3, right: 0.3, top: 0.4, bottom: 0.4, header: 0.2, footer: 0.2 },
+      // A sheet with nothing in it gets `A1` rather than an empty string,
+      // which Calc reads as "print everything".
+      printArea: lastRow > 0 && lastCol > 0 ? `A1:${columnLetter(lastCol)}${lastRow}` : 'A1:A1',
     };
   }
   return Buffer.from(await wb.xlsx.writeBuffer());
