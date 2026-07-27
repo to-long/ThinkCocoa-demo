@@ -52,7 +52,16 @@ function formatLabel(s: string): string {
 // drilldown line up edge-to-edge. col1 = expand toggle / indent (sticky),
 // then Waybill|PurchaseId · # · # · name(1fr) · weight. Both tables live
 // in one horizontal-scroll container and pin their first column.
-const LOT_GRID = 'grid grid-cols-[36px_190px_100px_100px_minmax(150px,1fr)_96px] gap-3';
+// Column spacing is PADDING on each cell after the first, not `gap-x`.
+// A column gap is transparent, and the first two columns are sticky — so the
+// 12px gap between them was a see-through strip the scrolling row showed
+// through, no matter what background the cells carried. Padding lives inside
+// the cell's box, so the sticky background covers it.
+//
+// Consequence: column 2 now sticks at the width of column 1 (36px = left-9),
+// not 36px + gap (left-12). Keep those in step.
+const LOT_GRID =
+  'grid grid-cols-[36px_190px_100px_100px_minmax(150px,1fr)_96px] gap-y-3 [&>*+*]:pl-3';
 
 export function TraceabilityDetailPageContent() {
   const { id } = useParams<{ id: string }>();
@@ -269,7 +278,7 @@ export function TraceabilityDetailPageContent() {
                   </button>
                 )}
               </span>
-              <span className="sticky left-12 z-10 bg-muted">
+              <span className="sticky left-9 z-10 bg-muted">
                 {t('traceability.detail.composition.col.waybill')}
               </span>
               <span>{t('traceability.detail.composition.col.purchases')}</span>
@@ -305,7 +314,7 @@ export function TraceabilityDetailPageContent() {
                 className={`${LOT_GRID} items-center border-t bg-muted py-2.5 font-semibold text-foreground text-xs`}
               >
                 <span className="sticky left-0 z-10 bg-muted pl-4 block h-full w-full" />
-                <span className="sticky left-12 z-10 bg-muted uppercase tracking-wide">
+                <span className="sticky left-9 z-10 bg-muted uppercase tracking-wide">
                   {t('traceability.detail.composition.total')}
                 </span>
                 <span className="text-muted-foreground">
@@ -464,7 +473,7 @@ function PrimaryLotRow({
           )}
         </span>
         <span
-          className="sticky left-12 z-10 inline-flex min-w-0 max-w-full items-center gap-1.5 bg-card"
+          className="sticky left-9 z-10 inline-flex min-w-0 max-w-full items-center gap-1.5 bg-card"
           title={wbLabel}
         >
           <StatusTag tone="info" className="max-w-full">
@@ -531,7 +540,7 @@ function PrimaryLotRow({
             className={`${LOT_GRID} border-b bg-muted py-1.5 font-semibold text-[10px] text-muted-foreground uppercase tracking-wide`}
           >
             <span className="sticky left-0 z-10 bg-muted pl-4 block h-full w-full" />
-            <span className="sticky left-12 z-10 bg-muted">
+            <span className="sticky left-9 z-10 bg-muted">
               {t('traceability.detail.composition.col.purchaseId')}
             </span>
             <span>{t('traceability.detail.composition.col.date')}</span>
@@ -545,7 +554,7 @@ function PrimaryLotRow({
               className={`${LOT_GRID} items-center border-b bg-card py-1.5 text-xs last:border-b-0`}
             >
               <span className="sticky left-0 z-10 bg-card pl-4 block h-full w-full" />
-              <span className="sticky left-12 z-10 inline-flex min-w-0 items-center gap-1.5 bg-card">
+              <span className="sticky left-9 z-10 inline-flex min-w-0 items-center gap-1.5 bg-card">
                 {p.matched ? (
                   <Link
                     to={`/purchases/${encodeURIComponent(p.purchaseId)}`}
