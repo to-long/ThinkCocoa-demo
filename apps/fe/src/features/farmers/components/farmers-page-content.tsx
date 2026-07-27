@@ -605,13 +605,13 @@ export function FarmersPageContent() {
               <TableBody style={refetching ? { opacity: 0.85 } : undefined}>
                 {initialLoading ? (
                   <TableRow>
-                    <TableCell colSpan={10} className="py-8 text-center text-muted-foreground">
+                    <TableCell colSpan={9} className="py-8 text-center text-muted-foreground">
                       <Loader2 className="mx-auto size-5 animate-spin" />
                     </TableCell>
                   </TableRow>
                 ) : displayItems.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={10} className="py-8 text-center text-muted-foreground">
+                    <TableCell colSpan={9} className="py-8 text-center text-muted-foreground">
                       {t('farmers.table.noFarmers')}
                     </TableCell>
                   </TableRow>
