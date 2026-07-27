@@ -48,3 +48,6 @@ coverage/
 # local scratch/backup copies — never commit
 backup_*/
 *.patch
+
+# LibreOffice conversion workspace — TMPDIR for scripts/soffice-docker.sh
+apps/be/.tmp/
