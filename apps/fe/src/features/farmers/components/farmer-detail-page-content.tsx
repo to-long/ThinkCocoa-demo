@@ -275,18 +275,6 @@ export function FarmerDetailPageContent({ farmerId }: Props) {
     .filter(Boolean)
     .map((n) => n[0]!.toUpperCase())
     .join('');
-  const certBadge = ((): { tone: 'success' | 'caution' | 'danger'; key: string } | null => {
-    switch (farmer.certificationStatus) {
-      case 'rainforest_alliance':
-        return { tone: 'success', key: 'farmers.certification.rainforest_alliance' };
-      case 'pending':
-        return { tone: 'caution', key: 'farmers.certification.pending' };
-      case 'expired':
-        return { tone: 'danger', key: 'farmers.certification.expired' };
-      default:
-        return null;
-    }
-  })();
   const isDeleted = Boolean(farmer.deletedAt);
 
   const consentLabel = (() => {
@@ -392,7 +380,6 @@ export function FarmerDetailPageContent({ farmerId }: Props) {
               <span className="min-w-0 break-all font-semibold text-base text-foreground">
                 {fullName || '—'}
               </span>
-              {certBadge && <StatusTag tone={certBadge.tone}>{t(certBadge.key)}</StatusTag>}
               {isDeleted ? (
                 <StatusTag tone="neutral" dot>
                   {t('farmers.status.deleted')}
@@ -454,9 +441,11 @@ export function FarmerDetailPageContent({ farmerId }: Props) {
                   <span className="text-xs text-muted-foreground uppercase tracking-wide">
                     {t('farmers.detail.certificationCard')}
                   </span>
-                  <StatusTag tone={certValidity.tone} dot>
-                    {intl.formatMessage({ id: certValidity.key }, { n: certValidity.days })}
-                  </StatusTag>
+                  <span className="inline-flex py-0.5">
+                    <StatusTag tone={certValidity.tone} dot>
+                      {intl.formatMessage({ id: certValidity.key }, { n: certValidity.days })}
+                    </StatusTag>
+                  </span>
                   {farmer.raExpiryDate ? (
                     <span className="text-muted-foreground text-xs">
                       {intl.formatMessage(
