@@ -102,6 +102,40 @@ function joinPair(parts: (string | null | undefined)[], sep = ', '): string {
   return mapped.every((p) => p === '—') ? '—' : mapped.join(sep);
 }
 
+/** Renewals window, same 90 days the farmers list and the BE filter use. */
+const RENEWAL_WINDOW_DAYS = 90;
+
+/**
+ * Expiry date plus how long the certificate still runs.
+ *
+ * The remaining time is the part anyone acts on, so it carries the
+ * colour — red once lapsed, amber inside the renewals window, green while
+ * there is nothing to do — and the date stays body text beside it.
+ */
+function CertificateValidity({ expiry }: { expiry: string | null }) {
+  const intl = useIntl();
+  if (!expiry) return <span className="text-muted-foreground">—</span>;
+  const days = Math.ceil((new Date(expiry).getTime() - Date.now()) / 86_400_000);
+  const verdict =
+    days < 0
+      ? { key: 'farmers.detail.raLapsedAgo', tone: 'text-destructive', n: -days }
+      : days <= RENEWAL_WINDOW_DAYS
+        ? { key: 'farmers.detail.raRemaining', tone: 'text-amber-600 dark:text-amber-400', n: days }
+        : {
+            key: 'farmers.detail.raRemaining',
+            tone: 'text-emerald-600 dark:text-emerald-400',
+            n: days,
+          };
+  return (
+    <span>
+      {formatGhanaDate(expiry)}{' '}
+      <span className={verdict.tone}>
+        ({intl.formatMessage({ id: verdict.key }, { n: verdict.n })})
+      </span>
+    </span>
+  );
+}
+
 export function FarmerDetailPageContent({ farmerId }: Props) {
   const intl = useIntl();
   const navigate = useNavigate();
@@ -331,9 +365,7 @@ export function FarmerDetailPageContent({ farmerId }: Props) {
               <span className="min-w-0 break-all font-semibold text-base text-foreground">
                 {fullName || '—'}
               </span>
-              {certBadge && (
-                <StatusTag tone={certBadge.tone}>{t(certBadge.key)}</StatusTag>
-              )}
+              {certBadge && <StatusTag tone={certBadge.tone}>{t(certBadge.key)}</StatusTag>}
               {isDeleted ? (
                 <StatusTag tone="neutral" dot>
                   {t('farmers.status.deleted')}
@@ -610,6 +642,34 @@ export function FarmerDetailPageContent({ farmerId }: Props) {
                 value={
                   <ProgramYearBadge programYear={farmer.latestCertification?.programYear ?? null} />
                 }
+              />
+              {/* The certificate itself, below the audit result that
+                  produced it. The four fields an auditor or buyer asks
+                  for: which certificate, who issued it, when, and how
+                  long it still runs. */}
+              <InfoField
+                label={t('farmers.detail.raCertificateNumber')}
+                value={
+                  farmer.raCertificateNumber ? (
+                    <span className="font-mono">{farmer.raCertificateNumber}</span>
+                  ) : (
+                    <span className="text-muted-foreground">
+                      {t('farmers.detail.raNoCertificate')}
+                    </span>
+                  )
+                }
+              />
+              <InfoField
+                label={t('farmers.detail.raCertifyingBody')}
+                value={farmer.raCertifyingBody ?? '—'}
+              />
+              <InfoField
+                label={t('farmers.detail.raAuditDate')}
+                value={farmer.raAuditDate ? formatGhanaDate(farmer.raAuditDate) : '—'}
+              />
+              <InfoField
+                label={t('farmers.detail.raExpiryDate')}
+                value={<CertificateValidity expiry={farmer.raExpiryDate} />}
               />
             </div>
           </CardContent>

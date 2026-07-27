@@ -343,7 +343,8 @@ export async function seedInspections(db: Db): Promise<void> {
   // shifts between reseeds and the split wandered with it.
   //
   // Audit date is always 12 months before expiry — an RA certificate runs
-  // a year from its audit, so the two cannot be drawn independently.
+  // a year from its audit, so the two cannot be drawn independently, and
+  // the valid band is capped at +364 days to keep every audit in the past.
   await db.execute(sql`
     WITH ranked AS (
       SELECT f.id,
@@ -364,7 +365,10 @@ export async function seedInspections(db: Db): Promise<void> {
              END AS status,
              CASE
                WHEN pct <= 10 THEN NULL
-               WHEN pct <= 55 THEN CURRENT_DATE + (120 + h2 % 400)
+               -- Capped at +364 so (expiry - 365) — the audit that issued
+               -- it — always lands in the PAST. The first version ran to
+               -- +519 and printed audit dates months into the future.
+               WHEN pct <= 55 THEN CURRENT_DATE + (91 + h2 % 274)
                WHEN pct <= 82 THEN CURRENT_DATE + (5 + h2 % 85)
                ELSE CURRENT_DATE - (10 + h2 % 320)
              END AS expiry

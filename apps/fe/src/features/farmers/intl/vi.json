@@ -234,5 +234,12 @@
   "farmers.certExpiry.none": "Chưa có chứng chỉ",
   "farmers.certExpiry.lapsed": "đã hết hạn",
   "farmers.certExpiry.inDays": "còn {n} ngày",
-  "farmers.certExpiry.stillValid": "còn hiệu lực"
+  "farmers.certExpiry.stillValid": "còn hiệu lực",
+  "farmers.detail.raCertificateNumber": "Số chứng chỉ",
+  "farmers.detail.raCertifyingBody": "Tổ chức cấp",
+  "farmers.detail.raAuditDate": "Ngày audit",
+  "farmers.detail.raExpiryDate": "Hiệu lực đến",
+  "farmers.detail.raNoCertificate": "Chưa có chứng chỉ",
+  "farmers.detail.raRemaining": "còn {n} ngày",
+  "farmers.detail.raLapsedAgo": "hết hạn {n} ngày trước"
 }

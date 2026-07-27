@@ -43,13 +43,13 @@
  * `Controller`'s render prop because they don't accept a raw ref.
  */
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   type CreateFarmerInput,
   createFarmerSchema,
   type UpdateFarmerInput,
   updateFarmerSchema,
 } from '@thinkcocoa/shared';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useMemo } from 'react';
 import { type Resolver, useForm } from 'react-hook-form';
 import { useIntl } from 'react-intl';

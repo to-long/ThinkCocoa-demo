@@ -244,5 +244,12 @@
   "farmers.certExpiry.none": "No certificate",
   "farmers.certExpiry.lapsed": "expired",
   "farmers.certExpiry.inDays": "in {n}d",
-  "farmers.certExpiry.stillValid": "valid"
+  "farmers.certExpiry.stillValid": "valid",
+  "farmers.detail.raCertificateNumber": "Certificate No.",
+  "farmers.detail.raCertifyingBody": "Certifying body",
+  "farmers.detail.raAuditDate": "Audit date",
+  "farmers.detail.raExpiryDate": "Valid until",
+  "farmers.detail.raNoCertificate": "No certificate",
+  "farmers.detail.raRemaining": "{n} days left",
+  "farmers.detail.raLapsedAgo": "lapsed {n} days ago"
 }
