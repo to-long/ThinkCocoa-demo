@@ -5,6 +5,7 @@ call, or use to put the environment back the way it was.
 
 | Path | What it is |
 |---|---|
+| [`SALES_DEMO_GUIDE.md`](SALES_DEMO_GUIDE.md) | Two pages for the sales team: sign-in, a ten-minute walkthrough, and how to reset |
 | [`import-samples/`](import-samples/) | Ready-to-upload farmers / parcel-polygon / EUDR files + their column reference |
 | `demo-db-dump.sql.gz.enc` | Encrypted snapshot of the whole demo database (see below) |
 
