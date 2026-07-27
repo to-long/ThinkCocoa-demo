@@ -38,9 +38,9 @@ const isProd = process.env.NODE_ENV === 'production';
 /** Seconds — mirrors `ACCESS_TOKEN_TTL` (auth.ts) so the cookie and the
  *  token expire together. Parsed from the same `15m` style string. */
 export function accessTokenTtlSeconds(): number {
-  const raw = process.env.ACCESS_TOKEN_TTL ?? '15m';
+  const raw = process.env.ACCESS_TOKEN_TTL ?? '30m';
   const m = /^(\d+)\s*([smhd])?$/.exec(raw.trim());
-  if (!m) return 15 * 60;
+  if (!m) return 30 * 60;
   const n = Number(m[1]);
   const unit = m[2] ?? 's';
   const mult = unit === 'd' ? 86400 : unit === 'h' ? 3600 : unit === 'm' ? 60 : 1;

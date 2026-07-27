@@ -117,7 +117,7 @@ export const auth = betterAuth({
         // Short enough that a revoked/downgraded user can only keep their
         // old scope for a few minutes, long enough that the refresh round
         // trip is rare. Env-tunable for demos that want to SHOW a refresh.
-        expirationTime: process.env.ACCESS_TOKEN_TTL ?? '15m',
+        expirationTime: process.env.ACCESS_TOKEN_TTL ?? '30m',
         definePayload: async ({ user }) => {
           const [row] = await db
             .select({
