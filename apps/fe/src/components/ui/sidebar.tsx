@@ -19,8 +19,29 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 
-const SIDEBAR_COOKIE_NAME = 'sidebar_state';
-const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
+/**
+ * Open/closed lives in sessionStorage, not a cookie.
+ *
+ * shadcn ships this as a 7-day cookie, which made the collapsed state
+ * outlive the visit AND the window it was set in: collapse the sidebar once
+ * in a narrow window and every later visit in that browser profile opened
+ * with no menu — including on a wide screen, where nothing suggests the
+ * menu is merely collapsed. Opening the app in a different profile "fixed"
+ * it, which is how it was reported. Per-tab, per-session is the right
+ * lifetime for a layout toggle; the cookie also travelled on every request
+ * to the API for no reason.
+ */
+const SIDEBAR_STORAGE_KEY = 'thinkcocoa:sidebar-open';
+
+function readStoredOpen(): boolean | null {
+  try {
+    const v = sessionStorage.getItem(SIDEBAR_STORAGE_KEY);
+    return v === null ? null : v === 'true';
+  } catch {
+    // Private mode / storage disabled — fall back to the default.
+    return null;
+  }
+}
 const SIDEBAR_WIDTH = '16rem';
 // Mobile drawer width. Overrides the shadcn default of `18rem` (288px)
 // — was too wide for our tight admin layout. Matches the desktop rail
@@ -68,7 +89,9 @@ function SidebarProvider({
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
-  const [_open, _setOpen] = React.useState(defaultOpen);
+  // Restore lazily so the very first render already has the right width and
+  // the layout doesn't jump.
+  const [_open, _setOpen] = React.useState(() => readStoredOpen() ?? defaultOpen);
   const open = openProp ?? _open;
   const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
@@ -79,8 +102,11 @@ function SidebarProvider({
         _setOpen(openState);
       }
 
-      // This sets the cookie to keep the sidebar state.
-      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+      try {
+        sessionStorage.setItem(SIDEBAR_STORAGE_KEY, String(openState));
+      } catch {
+        // Not being able to remember the toggle is not worth an error.
+      }
     },
     [setOpenProp, open],
   );
@@ -390,7 +416,13 @@ function SidebarGroupLabel({
       data-sidebar="group-label"
       className={cn(
         'flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium text-sidebar-foreground/70 ring-sidebar-ring outline-hidden transition-[margin,opacity] duration-200 ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0',
-        'group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0',
+        // Collapsed, the label fades out but keeps its 32px box and is pulled
+        // back over the neighbouring row by `-mt-8` — invisible, yet still
+        // hit-testable, so it swallowed clicks aimed at the icon underneath it
+        // (measured: 5 of 17 rows unclickable at their centre). `opacity-0`
+        // rather than `hidden` is what keeps the fade, so the pointer has to
+        // be turned off explicitly.
+        'group-data-[collapsible=icon]:pointer-events-none group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0',
         className,
       )}
       {...props}

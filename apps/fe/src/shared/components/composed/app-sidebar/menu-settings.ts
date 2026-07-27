@@ -63,13 +63,29 @@ export interface MenuSection {
   items: MenuItem[];
 }
 
-// Every icon carries the SAME brand green. The sidebar used to walk a
-// 13-stop gradient top-to-bottom — espresso → green → yellow, one stop per
-// row — which made the icon colour read as data ("why is Users yellow and
-// Inspections green?") when it carries no meaning at all. A single tint
-// lets the icons recede and the labels do the work; the active-row pill is
-// what marks position now.
-const MENU_ICON = BRAND_GRADIENT[7]; // sprout green — the brand's signature stop
+/**
+ * One brand stop per GROUP — not per row.
+ *
+ * Walking a stop per row (the original) made the colour read as data:
+ * "why is Users yellow and Inspections green?" when it meant nothing.
+ * Flattening all 17 to one green fixed that but left the rail
+ * undifferentiated. Per-group is the middle ground — the colour now
+ * encodes exactly one true thing, which section a row belongs to, and it
+ * reinforces the group labels instead of competing with them.
+ *
+ * All six stops come from the DARKER half of the gradient: light mode
+ * renders the hex verbatim (`brandTintForTheme` only lifts for dark), and
+ * the lime/yellow stops wash out against the rail's own tint. Dark mode
+ * raises each to a lightness floor, so the walk survives both themes.
+ */
+const GROUP_TINT = {
+  main: BRAND_GRADIENT[1], // s2  — cocoa
+  operations: BRAND_GRADIENT[2], // s3  — sienna
+  traceability: BRAND_GRADIENT[3], // s4  — deep forest
+  compliance: BRAND_GRADIENT[5], // s6  — olive
+  reporting: BRAND_GRADIENT[6], // s7  — apple green
+  admin: BRAND_GRADIENT[8], // s9  — light green
+} as const;
 
 export const menuSections: MenuSection[] = [
   {
@@ -83,28 +99,28 @@ export const menuSections: MenuSection[] = [
         labelKey: 'navigation.dashboard',
         href: '/',
         icon: LayoutDashboard,
-        iconColor: MENU_ICON,
+        iconColor: GROUP_TINT.main,
         permission: 'dashboard:read',
       },
       {
         labelKey: 'navigation.farmers',
         href: '/farmers',
         icon: Users,
-        iconColor: MENU_ICON,
+        iconColor: GROUP_TINT.main,
         permission: 'farmer:read',
       },
       {
         labelKey: 'navigation.farms',
         href: '/farms',
         icon: LandPlot,
-        iconColor: MENU_ICON,
+        iconColor: GROUP_TINT.main,
         permission: 'parcel:read',
       },
       {
         labelKey: 'navigation.vsla',
         href: '/vsla',
         icon: PiggyBank,
-        iconColor: MENU_ICON,
+        iconColor: GROUP_TINT.main,
         // VSLA reuses `farmer:read` for now — same audience as farmers/
         // parcels. When a dedicated `vsla:read` lands we'll swap this.
         permission: 'farmer:read',
@@ -118,14 +134,14 @@ export const menuSections: MenuSection[] = [
         labelKey: 'navigation.training',
         href: '/training',
         icon: GraduationCap,
-        iconColor: MENU_ICON,
+        iconColor: GROUP_TINT.operations,
         permission: 'training:read',
       },
       {
         labelKey: 'navigation.coaching',
         href: '/coaching',
         icon: Handshake,
-        iconColor: MENU_ICON,
+        iconColor: GROUP_TINT.operations,
         permission: 'coaching:read',
       },
     ],
@@ -140,21 +156,21 @@ export const menuSections: MenuSection[] = [
         labelKey: 'navigation.purchases',
         href: '/purchases',
         icon: ShoppingCart,
-        iconColor: MENU_ICON,
+        iconColor: GROUP_TINT.traceability,
         permission: 'purchase:read',
       },
       {
         labelKey: 'navigation.primaryEvac',
         href: '/primary-evacuation',
         icon: Truck,
-        iconColor: MENU_ICON,
+        iconColor: GROUP_TINT.traceability,
         permission: 'primary_evac:read',
       },
       {
         labelKey: 'navigation.secondaryEvac',
         href: '/secondary-evacuation',
         icon: TruckLeft,
-        iconColor: MENU_ICON,
+        iconColor: GROUP_TINT.traceability,
         permission: 'secondary_evac:read',
       },
     ],
@@ -166,7 +182,7 @@ export const menuSections: MenuSection[] = [
         labelKey: 'navigation.inspections',
         href: '/inspections',
         icon: ClipboardCheck,
-        iconColor: MENU_ICON,
+        iconColor: GROUP_TINT.compliance,
         permission: 'inspection:read',
       },
       // CLMRS lands under Compliance next to Inspections. The single
@@ -178,7 +194,7 @@ export const menuSections: MenuSection[] = [
         labelKey: 'navigation.clmrs',
         href: '/clmrs',
         icon: ShieldAlert,
-        iconColor: MENU_ICON,
+        iconColor: GROUP_TINT.compliance,
         permission: 'farmer:read',
       },
     ],
@@ -190,7 +206,7 @@ export const menuSections: MenuSection[] = [
         labelKey: 'navigation.reports',
         href: '/reports',
         icon: FileBarChart,
-        iconColor: MENU_ICON,
+        iconColor: GROUP_TINT.reporting,
         permission: 'report:read',
       },
     ],
@@ -202,35 +218,35 @@ export const menuSections: MenuSection[] = [
         labelKey: 'navigation.adminCooperatives',
         href: '/admin/cooperatives',
         icon: Building2,
-        iconColor: MENU_ICON,
+        iconColor: GROUP_TINT.admin,
         permission: 'cooperative:read',
       },
       {
         labelKey: 'navigation.adminUsers',
         href: '/admin/users',
         icon: UserCog,
-        iconColor: MENU_ICON,
+        iconColor: GROUP_TINT.admin,
         permission: 'user:read',
       },
       {
         labelKey: 'navigation.adminRoles',
         href: '/admin/roles',
         icon: Shield,
-        iconColor: MENU_ICON,
+        iconColor: GROUP_TINT.admin,
         permission: 'role:read',
       },
       {
         labelKey: 'navigation.adminPermissions',
         href: '/admin/permissions',
         icon: KeyRound,
-        iconColor: MENU_ICON,
+        iconColor: GROUP_TINT.admin,
         permission: 'permission:read',
       },
       {
         labelKey: 'navigation.adminSync',
         href: '/admin/sync',
         icon: RefreshCw,
-        iconColor: MENU_ICON,
+        iconColor: GROUP_TINT.admin,
         permission: 'sync:config',
       },
     ],

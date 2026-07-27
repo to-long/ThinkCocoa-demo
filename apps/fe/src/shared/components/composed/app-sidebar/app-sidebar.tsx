@@ -129,22 +129,43 @@ export function AppSidebar() {
     // ABOVE the topbar (and above any breadcrumb row) instead of being
     // clipped behind it. `cn()` via tailwind-merge resolves the two
     // z-* classes for the same axis — our `z-50` wins.
-    <Sidebar className="z-50">
-      <SidebarHeader className="pl-4 pt-2">
-        <Link to="/" className="flex items-center gap-2.5">
+    // `collapsible="icon"` — collapsing leaves the icon rail rather than
+    // taking the whole sidebar off-canvas. Off-canvas (the primitive's
+    // default) hid navigation completely on a desktop screen, where nothing
+    // then suggests the menu is only collapsed. The header and the section
+    // labels already carry `group-data-[collapsible=icon]:hidden`, so they
+    // fold away and the icons stay.
+    <Sidebar collapsible="icon" className="z-50">
+      {/* `pl-4` frames the logo + wordmark when expanded, but in the 48px
+          icon rail it shoves the mark off-centre and into the header's
+          overflow clip — so collapsed falls back to symmetric padding and
+          centres the row. */}
+      <SidebarHeader className="pl-4 pt-2 group-data-[collapsible=icon]:pl-2">
+        <Link
+          to="/"
+          className="flex min-w-0 items-center gap-2.5 group-data-[collapsible=icon]:justify-center"
+        >
           <img
             src="/ThinkCocoaLogo.webp"
             alt="Think!Cocoa"
-            className="size-7"
+            // `shrink-0` — the mark is a flex child, so without it the
+            // cramped collapsed row squeezes its width while the height
+            // stays, stretching a square (512×512) source.
+            className="size-7 shrink-0"
             width={28}
             height={28}
             decoding="async"
           />
-          <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-            <span className="font-semibold text-sm leading-tight text-sidebar-foreground">
+          {/* `min-w-0` — without it a flex child refuses to shrink below its
+              content width, so `truncate` never engages and the wordmark
+              pushes the header wider instead. Both lines are single-line by
+              contract: the brand name must never wrap, and the slogan is
+              longer than the 200px rail at most locales, so it ellipsises. */}
+          <div className="flex min-w-0 flex-col group-data-[collapsible=icon]:hidden">
+            <span className="truncate font-semibold text-sm leading-tight text-sidebar-foreground">
               Think!Cocoa
             </span>
-            <span className="text-[10px] leading-tight text-muted-foreground">
+            <span className="truncate text-[10px] leading-tight text-muted-foreground">
               {t('brand.slogan')}
             </span>
           </div>
@@ -161,23 +182,39 @@ export function AppSidebar() {
           - SidebarMenu     `gap-0.5`  → halves the inter-item gap from
                                          4 px → 2 px. */}
       <SidebarContent className="gap-0 pb-6">
-        {visibleSections.map((section) => {
+        {visibleSections.map((section, sectionIndex) => {
           const alwaysOpen = ALWAYS_OPEN_SECTIONS.has(section.labelKey);
           const isExpanded = alwaysOpen || expandedKey === section.labelKey;
+          // `px-1` when collapsed (vs the stock `px-2`) hands the spare 8px
+          // to the buttons, so a row is 40px wide instead of 31 — still a 4px
+          // inset so the active pill doesn't bleed into the rail edges.
           return (
-            <SidebarGroup key={section.labelKey} className="py-0">
+            <SidebarGroup
+              key={section.labelKey}
+              className="py-0 group-data-[collapsible=icon]:px-1"
+            >
+              {/* Collapsed to the icon rail, the group LABELS are hidden —
+                  which leaves one undifferentiated column of icons. A rule
+                  takes over their job of marking where a group starts. Only
+                  between groups, so the first one keeps a clean top edge. */}
+              {sectionIndex > 0 && (
+                <div
+                  aria-hidden="true"
+                  className="mx-2 my-1.5 hidden border-sidebar-border border-t group-data-[collapsible=icon]:block"
+                />
+              )}
               {/* Always-open sections: plain label, no chevron, no
                   click handler. Toggleable sections: wrap the label in
                   an `asChild` button so the whole row is a click
                   target + chevron rotates when collapsed. */}
               {alwaysOpen ? (
-                <SidebarGroupLabel className="text-sidebar-foreground/40">
+                <SidebarGroupLabel className="text-sidebar-foreground/55">
                   {t(section.labelKey)}
                 </SidebarGroupLabel>
               ) : (
                 <SidebarGroupLabel
                   asChild
-                  className="text-sidebar-foreground/40 hover:text-sidebar-foreground/60"
+                  className="text-sidebar-foreground/55 hover:text-sidebar-foreground/60"
                 >
                   <button
                     type="button"
@@ -204,7 +241,19 @@ export function AppSidebar() {
                           asChild
                           isActive={isActive(item.href)}
                           tooltip={t(item.labelKey)}
-                          className="px-2 py-1.5 text-[13px] text-sidebar-foreground/70 hover:text-sidebar-foreground data-[active=true]:bg-background data-[active=true]:text-foreground data-[active=true]:shadow-sm dark:data-[active=true]:bg-white/10"
+                          className={cn(
+                            'px-2 py-1.5 text-[13px] text-sidebar-foreground/80 hover:text-sidebar-foreground data-[active=true]:bg-background data-[active=true]:text-foreground data-[active=true]:shadow-sm dark:data-[active=true]:bg-white/10',
+                            // Collapsed, the primitive pins the button to a
+                            // 32px square (`size-8!`), so only the icon
+                            // itself was clickable. `!` to outrank it: the
+                            // row fills the rail and stands 36px tall — a
+                            // real target. The label then has to be hidden
+                            // EXPLICITLY: the primitive never hides it, it
+                            // just relies on the square's overflow clip, so
+                            // a wider button leaks the first letter of every
+                            // label.
+                            'group-data-[collapsible=icon]:size-auto! group-data-[collapsible=icon]:h-9! group-data-[collapsible=icon]:w-full! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0! group-data-[collapsible=icon]:[&>span]:hidden',
+                          )}
                         >
                           {/* No hover/focus prefetch here — every route is
                             warmed by `route-warmup` once the current screen
