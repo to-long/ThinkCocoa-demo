@@ -30,7 +30,11 @@ function SheetOverlay({
     <SheetPrimitive.Overlay
       data-slot="sheet-overlay"
       className={cn(
-        'fixed inset-0 z-50 bg-black/60 backdrop-blur-sm data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0',
+        // The durations match `SheetContent` below. Stock shadcn leaves them
+        // off, so the overlay ran at the 150ms default and the dimming
+        // vanished ~150ms before the panel finished sliding out — measured:
+        // overlay gone at 181ms, panel still travelling at 301ms.
+        'fixed inset-0 z-50 bg-black/60 backdrop-blur-sm data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-300 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:duration-500',
         className,
       )}
       {...props}

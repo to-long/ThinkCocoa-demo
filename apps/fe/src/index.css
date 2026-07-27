@@ -1,4 +1,10 @@
 @import "tailwindcss";
+/* The `animate-in` / `slide-in-from-*` / `zoom-in-95` utilities that every
+   shadcn overlay (dialog, popover, select, sheet, tooltip) is written
+   against. They come from `tailwindcss-animate`, whose Tailwind v4 port is
+   this package — without it all 7 of those class names resolve to nothing
+   and the overlays pop into place instead of animating. */
+@import "tw-animate-css";
 @source "./**/*.{ts,tsx}";
 
 @layer base {
