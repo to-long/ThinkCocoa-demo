@@ -40,6 +40,7 @@ export interface PurchaseListItem {
 interface ListFilters {
   activeCoopId: string;
   q?: string;
+  farmerId?: string;
   dateFrom?: string;
   dateTo?: string;
   districts?: string[];
@@ -72,6 +73,7 @@ export async function listPurchases(filters: ListFilters): Promise<ListResult> {
       )!,
     );
   }
+  if (filters.farmerId) conds.push(eq(cocoaPurchases.farmerId, filters.farmerId));
   if (filters.dateFrom) conds.push(gte(cocoaPurchases.purchaseDate, filters.dateFrom));
   if (filters.dateTo) conds.push(lte(cocoaPurchases.purchaseDate, filters.dateTo));
   if (filters.districts && filters.districts.length > 0) {

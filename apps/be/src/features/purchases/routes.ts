@@ -40,6 +40,10 @@ const listQuery = z.object({
   district: z.string().optional(), // CSV
   society: z.string().optional(), // CSV
   payment: z.string().optional(), // CSV cash,mobile_money,cheque,card
+  /** Exact farmer id — the farmer detail page's deliveries tile. `q`
+   *  would have worked by accident (purchase ids embed the farmer code)
+   *  but would also match any other column it happens to appear in. */
+  farmerId: z.string().optional(),
   sort: z.string().optional(),
 });
 
@@ -158,6 +162,7 @@ purchaseRoutes.openapi(
     const result = await listPurchases({
       activeCoopId: c.get('activeCoopId'),
       q: q.q,
+      farmerId: q.farmerId,
       dateFrom: q.dateFrom,
       dateTo: q.dateTo,
       districts: splitCsv(q.district),

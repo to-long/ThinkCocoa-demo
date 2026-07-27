@@ -58,6 +58,8 @@ export interface PurchaseListParams {
   page?: number;
   pageSize?: number;
   q?: string;
+  /** Exact farmer id — the farmer detail page's deliveries tile. */
+  farmerId?: string;
   dateFrom?: string;
   dateTo?: string;
   district?: string; // CSV
@@ -95,6 +97,7 @@ function normalize(p: PurchaseListParams) {
   if (p.page != null) out.page = p.page;
   if (p.pageSize != null) out.pageSize = p.pageSize;
   if (p.q) out.q = p.q;
+  if (p.farmerId) out.farmerId = p.farmerId;
   if (p.dateFrom) out.dateFrom = p.dateFrom;
   if (p.dateTo) out.dateTo = p.dateTo;
   if (p.district) out.district = p.district;
@@ -122,6 +125,7 @@ function buildQuery(p: PurchaseListParams): string {
   if (p.page != null) sp.set('page', String(p.page));
   if (p.pageSize != null) sp.set('pageSize', String(p.pageSize));
   if (p.q) sp.set('q', p.q);
+  if (p.farmerId) sp.set('farmerId', p.farmerId);
   if (p.dateFrom) sp.set('dateFrom', p.dateFrom);
   if (p.dateTo) sp.set('dateTo', p.dateTo);
   if (p.district) sp.set('district', p.district);

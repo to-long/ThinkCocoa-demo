@@ -247,7 +247,12 @@ export function FarmDetailPageContent({ parcelId }: Props) {
                 <span className="text-xs text-muted-foreground uppercase tracking-wide">
                   {t('farms.detail.eudrCompliance')}
                 </span>
-                <span className="text-foreground text-sm">{t(`farms.eudr.${eudrKey}`)}</span>
+                {/* A verdict, so it wears the same chip it does in the
+                    list — plain text made the one tile that carries a
+                    compliance decision look like a label. */}
+                <StatusTag tone={eudrTone} dot>
+                  {t(`farms.eudr.${eudrKey}`)}
+                </StatusTag>
               </div>
             </div>
 

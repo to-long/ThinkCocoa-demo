@@ -23,10 +23,10 @@ import {
   Pencil,
   Phone,
   RotateCcw,
+  Scale,
   ShieldAlert,
   ShieldCheck,
   Trash2,
-  Trees,
   User,
 } from 'lucide-react';
 import { useCallback, useState } from 'react';
@@ -51,6 +51,7 @@ import {
   useApiSuccessToast,
   useFarmer,
   useParcelsList,
+  usePurchasesList,
 } from '@/shared/api';
 import { BackButton } from '@/shared/components/composed/back-button';
 import { useBreadcrumb } from '@/shared/contexts/breadcrumb-context';
@@ -64,7 +65,6 @@ import { FarmerClmrsCard } from './farmer-clmrs-card';
 import { FarmerDialog } from './farmer-dialog';
 import { FarmerInspectionsCard } from './farmer-inspections-card';
 import { FarmerParcelsCard } from './farmer-parcels-card';
-import { ShadeSurvivalBadge } from './shade-survival-badge';
 
 interface Props {
   farmerId: string;
@@ -104,6 +104,24 @@ function joinPair(parts: (string | null | undefined)[], sep = ', '): string {
 
 /** Renewals window, same 90 days the farmers list and the BE filter use. */
 const RENEWAL_WINDOW_DAYS = 90;
+
+/**
+ * One verdict for a certificate's expiry date, so the tile at the top of
+ * the page and the card further down cannot disagree about whether a
+ * farmer is certified today.
+ */
+function certificateValidity(expiry: string | null): {
+  key: string;
+  tone: 'success' | 'caution' | 'danger' | 'neutral';
+  days: number;
+} {
+  if (!expiry) return { key: 'farmers.detail.raNoCertificate', tone: 'neutral', days: 0 };
+  const days = Math.ceil((new Date(expiry).getTime() - Date.now()) / 86_400_000);
+  if (days < 0) return { key: 'farmers.detail.raExpired', tone: 'danger', days: -days };
+  if (days <= RENEWAL_WINDOW_DAYS)
+    return { key: 'farmers.detail.raExpiringIn', tone: 'caution', days };
+  return { key: 'farmers.detail.raValid', tone: 'success', days };
+}
 
 /**
  * Expiry date plus how long the certificate still runs.
@@ -146,6 +164,15 @@ export function FarmerDetailPageContent({ farmerId }: Props) {
   // EUDR-compliant, out of the total. Reuses the same parcels query the
   // Parcels card runs (SWR-deduped → no extra request).
   const { data: parcelsResp } = useParcelsList({ farmerId, pageSize: 50 });
+  // Deliveries — what this farmer actually sold. Three of the four tiles
+  // are compliance; a page about a producer that never says how much they
+  // produced is missing the commercial half of the story. pageSize 200
+  // covers every farmer in the book (the busiest has a few dozen
+  // purchases) so the totals are exact, not page one's.
+  const { data: purchasesResp } = usePurchasesList({ farmerId, pageSize: 200 });
+  const purchases = purchasesResp?.items ?? [];
+  const deliveredKg = purchases.reduce((n, p) => n + (Number(p.weightKg) || 0), 0);
+  const deliveredGhs = purchases.reduce((n, p) => n + (Number(p.amountReceivedGhs) || 0), 0);
   const eudrParcels = parcelsResp?.items ?? [];
   const eudrTotal = eudrParcels.length;
   const eudrCompliant = eudrParcels.filter((p) => p.eudrStatus === 'compliant').length;
@@ -407,23 +434,37 @@ export function FarmerDetailPageContent({ farmerId }: Props) {
           const clmrsFlagged = clmrsRecords.filter((r) => !r.case).length;
           const clmrsHasCase = clmrsRecords.some((r) => r.case);
           const clmrsTone = clmrsOpen > 0 ? 'danger' : clmrsFlagged > 0 ? 'caution' : 'neutral';
+          // Certificate validity, shared by the tile above and the card
+          // below so the two can never disagree.
+          const certValidity = certificateValidity(farmer.raExpiryDate);
           return (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {/* The tile answers "can this farmer sell as certified
+                  today?", so it carries the certificate's VALIDITY, not
+                  the audit outcome — "Certified" beside a lapsed
+                  certificate is the contradiction this page used to
+                  print. The audit outcome keeps its place in the RA
+                  Certification card below, where the score and program
+                  year give it context. */}
               <div className="flex flex-row-reverse items-start gap-3 rounded-lg border border-border bg-card p-4 shadow-sm">
-                <StatusTag tone="success" variant="icon">
+                <StatusTag tone={certValidity.tone} variant="icon">
                   <ShieldCheck className="size-5" />
                 </StatusTag>
                 <div className="flex min-w-0 flex-1 flex-col gap-1">
                   <span className="text-xs text-muted-foreground uppercase tracking-wide">
                     {t('farmers.detail.certificationCard')}
                   </span>
-                  {farmer.latestCertification?.outcome ? (
-                    <CertificationOutcomeBadge outcome={farmer.latestCertification.outcome} />
-                  ) : (
-                    <span className="text-muted-foreground text-sm">
-                      {t('farmers.detail.latestCertificationNone')}
+                  <StatusTag tone={certValidity.tone} dot>
+                    {intl.formatMessage({ id: certValidity.key }, { n: certValidity.days })}
+                  </StatusTag>
+                  {farmer.raExpiryDate ? (
+                    <span className="text-muted-foreground text-xs">
+                      {intl.formatMessage(
+                        { id: 'farmers.detail.raValidUntilShort' },
+                        { date: formatGhanaDate(farmer.raExpiryDate) },
+                      )}
                     </span>
-                  )}
+                  ) : null}
                 </div>
               </div>
 
@@ -490,17 +531,39 @@ export function FarmerDetailPageContent({ farmerId }: Props) {
                 </div>
               </div>
 
+              {/* Replaced the shade-survival tile, which read "—" for most
+                  farmers because shade profiles are collected per parcel
+                  and only sporadically. */}
               <div className="flex flex-row-reverse items-start gap-3 rounded-lg border border-border bg-card p-4 shadow-sm">
-                <StatusTag tone="lime" variant="icon">
-                  <Trees className="size-5" />
+                <StatusTag tone="info" variant="icon">
+                  <Scale className="size-5" />
                 </StatusTag>
                 <div className="flex min-w-0 flex-1 flex-col gap-1">
                   <span className="text-xs text-muted-foreground uppercase tracking-wide">
-                    {t('farmers.detail.shadeSurvival')}
+                    {t('farmers.detail.delivered')}
                   </span>
-                  <div>
-                    <ShadeSurvivalBadge pct={farmer.shadeSurvivalPct} />
-                  </div>
+                  {purchases.length === 0 ? (
+                    <span className="text-muted-foreground text-sm">
+                      {t('farmers.detail.deliveredNone')}
+                    </span>
+                  ) : (
+                    <>
+                      <span className="font-semibold text-base text-foreground">
+                        {intl.formatNumber(deliveredKg, { maximumFractionDigits: 0 })} kg
+                      </span>
+                      <span className="text-muted-foreground text-xs">
+                        {intl.formatMessage(
+                          { id: 'farmers.detail.deliveredSummary' },
+                          {
+                            n: purchases.length,
+                            amount: intl.formatNumber(deliveredGhs, {
+                              maximumFractionDigits: 0,
+                            }),
+                          },
+                        )}
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

@@ -241,5 +241,12 @@
   "farmers.detail.raExpiryDate": "Hiệu lực đến",
   "farmers.detail.raNoCertificate": "Chưa có chứng chỉ",
   "farmers.detail.raRemaining": "còn {n} ngày",
-  "farmers.detail.raLapsedAgo": "hết hạn {n} ngày trước"
+  "farmers.detail.raLapsedAgo": "hết hạn {n} ngày trước",
+  "farmers.detail.raValid": "Còn hiệu lực",
+  "farmers.detail.raExpiringIn": "Hết hạn sau {n} ngày",
+  "farmers.detail.raExpired": "Hết hạn {n} ngày trước",
+  "farmers.detail.raValidUntilShort": "đến {date}",
+  "farmers.detail.delivered": "Đã giao",
+  "farmers.detail.deliveredNone": "Chưa có giao dịch",
+  "farmers.detail.deliveredSummary": "{n} giao dịch · ₵{amount}"
 }

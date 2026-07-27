@@ -251,5 +251,12 @@
   "farmers.detail.raExpiryDate": "Valid until",
   "farmers.detail.raNoCertificate": "No certificate",
   "farmers.detail.raRemaining": "{n} days left",
-  "farmers.detail.raLapsedAgo": "lapsed {n} days ago"
+  "farmers.detail.raLapsedAgo": "lapsed {n} days ago",
+  "farmers.detail.raValid": "Valid",
+  "farmers.detail.raExpiringIn": "Expiring in {n}d",
+  "farmers.detail.raExpired": "Expired {n}d ago",
+  "farmers.detail.raValidUntilShort": "until {date}",
+  "farmers.detail.delivered": "Delivered",
+  "farmers.detail.deliveredNone": "No purchases recorded",
+  "farmers.detail.deliveredSummary": "{n} {n, plural, one {purchase} other {purchases}} · ₵{amount}"
 }
