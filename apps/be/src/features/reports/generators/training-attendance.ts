@@ -23,6 +23,7 @@ import { db } from '../../../db/client';
 import { farmers } from '../../../db/schema/farmer';
 import { trainingAttendance, trainingSessions } from '../../../db/schema/training';
 import { seasonToDateRange, seasonToSlug } from '../lib/season';
+import { setFormula } from '../lib/summary-cells';
 import { readReportTemplate } from '../lib/templates';
 
 export type TrainingAttendanceFormat = 'excel' | 'csv';
@@ -232,13 +233,30 @@ async function buildXlsx(rows: AttendeeRow[], totals: Totals): Promise<Buffer> {
   // sits directly under the headers.
   sheet.spliceRows(5, 1);
 
-  // Summary cells (row 2).
-  sheet.getCell('B2').value = totals.records;
-  sheet.getCell('G2').value = totals.sessions;
-  sheet.getCell('L2').value = totals.male;
-  sheet.getCell('P2').value = totals.female;
-  sheet.getCell('T2').value = totals.farmers;
-  sheet.getCell('Y2').value = totals.consent;
+  // Summary cells (row 2). These were plain numbers — correct in every app,
+  // but they replaced the template's formulas, so the KPI row stopped being
+  // live: widen the data and the totals no longer move. Now both, formula +
+  // cached result (see `lib/summary-cells.ts`).
+  //
+  // The template's own ranges are NOT reusable here. They were authored
+  // against a layout where the data started on row 6 and gender sat in P;
+  // this sheet drops the spec row (so data starts at DATA_START_ROW) and
+  // holds gender in Q, category in N, participant name in P. Reusing them
+  // would count "Male" in the NAME column — a plausible zero.
+  const span = (col: string) => `${col}${DATA_START_ROW}:${col}${DATA_END_ROW}`;
+  setFormula(sheet, 'B2', `COUNTA(${span('A')})`, totals.records);
+  setFormula(
+    sheet,
+    'G2',
+    `IFERROR(SUMPRODUCT(1/COUNTIF(${span('A')},${span('A')})*(${span('A')}<>"")),0)`,
+    totals.sessions,
+  );
+  setFormula(sheet, 'L2', `COUNTIF(${span('Q')},"Male")`, totals.male);
+  setFormula(sheet, 'P2', `COUNTIF(${span('Q')},"Female")`, totals.female);
+  // `farmers` counts rows carrying a farmer code, which is what the label
+  // "Farmers attending" means here — not the participant-category text.
+  setFormula(sheet, 'T2', `COUNTA(${span('O')})`, totals.farmers);
+  setFormula(sheet, 'Y2', `COUNTIF(${span('R')},"Yes")`, totals.consent);
 
   const wipeEnd = Math.max(DATA_END_ROW, DATA_START_ROW + rows.length);
   for (let r = DATA_START_ROW; r <= wipeEnd; r++) {

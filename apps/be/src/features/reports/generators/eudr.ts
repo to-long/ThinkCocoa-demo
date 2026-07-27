@@ -34,6 +34,7 @@ import {
   secondaryEvacLots,
 } from '../../../db/schema/secondary-evacuation';
 import { seasonToDateRange, seasonToSlug } from '../lib/season';
+import { countWhere, ratioOr, setFormula, sumOf } from '../lib/summary-cells';
 import { readReportTemplate } from '../lib/templates';
 
 export type EudrReportFormat = 'excel' | 'csv';
@@ -374,10 +375,50 @@ async function buildXlsx(rows: EudrRow[]): Promise<Buffer> {
     row.commit();
   }
 
+  writeSummary(sheet, rows);
   wb.calcProperties.fullCalcOnLoad = true;
 
   const arrayBuf = await wb.xlsx.writeBuffer();
   return Buffer.from(arrayBuf);
+}
+
+/**
+ * Row-2 KPIs, formula + cached result (see `lib/summary-cells.ts`).
+ *
+ * This template is the worst of the set: three of its six KPIs were
+ * `COUNTIF(#REF!,…)` — the range was deleted when the sheet was edited, so
+ * the formula could never produce anything but `#REF!`, in every app, and
+ * page 1 of the PDF printed the error. Compliance status is column O, so
+ * that is what they count now.
+ */
+function writeSummary(sheet: ExcelJS.Worksheet, rows: EudrRow[]): void {
+  const span = (col: string) => `${col}${DATA_START_ROW}:${col}${DATA_END_ROW}`;
+  const total = rows.length;
+  const byStatus = (status: EudrCompliance) =>
+    countWhere(rows, (r) => r.complianceStatus === status);
+  const compliant = byStatus('COMPLIANT');
+
+  setFormula(sheet, 'B2', `COUNTA(${span('A')})`, total);
+  setFormula(sheet, 'G2', `COUNTIF(${span('O')},"COMPLIANT")`, compliant);
+  setFormula(sheet, 'K2', `COUNTIF(${span('O')},"HIGH RISK")`, byStatus('HIGH RISK'));
+  setFormula(
+    sheet,
+    'O2',
+    `COUNTIF(${span('O')},"PENDING ASSESSMENT")`,
+    byStatus('PENDING ASSESSMENT'),
+  );
+  setFormula(
+    sheet,
+    'S2',
+    `IFERROR(SUM(${span('H')}),"—")`,
+    sumOf(rows, (r) => r.areaHa),
+  );
+  setFormula(
+    sheet,
+    'W2',
+    `IFERROR(COUNTIF(${span('O')},"COMPLIANT")/COUNTA(${span('A')}),"—")`,
+    ratioOr(compliant, total),
+  );
 }
 
 const CSV_COLUMNS: ReadonlyArray<{ header: string; pick: (r: EudrRow) => string | number | null }> =

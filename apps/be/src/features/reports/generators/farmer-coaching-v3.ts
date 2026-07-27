@@ -23,6 +23,7 @@ import { farmers } from '../../../db/schema/farmer';
 import { cooperatives } from '../../../db/schema/iam';
 import { correctiveActions } from '../../../db/schema/inspection';
 import { seasonToDateRange, seasonToSlug } from '../lib/season';
+import { countWhere, ratioOr, setFormula } from '../lib/summary-cells';
 import { readReportTemplate } from '../lib/templates';
 
 export type CoachingReportFormat = 'excel' | 'csv';
@@ -309,6 +310,13 @@ function followUpDateCell(row: Row): string | null {
   return row.caActionDate ?? row.followUpDate;
 }
 
+/** `YYYY-MM-DD` → `DD/MM/YY`, matching the T2 summary cell's TEXT() mask so
+ *  the cached result reads identically to a recalculated one. */
+function formatDdMmYy(iso: string): string {
+  const [y, m, d] = iso.slice(0, 10).split('-');
+  return y && m && d ? `${d}/${m}/${y.slice(2)}` : iso;
+}
+
 function fmtBoolYesNo(v: boolean | null): string | null {
   if (v == null) return null;
   return v ? 'Yes' : 'No';
@@ -370,15 +378,48 @@ async function buildXlsx(rows: Row[]): Promise<Buffer> {
   // open follow-ups: col T (Follow-Up Required), CLMRS at-risk: col P
   // (Risk Level), % compliant: col R. (O2 especially must move off R,
   // which now holds NC Yes/No — otherwise it would count every row.)
-  const SUMMARY_FORMULA_FIXES: ReadonlyArray<readonly [string, string]> = [
-    ['G2', 'COUNTIF(R5:R1004,"Yes")'],
-    ['K2', 'COUNTIF(T5:T1004,"Yes")'],
-    ['O2', 'COUNTIFS(P5:P1004,"<>No Risk",P5:P1004,"<>")'],
-    ['Y2', 'IFERROR(COUNTIF(R5:R1004,"No")/COUNTA(A5:A1004),"—")'],
-  ];
-  for (const [addr, formula] of SUMMARY_FORMULA_FIXES) {
-    sheet.getCell(addr).value = { formula };
-  }
+  // Each carries its computed result as well — a formula alone has no
+  // cached value, and Google Sheets / Numbers show exactly the cached value
+  // (blank, here). See `lib/summary-cells.ts`.
+  //
+  // T2 ("Next follow-up due") is repointed too, and off `MIN(IF(…))` — an
+  // array formula, which ExcelJS cannot write with the CSE marker older
+  // Excel needs. `MINIFS` is an ordinary function over the same two columns.
+  const total = rows.length;
+  const nc = countWhere(rows, (r) => r.nonComplianceObserved === 'Yes');
+  const compliant = countWhere(rows, (r) => r.nonComplianceObserved === 'No');
+  const nextFollowUp = rows
+    .filter((r) => r.followUpRequired)
+    .map(followUpDateCell)
+    .filter((d): d is string => !!d)
+    .sort()[0];
+
+  setFormula(sheet, 'B2', 'COUNTA(A5:A1004)', total);
+  setFormula(sheet, 'G2', 'COUNTIF(R5:R1004,"Yes")', nc);
+  setFormula(
+    sheet,
+    'K2',
+    'COUNTIF(T5:T1004,"Yes")',
+    countWhere(rows, (r) => r.followUpRequired),
+  );
+  setFormula(
+    sheet,
+    'O2',
+    'COUNTIFS(P5:P1004,"<>No Risk",P5:P1004,"<>")',
+    countWhere(rows, (r) => !!r.clmrsRiskLevel && r.clmrsRiskLevel !== 'No Risk'),
+  );
+  setFormula(
+    sheet,
+    'T2',
+    'IFERROR(TEXT(MINIFS(U5:U1004,T5:T1004,"Yes"),"DD/MM/YY"),"—")',
+    nextFollowUp ? formatDdMmYy(nextFollowUp) : '—',
+  );
+  setFormula(
+    sheet,
+    'Y2',
+    'IFERROR(COUNTIF(R5:R1004,"No")/COUNTA(A5:A1004),"—")',
+    ratioOr(compliant, total),
+  );
 
   // Wipe the spec-annotation row (and any leftover sample data within
   // the formula range) so the row-2 COUNTA/COUNTIF formulas reflect

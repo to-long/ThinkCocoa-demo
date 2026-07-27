@@ -38,6 +38,7 @@ import { farmers } from '../../../db/schema/farmer';
 import { cooperatives } from '../../../db/schema/iam';
 import { inspections } from '../../../db/schema/inspection';
 import { seasonToDateRange, seasonToSlug } from '../lib/season';
+import { countWhere, ratioOr, setFormula } from '../lib/summary-cells';
 import { readReportTemplate } from '../lib/templates';
 
 export type CorrectiveActionsFormat = 'excel' | 'csv';
@@ -278,10 +279,53 @@ async function buildXlsx(rows: CARow[]): Promise<Buffer> {
     row.commit();
   }
 
+  writeSummary(sheet, rows);
   wb.calcProperties.fullCalcOnLoad = true;
 
   const arrayBuf = await wb.xlsx.writeBuffer();
   return Buffer.from(arrayBuf);
+}
+
+/**
+ * Row-2 KPIs, formula + cached result (see `lib/summary-cells.ts`). These
+ * ranges are the template's own — status is column R and the due date is
+ * column N, which is where this generator writes them.
+ *
+ * "⚠ Overdue" keeps its `TODAY()` formula, so the live workbook re-evaluates
+ * as the file ages, while the cached result is `daysOverdue` — same
+ * definition (open/in-progress AND past due), evaluated at generation time.
+ */
+function writeSummary(sheet: ExcelJS.Worksheet, rows: CARow[]): void {
+  const span = (col: string) => `${col}${DATA_START_ROW}:${col}${DATA_END_ROW}`;
+  const total = rows.length;
+  const closed = countWhere(rows, (r) => r.status === 'Closed');
+
+  setFormula(sheet, 'B2', `COUNTA(${span('A')})`, total);
+  setFormula(
+    sheet,
+    'F2',
+    `COUNTIF(${span('R')},"Open")`,
+    countWhere(rows, (r) => r.status === 'Open'),
+  );
+  setFormula(
+    sheet,
+    'J2',
+    `COUNTIF(${span('R')},"In Progress")`,
+    countWhere(rows, (r) => r.status === 'In Progress'),
+  );
+  setFormula(sheet, 'N2', `COUNTIF(${span('R')},"Closed")`, closed);
+  setFormula(
+    sheet,
+    'R2',
+    `COUNTIFS(${span('R')},"<>Closed",${span('R')},"<>Waived",${span('N')},"<"&TODAY())`,
+    countWhere(rows, (r) => r.daysOverdue != null),
+  );
+  setFormula(
+    sheet,
+    'V2',
+    `IFERROR(COUNTIF(${span('R')},"Closed")/COUNTA(${span('A')}),"—")`,
+    ratioOr(closed, total),
+  );
 }
 
 const CSV_COLUMNS: ReadonlyArray<{ header: string; pick: (r: CARow) => string | number | null }> = [

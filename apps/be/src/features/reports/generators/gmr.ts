@@ -28,6 +28,7 @@ import { parcels } from '../../../db/schema/gis';
 import { cooperatives } from '../../../db/schema/iam';
 import { inspections } from '../../../db/schema/inspection';
 import { seasonToDateRange, seasonToSlug } from '../lib/season';
+import { countWhere, type FormulaResult, ratioOr, setFormula, sumOf } from '../lib/summary-cells';
 import { readReportTemplate } from '../lib/templates';
 
 export type GmrReportFormat = 'excel' | 'csv';
@@ -56,6 +57,7 @@ const DATA_END_ROW = 104;
 const TAB_FARM = '1. Farm Information';
 const TAB_CROP = '2. Certified Crop';
 const TAB_UNIT = '3. Farm Unit';
+const TAB_DASHBOARD = 'Dashboard';
 const STRIP_SHEETS = new Set(['DB Field Mapping']);
 
 interface PlotRow {
@@ -289,11 +291,72 @@ function adjustFormulaRow(formula: string, n: number): string {
   return formula.replace(/(\$?[A-Z]+)\$?5\b/g, `$1${n}`);
 }
 
+/**
+ * Per-row result for each formula column, mirroring the template formula
+ * printed above it. A formula with no cached result is BLANK in Google
+ * Sheets and Numbers (they never recalculate) — 300 cells' worth on this
+ * workbook. See `lib/summary-cells.ts`.
+ *
+ * The three presence checks are unconditional `✓`: every plot row is
+ * written to all three tabs by `buildXlsx`, so a cross-tab COUNTIF can
+ * never miss. If that ever stops being true, these become real lookups.
+ */
+const FORMULA_RESULTS: Record<string, (r: PlotRow) => FormulaResult> = {
+  // 1. Farm Information — present in tab 2 / tab 3.
+  AA: () => '✓ Present',
+  AB: () => '✓ Present',
+  // 2. Certified Crop. D=area, E=next-season estimate, F=harvest, G=volume
+  // sold to the group; 64 kg is the standard bag.
+  H: () => '✓',
+  I: (r) => (num(r.volumeSoldGroup) > num(r.harvestCurrentSeason) ? '⚠ Vol>Harvest' : 'OK'),
+  J: (r) => div(num(r.estimateNextSeason) - num(r.harvestCurrentSeason), r.harvestCurrentSeason),
+  K: (r) => div(num(r.estimateNextSeason), r.areaHa),
+  L: (r) => div(num(r.harvestCurrentSeason), r.areaHa),
+  M: (r) => div(num(r.volumeSoldGroup), r.harvestCurrentSeason),
+  N: (r) => div(num(r.estimateNextSeason), 64),
+  O: (r) => div(num(r.harvestCurrentSeason), 64),
+  P: (r) => div(num(r.volumeSoldGroup), 64),
+};
+
+/** Tab 3 shares column letters F/G/H/I with tab 2 but means different
+ *  things by them, so it gets its own map. */
+const FORMULA_RESULTS_UNIT: Record<string, (r: PlotRow) => FormulaResult> = {
+  F: () => '✓',
+  G: (r) => latLonVerdict(r.latitude, 90),
+  H: (r) => latLonVerdict(r.longitude, 180),
+  // "★ Largest" marks the biggest farm unit within a plot. One unit per
+  // plot here (unit ID = plot ID), so every row is its own maximum.
+  I: () => '★ Largest',
+};
+
+const num = (v: number | null | undefined): number => (typeof v === 'number' ? v : 0);
+
+/** `IFERROR(IF(AND(ISNUMBER(..),divisor<>0), a/divisor, "—"), " ")`. */
+function div(a: number, divisor: number | null | undefined): FormulaResult {
+  return typeof divisor === 'number' && divisor !== 0 ? a / divisor : '—';
+}
+
+/**
+ * `IF(v="","",IF(AND(ISNUMBER(v),-limit<=v<=limit),"✓ Valid","⚠ Check value"))`.
+ *
+ * The blank branch returns `''`, which ExcelJS cannot store: its model copy
+ * guards on `if (value)` and drops every falsy result. The cell ends up with
+ * a formula and no cached value — which renders blank, exactly what `""`
+ * renders as. So the omission is harmless HERE, and only here; a cached `0`
+ * survives (verified) because the drop happens in the value copy, not the
+ * writer.
+ */
+function latLonVerdict(v: number | null | undefined, limit: number): FormulaResult {
+  if (v == null) return '';
+  return v >= -limit && v <= limit ? '✓ Valid' : '⚠ Check value';
+}
+
 function writeDataSheet(
   sheet: ExcelJS.Worksheet,
   cellMap: ReadonlyArray<{ col: string; value: (r: PlotRow) => unknown }>,
   formulaCols: string[],
   rows: PlotRow[],
+  results: Record<string, (r: PlotRow) => FormulaResult> = FORMULA_RESULTS,
 ): void {
   // Snapshot row-5 formula text for each formula column.
   const formulaTemplates = new Map<string, string>();
@@ -343,10 +406,109 @@ function writeDataSheet(
       const tpl = formulaTemplates.get(col);
       if (!tpl) continue;
       const formula = adjustFormulaRow(tpl, rowIdx);
-      row.getCell(col).value = { formula, date1904: false };
+      const result = results[col]?.(data);
+      row.getCell(col).value = { formula, date1904: false, result } as ExcelJS.CellValue;
     }
     row.commit();
   }
+}
+
+/**
+ * The Dashboard tab's 21 indicators, formula + cached result.
+ *
+ * Two ranges change here:
+ *   - Every range was hard-capped at row 104, the template's styled depth.
+ *     A cooperative with more than 100 plots silently dropped the rest from
+ *     every total. They now span the data actually written.
+ *   - "Farms with missing inspection data" counted `⚠ MISSING!` in column W,
+ *     which holds the inspector CODE — a marker that never appears there, so
+ *     the answer was always 0. Blank inspector is what the label describes.
+ */
+function writeDashboard(sheet: ExcelJS.Worksheet, rows: PlotRow[]): void {
+  const end = Math.max(DATA_END_ROW, DATA_START_ROW + rows.length - 1);
+  const at = (tab: string, col: string) => `'${tab}'!${col}${DATA_START_ROW}:${col}${end}`;
+  const farm = (col: string) => at(TAB_FARM, col);
+  const crop = (col: string) => at(TAB_CROP, col);
+  const unit = (col: string) => at(TAB_UNIT, col);
+
+  const area = sumOf(rows, (r) => r.areaHa);
+  const estimate = sumOf(rows, (r) => r.estimateNextSeason);
+  const harvest = sumOf(rows, (r) => r.harvestCurrentSeason);
+
+  // Tab 1 — completeness.
+  setFormula(sheet, 'C5', `COUNTA(${farm('A')})`, rows.length);
+  setFormula(
+    sheet,
+    'C6',
+    `COUNTBLANK(${farm('W')})`,
+    countWhere(rows, (r) => !r.inspectorCode),
+  );
+  // AB is tab 1's "present in tab 3" check — every plot row is written to
+  // all three tabs, so nothing is ever missing.
+  setFormula(sheet, 'C7', `COUNTIF(${farm('AB')},"⚠ MISSING!")`, 0);
+
+  // Tab 2 — certified crop.
+  setFormula(sheet, 'C9', `COUNTA(${crop('A')})`, rows.length);
+  setFormula(sheet, 'C10', `SUM(${crop('D')})`, area);
+  setFormula(sheet, 'C11', `SUM(${crop('E')})`, estimate);
+  setFormula(sheet, 'C12', `SUM(${crop('F')})`, harvest);
+  setFormula(
+    sheet,
+    'C13',
+    `SUM(${crop('G')})`,
+    sumOf(rows, (r) => r.volumeSoldGroup),
+  );
+  setFormula(
+    sheet,
+    'C14',
+    `IFERROR(SUM(${crop('E')})/SUM(${crop('D')}),"—")`,
+    ratioOr(estimate, area),
+  );
+  setFormula(
+    sheet,
+    'C15',
+    `IFERROR(SUM(${crop('F')})/SUM(${crop('D')}),"—")`,
+    ratioOr(harvest, area),
+  );
+  setFormula(
+    sheet,
+    'C16',
+    `COUNTIF(${crop('I')},"⚠ Vol>Harvest")`,
+    countWhere(rows, (r) => num(r.volumeSoldGroup) > num(r.harvestCurrentSeason)),
+  );
+
+  // Tab 3 — farm units / GPS. The two error counts follow the formula's own
+  // definition: out-of-range coordinates. A blank coordinate yields "" on
+  // the row, so it is not counted despite the label saying "/ missing".
+  setFormula(sheet, 'C18', `COUNTA(${unit('A')})`, rows.length);
+  setFormula(sheet, 'C19', `SUM(${unit('C')})`, area);
+  setFormula(
+    sheet,
+    'C20',
+    `COUNTIF(${unit('G')},"⚠ Check value")`,
+    countWhere(rows, (r) => latLonVerdict(r.latitude, 90) === '⚠ Check value'),
+  );
+  setFormula(
+    sheet,
+    'C21',
+    `COUNTIF(${unit('H')},"⚠ Check value")`,
+    countWhere(rows, (r) => latLonVerdict(r.longitude, 180) === '⚠ Check value'),
+  );
+  setFormula(sheet, 'C22', `COUNTIF(${unit('I')},"★ Largest")`, rows.length);
+
+  // Workforce.
+  setFormula(
+    sheet,
+    'C24',
+    `SUM(${farm('U')})`,
+    sumOf(rows, (r) => r.permanentStaff),
+  );
+  setFormula(
+    sheet,
+    'C25',
+    `SUM(${farm('V')})`,
+    sumOf(rows, (r) => r.temporaryStaff),
+  );
 }
 
 async function buildXlsx(rows: PlotRow[]): Promise<Buffer> {
@@ -372,7 +534,17 @@ async function buildXlsx(rows: PlotRow[]): Promise<Buffer> {
 
   writeDataSheet(farmSheet, TAB_FARM_CELLS, FORMULA_COLS_BY_SHEET[TAB_FARM] ?? [], rows);
   writeDataSheet(cropSheet, TAB_CROP_CELLS, FORMULA_COLS_BY_SHEET[TAB_CROP] ?? [], rows);
-  writeDataSheet(unitSheet, TAB_UNIT_CELLS, FORMULA_COLS_BY_SHEET[TAB_UNIT] ?? [], rows);
+  writeDataSheet(
+    unitSheet,
+    TAB_UNIT_CELLS,
+    FORMULA_COLS_BY_SHEET[TAB_UNIT] ?? [],
+    rows,
+    FORMULA_RESULTS_UNIT,
+  );
+
+  // The Dashboard reads from the three data tabs, so it goes last.
+  const dashboard = wb.getWorksheet(TAB_DASHBOARD);
+  if (dashboard) writeDashboard(dashboard, rows);
 
   wb.calcProperties.fullCalcOnLoad = true;
 

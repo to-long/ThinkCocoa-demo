@@ -31,6 +31,7 @@ import { farmers } from '../../../db/schema/farmer';
 import { cooperatives } from '../../../db/schema/iam';
 import { inspections } from '../../../db/schema/inspection';
 import { seasonToDateRange, seasonToSlug } from '../lib/season';
+import { countWhere, ratioOr, setFormula } from '../lib/summary-cells';
 import { readReportTemplate } from '../lib/templates';
 
 export type CertificationReportFormat = 'excel' | 'csv';
@@ -247,10 +248,42 @@ async function buildXlsx(rows: Row[]): Promise<Buffer> {
     row.commit();
   }
 
+  writeSummary(sheet, rows);
   wb.calcProperties.fullCalcOnLoad = true;
 
   const arrayBuf = await wb.xlsx.writeBuffer();
   return Buffer.from(arrayBuf);
+}
+
+/**
+ * Row-2 KPIs, formula + cached result — see `lib/summary-cells.ts` for why
+ * the result matters.
+ *
+ * Two of these ranges are also CORRECTED here. The template counts tiers in
+ * column G, which in the current layout holds the inspection DATE — column I
+ * is the tier label. Every tier KPI therefore read 0 in Excel too, which is
+ * exactly the failure mode a plausible zero hides.
+ */
+function writeSummary(sheet: ExcelJS.Worksheet, rows: Row[]): void {
+  const span = (col: string) => `${col}${DATA_START_ROW}:${col}${DATA_END_ROW}`;
+  const total = rows.length;
+  const approved = countWhere(rows, (r) => r.tier === 'certified');
+  const withConditions = countWhere(rows, (r) => r.tier === 'certified_with_ca');
+  const notApproved = countWhere(rows, (r) => r.tier === 'not_certified');
+
+  setFormula(sheet, 'B2', `COUNTA(${span('A')})`, total);
+  setFormula(sheet, 'F2', `COUNTIF(${span('I')},"Approved")`, approved);
+  setFormula(sheet, 'J2', `COUNTIF(${span('I')},"Approved with Conditions")`, withConditions);
+  setFormula(sheet, 'N2', `COUNTIF(${span('I')},"Not Approved")`, notApproved);
+  // Column R (CA status) is blank until a corrective-actions table lands, so
+  // this is a true zero rather than a mis-pointed range.
+  setFormula(sheet, 'R2', `COUNTIF(${span('R')},"⚠ Overdue")`, 0);
+  setFormula(
+    sheet,
+    'V2',
+    `IFERROR(COUNTIF(${span('I')},"Approved")/COUNTA(${span('A')}),"—")`,
+    ratioOr(approved, total),
+  );
 }
 
 const CSV_COLUMNS: ReadonlyArray<{ header: string; pick: (r: Row) => string | number | null }> = [

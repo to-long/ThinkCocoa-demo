@@ -26,6 +26,7 @@ import { parcels } from '../../../db/schema/gis';
 import { cooperatives } from '../../../db/schema/iam';
 import { inspections } from '../../../db/schema/inspection';
 import { seasonToDateRange, seasonToSlug } from '../lib/season';
+import { countWhere, setFormula, sumOf } from '../lib/summary-cells';
 import { readReportTemplate } from '../lib/templates';
 
 export type TraceabilityReportFormat = 'excel' | 'csv';
@@ -225,10 +226,48 @@ async function buildXlsx(rows: Row[]): Promise<Buffer> {
     row.commit();
   }
 
+  writeSummary(sheet, rows);
   wb.calcProperties.fullCalcOnLoad = true;
 
   const arrayBuf = await wb.xlsx.writeBuffer();
   return Buffer.from(arrayBuf);
+}
+
+/**
+ * Row-2 KPIs, formula + cached result (see `lib/summary-cells.ts`).
+ *
+ * Two ranges are corrected against the labels above them:
+ *   - "Total max capacity (kg)" summed column L, which holds the per-hectare
+ *     CONSTANT (800) repeated on every row — so it returned 800 × rows.
+ *     Capacity is column M.
+ *   - "Plots with GPS" counted `M>0` (capacity again). GPS lives in N/O, and
+ *     `>0` would have been wrong there regardless: Ghana's longitudes are
+ *     negative. `COUNT` over the longitude column counts numeric cells,
+ *     which is precisely "has a coordinate".
+ */
+function writeSummary(sheet: ExcelJS.Worksheet, rows: Row[]): void {
+  const span = (col: string) => `${col}${DATA_START_ROW}:${col}${DATA_END_ROW}`;
+
+  setFormula(sheet, 'B2', `COUNTA(${span('B')})`, rows.length);
+  setFormula(
+    sheet,
+    'F2',
+    `IFERROR(SUM(${span('D')}),"—")`,
+    sumOf(rows, (r) => r.areaHa),
+  );
+  setFormula(
+    sheet,
+    'J2',
+    `IFERROR(SUM(${span('J')}),"—")`,
+    sumOf(rows, (r) => r.harvestKg),
+  );
+  setFormula(sheet, 'N2', `IFERROR(SUM(${span('M')}),"—")`, sumOf(rows, maxCapacityKg));
+  setFormula(
+    sheet,
+    'R2',
+    `COUNT(${span('N')})`,
+    countWhere(rows, (r) => r.longitude != null && r.latitude != null),
+  );
 }
 
 const CSV_COLUMNS: ReadonlyArray<{ header: string; pick: (r: Row) => string | number | null }> = [
