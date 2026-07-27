@@ -56,7 +56,7 @@ not to.
   click it to clear that one filter. Filters live in the URL, so you can
   paste a filtered view to a colleague and they see exactly the same rows.
 - **Sort** — click a column header; click again to reverse.
-- **Row → detail** — click the row. Codes with a `↗` jump to that
+- **Row → detail** — click the row. Codes with an open-in arrow jump to that
   record's own page (farmer → their plots, plot → its farmer).
 - **History** — the button at the top right of a list opens the audit
   trail for that kind of record.
@@ -108,7 +108,7 @@ date, **RA Certificate**, CLMRS status and outstanding corrective actions.
   across their plots, and kilos delivered; then profile, household,
   RA certificate (number, certifying body, audit date, time left),
   plots, coaching and CLMRS history.
-- **Add Farmer** — the ⋮ menu also holds **Import CSV**, which
+- **Add Farmer** — the **more** menu (three dots, top right) also holds **Import CSV**, which
   takes the sample file from `docs/import-samples/`.
 
 *Line that works:* "One screen per producer, and the registration flow
@@ -173,7 +173,7 @@ seconds — download it and open it in front of them.
 ### Notifications (the bell, top right)
 
 Every change in the system: who, what, when, and the field-by-field diff.
-Filter by user or record with the ↑ button that appears on hover.
+Filter by user or record with the arrow button that appears on hover.
 Auditors ask about this.
 
 ### Administration

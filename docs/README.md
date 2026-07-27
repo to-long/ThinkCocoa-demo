@@ -5,7 +5,7 @@ call, or use to put the environment back the way it was.
 
 | Path | What it is |
 |---|---|
-| [`SALES_DEMO_GUIDE.md`](SALES_DEMO_GUIDE.md) | Two pages for the sales team: sign-in, a ten-minute walkthrough, and how to reset |
+| [`SALES_DEMO_GUIDE.md`](SALES_DEMO_GUIDE.md) | The sales team's manual: sign-in, how the app works, a module-by-module tour, reset. `SALES_DEMO_GUIDE.pdf` beside it is the version to hand out — regenerate it after editing the markdown (see below) |
 | [`import-samples/`](import-samples/) | Ready-to-upload farmers / parcel-polygon / EUDR files + their column reference |
 | `demo-db-dump.sql.gz.enc` | Encrypted snapshot of the whole demo database (see below) |
 
@@ -83,3 +83,17 @@ and skip the restore prompt with `RESTORE_YES=1`.
 Re-run `db:dump` whenever the demo baseline changes in a way the seed
 doesn't reproduce (new demo accounts, curated records, edited copy) and
 commit the result.
+
+## Regenerating the sales guide PDF
+
+`SALES_DEMO_GUIDE.pdf` is a build artefact of the markdown next to it —
+edit the `.md`, never the PDF, then:
+
+```bash
+cd docs && pandoc SALES_DEMO_GUIDE.md -o SALES_DEMO_GUIDE.pdf \
+  --pdf-engine=tectonic -V geometry:margin=2cm -V fontsize=10pt -V colorlinks=true
+```
+
+Needs `pandoc` + `tectonic` (`brew install pandoc tectonic`). Keep the
+prose free of glyphs Latin Modern lacks — `⋮`, `↗`, `↑` all dropped
+silently in the first render; arrows written as `→` are fine.
