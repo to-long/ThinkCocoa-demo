@@ -1,12 +1,13 @@
 /**
- * Dashboard landing view. Four top-level tabs — `farmers`, `farms`,
- * `traceability` (evacuation lots + purchases folded in), and `vsla`.
+ * Dashboard landing view. Four top-level tabs — `traceability`
+ * (evacuation lots + purchases folded in), `farmers`, `farms` and `vsla`.
  *
- * The Farmers tab (default active) is statically imported so the first
- * paint needs no extra chunk. The other three are code-split
- * (`lazyRoute`) — their components + breakdown charts (chart.js) load
- * only when a tab is opened, and are warmed on browser idle so a switch
- * still feels instant. Radix unmounts inactive tab content, so each
+ * Traceability leads and is the default, but stays code-split: it pulls
+ * the breakdown charts, and chart.js in the initial bundle is the very
+ * thing the split exists to avoid — importing it statically blanked the
+ * whole page. Farmers is the one statically imported tab (it has no
+ * charts of its own). The lazy tabs are warmed on browser idle so a
+ * switch still feels instant. Radix unmounts inactive tab content, so each
  * tab's data hooks fire only when that tab is shown.
  */
 
@@ -32,7 +33,7 @@ export function DashboardPageContent() {
   // Farms / Traceability / VSLA opens instantly instead of fetching a
   // chunk (chart.js included) on click. Doesn't compete with first paint.
   useEffect(
-    () => preloadWhenIdle([FarmsTab.preload, TraceabilityTab.preload, VslaTab.preload]),
+    () => preloadWhenIdle([TraceabilityTab.preload, FarmsTab.preload, VslaTab.preload]),
     [],
   );
 
@@ -43,8 +44,12 @@ export function DashboardPageContent() {
         <p className="text-muted-foreground text-sm">{t('dashboard.subtitle')}</p>
       </div>
 
-      <Tabs defaultValue="farmers" className="flex flex-col gap-4">
+      <Tabs defaultValue="traceability" className="flex flex-col gap-4">
         <TabsList className="w-fit">
+          <TabsTrigger value="traceability" className="gap-2">
+            <PackageCheck className="size-4" />
+            {t('dashboard.tabs.traceability')}
+          </TabsTrigger>
           <TabsTrigger value="farmers" className="gap-2">
             <UsersIcon className="size-4" />
             {t('dashboard.tabs.farmers')}
@@ -53,27 +58,23 @@ export function DashboardPageContent() {
             <Leaf className="size-4" />
             {t('dashboard.tabs.farms')}
           </TabsTrigger>
-          <TabsTrigger value="traceability" className="gap-2">
-            <PackageCheck className="size-4" />
-            {t('dashboard.tabs.traceability')}
-          </TabsTrigger>
           <TabsTrigger value="vsla" className="gap-2">
             <PiggyBank className="size-4" />
             {t('dashboard.tabs.vsla')}
           </TabsTrigger>
         </TabsList>
 
+        <TabsContent value="traceability">
+          <Suspense fallback={<PageLoader />}>
+            <TraceabilityTab />
+          </Suspense>
+        </TabsContent>
         <TabsContent value="farmers">
           <FarmersTab />
         </TabsContent>
         <TabsContent value="farms">
           <Suspense fallback={<PageLoader />}>
             <FarmsTab />
-          </Suspense>
-        </TabsContent>
-        <TabsContent value="traceability">
-          <Suspense fallback={<PageLoader />}>
-            <TraceabilityTab />
           </Suspense>
         </TabsContent>
         <TabsContent value="vsla">
