@@ -1,6 +1,6 @@
 /**
  * Audit log table — the 7-column view used by /notifications:
- *   User (sticky) · Timestamp · User Action · Entity · Changes ·
+ *   Timestamp (sticky) · User · User Action · Entity · Changes ·
  *   Status · row Actions.
  *
  * Helpers (`entityDisplayName`, `entityDetailHref`, tone palettes,
@@ -13,12 +13,11 @@
  * without sort controls or clickable cells.
  */
 
-import { ExternalLink, Eye, Loader2, Mail } from 'lucide-react';
+import { ArrowUp, ExternalLink, Eye, Loader2 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useIntl } from 'react-intl';
 import { Link, useNavigate } from 'react-router-dom';
 import { ColumnSorter } from '@/components/ui/column-sorter';
-import { CopyButton } from '@/components/ui/copy-button';
 import {
   Table,
   TableBody,
@@ -177,12 +176,10 @@ interface Props {
    *  message; callers may override with a context-specific empty
    *  state. Falls back to the shared `auditLogs.empty` key. */
   emptyMessage?: ReactNode;
-  /** Optional handler for clicking on the entity name / id cells.
-   *  When provided, those cells become buttons that emit the row's
-   *  (entityTable, entityId) instead of navigating to the audit
-   *  detail page. /notifications passes a handler that pins the
-   *  row's entity to the URL filter. Read-only embeds omit it so
-   *  the cells stay as plain link-to-audit-detail. */
+  /** Optional filter handler for the entity cell. When provided the
+   *  cell grows an arrow button that emits the row's (entityTable,
+   *  entityId); /notifications pins that to the URL filter. Read-only
+   *  embeds omit it and the entity id links to the audit detail. */
   onPinEntity?: (entityTable: string, entityId: string) => void;
   /** Optional handler for clicking on the actor (User) cell. When
    *  provided AND the row has an `actorUserId`, the User cell becomes
@@ -191,6 +188,36 @@ interface Props {
    *  plain. */
   onPinUser?: (actorUserId: string) => void;
 }
+
+/**
+ * The only thing in a cell that applies a filter.
+ *
+ * The whole actor / entity cell used to be a button, so reading an email
+ * meant hovering a link and a stray click re-filtered the page. The text is
+ * inert now; this sits at the right edge and is the single explicit
+ * "narrow to this" affordance.
+ */
+function ApplyFilterButton({ onClick, label }: { onClick: () => void; label: string }) {
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        // The row navigates to the audit detail — filtering must not also
+        // open it.
+        e.stopPropagation();
+        onClick();
+      }}
+      title={label}
+      aria-label={label}
+      className="inline-flex size-6 shrink-0 cursor-pointer items-center justify-center rounded text-muted-foreground opacity-0 transition-opacity hover:bg-accent hover:text-foreground focus-visible:opacity-100 group-hover/row:opacity-100"
+    >
+      <ArrowUp className="size-3.5" />
+    </button>
+  );
+}
+
+/** Change lines rendered inline before collapsing into "+N more". */
+const MAX_CHANGE_LINES = 2;
 
 export function AuditLogTable({
   items,
@@ -217,10 +244,9 @@ export function AuditLogTable({
     >
       <TableHeader className="sticky top-0 z-20 [&_th]:bg-muted">
         <TableRow className="bg-muted">
-          <TableHead className="sticky left-0 z-20 w-[240px] bg-muted">
-            {t('auditLogs.table.user')}
-          </TableHead>
-          <TableHead className="w-[160px] p-0">
+          {/* Timestamp leads: an audit feed is read chronologically, and
+              it is the column that stays pinned while the row scrolls. */}
+          <TableHead className="sticky left-0 z-20 w-[160px] bg-muted p-0">
             {onSortChange && sortDir !== undefined ? (
               <ColumnSorter
                 value={sortDir}
@@ -233,6 +259,7 @@ export function AuditLogTable({
               </span>
             )}
           </TableHead>
+          <TableHead className="w-[240px]">{t('auditLogs.table.user')}</TableHead>
           <TableHead className="w-[110px]">{t('auditLogs.table.userActions')}</TableHead>
           <TableHead className="w-[220px]">{t('auditLogs.table.scope')}</TableHead>
           <TableHead className="w-[260px]">{t('auditLogs.table.changes')}</TableHead>
@@ -263,7 +290,14 @@ export function AuditLogTable({
             const entityName = entityDisplayName(row);
             return (
               <TableRow key={row.id} className="group/row hover:bg-muted">
-                <TableCell className="sticky left-0 z-10 bg-card text-[13px] transition-colors group-hover/row:bg-muted">
+                <TableCell
+                  className="sticky left-0 z-10 cursor-pointer whitespace-nowrap bg-card transition-colors group-hover/row:bg-muted hover:underline"
+                  onClick={() => navigate(`/notifications/${row.id}`)}
+                  title={t('auditLogs.actions.view')}
+                >
+                  <StackedDateTime value={row.createdAt} />
+                </TableCell>
+                <TableCell className="text-[13px]">
                   {row.actorFullName || row.actorEmail || row.ipAddress ? (
                     (() => {
                       const inner = (
@@ -279,39 +313,27 @@ export function AuditLogTable({
                               className="inline-flex min-w-0 items-center gap-1 text-[12px] text-muted-foreground"
                               title={row.actorEmail}
                             >
-                              <Mail className="size-3 shrink-0" />
                               <span className="truncate">{row.actorEmail}</span>
                             </span>
                           ) : null}
                         </div>
                       );
-                      // Wrap in a button when caller provided
-                      // `onPinUser` AND the row has a real actor id.
-                      // Clicking pins the actor to the URL filter —
-                      // same UX as clicking entity name / id.
-                      return onPinUser && row.actorUserId ? (
-                        <button
-                          type="button"
-                          onClick={() => onPinUser(row.actorUserId!)}
-                          className="block w-full text-left hover:underline cursor-pointer"
-                          title={t('auditLogs.actions.pinUser')}
-                        >
-                          {inner}
-                        </button>
-                      ) : (
-                        inner
+                      // Text inert; filtering is the icon only.
+                      return (
+                        <div className="flex min-w-0 items-center gap-1">
+                          <div className="min-w-0 flex-1">{inner}</div>
+                          {onPinUser && row.actorUserId ? (
+                            <ApplyFilterButton
+                              onClick={() => onPinUser(row.actorUserId!)}
+                              label={t('auditLogs.actions.applyFilter')}
+                            />
+                          ) : null}
+                        </div>
                       );
                     })()
                   ) : (
                     <span className="text-muted-foreground">—</span>
                   )}
-                </TableCell>
-                <TableCell
-                  className="cursor-pointer whitespace-nowrap transition-colors hover:underline"
-                  onClick={() => navigate(`/notifications/${row.id}`)}
-                  title={t('auditLogs.actions.view')}
-                >
-                  <StackedDateTime value={row.createdAt} />
                 </TableCell>
                 <TableCell>
                   <div className="flex min-w-0 flex-col gap-0.5">
@@ -332,42 +354,31 @@ export function AuditLogTable({
                 </TableCell>
                 <TableCell className="text-[13px]">
                   <div className="flex min-w-0 flex-col gap-0.5">
-                    {/* Entity NAME — when onPinEntity is provided
-                        (notifications page), click pins the row's
-                        entity to the URL filter. Otherwise plain
-                        text (read-only embed). */}
-                    {onPinEntity && row.entityId ? (
-                      <button
-                        type="button"
-                        onClick={() => onPinEntity(row.entityTable, row.entityId!)}
-                        className="block truncate text-left font-medium text-foreground hover:underline cursor-pointer"
-                        title={t('auditLogs.actions.pinEntity')}
-                      >
-                        {entityName}
-                      </button>
-                    ) : (
+                    {/* Entity NAME — plain text. When onPinEntity is
+                        provided (notifications page) the arrow button
+                        beside it pins this entity to the URL filter. */}
+                    <div className="flex min-w-0 items-center gap-1">
                       <span
-                        className="block truncate font-medium text-foreground"
+                        className="block min-w-0 flex-1 truncate font-medium text-foreground"
                         title={entityName}
                       >
                         {entityName}
                       </span>
-                    )}
+                      {onPinEntity && row.entityId ? (
+                        <ApplyFilterButton
+                          onClick={() => onPinEntity(row.entityTable, row.entityId!)}
+                          label={t('auditLogs.actions.applyFilter')}
+                        />
+                      ) : null}
+                    </div>
                     {row.entityId ? (
-                      <div className="group/eid flex min-w-0 items-center justify-between gap-1.5">
+                      <div className="flex min-w-0 items-center gap-1.5">
                         {onPinEntity ? (
-                          // Click ID → pin entity in URL (same as name).
-                          // Eye icon at the far right of the row still
-                          // links to audit detail, so we don't lose that
-                          // affordance.
-                          <button
-                            type="button"
-                            onClick={() => onPinEntity(row.entityTable, row.entityId!)}
-                            className="inline-flex min-w-0 items-center gap-1 truncate font-mono text-[12px] text-muted-foreground hover:text-foreground hover:underline cursor-pointer"
-                            title={t('auditLogs.actions.pinEntity')}
-                          >
+                          // ID inert too — the icon above filters, the eye at
+                          // the row's end opens the audit detail.
+                          <span className="inline-flex min-w-0 items-center gap-1 truncate font-mono text-[12px] text-muted-foreground">
                             <span className="truncate">{truncateMiddle(row.entityId, 10, 4)}</span>
-                          </button>
+                          </span>
                         ) : (
                           <Link
                             to={`/notifications/${row.id}`}
@@ -379,55 +390,61 @@ export function AuditLogTable({
                             <ExternalLink className="size-3 shrink-0" />
                           </Link>
                         )}
-                        <CopyButton
-                          value={row.entityId}
-                          className="opacity-0 transition-opacity group-hover/eid:opacity-100"
-                        />
                       </div>
                     ) : null}
                   </div>
                 </TableCell>
                 <TableCell className="text-[12px]">
-                  {row.changesPreview && row.changesPreview.preview.length > 0 ? (
-                    <div className="flex min-w-0 flex-col gap-0.5">
-                      {row.changesPreview.preview.map((ch: ApiAuditLogChangePreviewEntry) => {
-                        const oldStr = previewValue(ch.oldValue);
-                        const newStr = previewValue(ch.newValue);
-                        return (
-                          <div
-                            key={ch.fieldName}
-                            className="flex min-w-0 items-center gap-1"
-                            title={`${ch.fieldName}: ${oldStr} → ${newStr}`}
-                          >
-                            <span className="shrink-0 font-medium text-foreground">
-                              {ch.fieldName}
-                            </span>
-                            <span className="min-w-0 flex-1 truncate font-mono">
-                              <span className="text-red-600 dark:text-red-400">{oldStr}</span>
-                              <span className="px-1 text-muted-foreground">→</span>
-                              <span className="text-emerald-600 dark:text-emerald-400">
-                                {newStr}
+                  {(() => {
+                    const all = row.changesPreview?.preview ?? [];
+                    if (all.length === 0) return <span className="text-muted-foreground">—</span>;
+                    // Two lines is the row height every other column already
+                    // occupies (name over email, action over IP). A third
+                    // line would make audit rows taller than the rest of the
+                    // app's tables for no extra signal — the overflow link
+                    // rides the second line instead of adding one.
+                    const visible = all.slice(0, MAX_CHANGE_LINES);
+                    const hidden = (row.changesPreview?.total ?? 0) - visible.length;
+                    return (
+                      <div className="flex min-w-0 flex-col gap-0.5">
+                        {visible.map((ch: ApiAuditLogChangePreviewEntry, i) => {
+                          const oldStr = previewValue(ch.oldValue);
+                          const newStr = previewValue(ch.newValue);
+                          const isLast = i === visible.length - 1;
+                          return (
+                            <div
+                              key={ch.fieldName}
+                              className="flex min-w-0 items-center gap-1"
+                              title={`${ch.fieldName}: ${oldStr} → ${newStr}`}
+                            >
+                              <span className="shrink-0 font-medium text-foreground">
+                                {ch.fieldName}
                               </span>
-                            </span>
-                          </div>
-                        );
-                      })}
-                      {row.changesPreview.total > row.changesPreview.preview.length ? (
-                        <Link
-                          to={`/notifications/${row.id}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="text-[11px] text-muted-foreground hover:text-foreground hover:underline"
-                        >
-                          {intl.formatMessage(
-                            { id: 'auditLogs.table.changesMore' },
-                            { n: row.changesPreview.total - row.changesPreview.preview.length },
-                          )}
-                        </Link>
-                      ) : null}
-                    </div>
-                  ) : (
-                    <span className="text-muted-foreground">—</span>
-                  )}
+                              <span className="min-w-0 flex-1 truncate font-mono">
+                                <span className="text-red-600 dark:text-red-400">{oldStr}</span>
+                                <span className="px-1 text-muted-foreground">→</span>
+                                <span className="text-emerald-600 dark:text-emerald-400">
+                                  {newStr}
+                                </span>
+                              </span>
+                              {isLast && hidden > 0 ? (
+                                <Link
+                                  to={`/notifications/${row.id}`}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="shrink-0 whitespace-nowrap text-[11px] text-muted-foreground hover:text-foreground hover:underline"
+                                >
+                                  {intl.formatMessage(
+                                    { id: 'auditLogs.table.changesMore' },
+                                    { n: hidden },
+                                  )}
+                                </Link>
+                              ) : null}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
                 </TableCell>
                 <TableCell>
                   {row.status ? (
