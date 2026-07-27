@@ -75,6 +75,20 @@ export async function seedInspections(db: Db): Promise<void> {
   }
 
   const rng = mulberry32(778201);
+  /**
+   * Weighted draw from `{value: probability}`. Weights are expected to
+   * sum to 1; the last key catches any rounding remainder so a 0.999 total
+   * can never fall through and return undefined.
+   */
+  const pick = (weights: Record<string, number>): string => {
+    const entries = Object.entries(weights);
+    let roll = rng();
+    for (const [value, weight] of entries) {
+      roll -= weight;
+      if (roll <= 0) return value;
+    }
+    return entries[entries.length - 1]![0];
+  };
   let driftCount = 0;
   const CHUNK = 500;
   const values: (typeof inspections.$inferInsert)[] = [];
@@ -210,11 +224,37 @@ export async function seedInspections(db: Db): Promise<void> {
       assessedAt: date,
       assessedBy: 'EUDR Analyst',
       baselineDataset: 'JRC Global Forest Cover 2020 (demo)',
-      deforestationRisk: eudrCompliant ? 'low' : eudrStatus === 'needs_review' ? 'medium' : 'high',
-      protectedAreaRisk: eudrStatus === 'non_compliant' ? 'high' : 'low',
+      // The three verdicts are DRAWN, not derived, from the headline
+      // status. Deriving them made all three move as one triplet — every
+      // non-compliant plot was high/high/overlap and nothing was ever
+      // "protected area: medium" — so the three list filters returned
+      // identical rows and two of them looked broken. They still
+      // correlate with the status (that is real: a plot flagged
+      // non-compliant usually IS the one sitting on a reserve boundary),
+      // just not perfectly.
+      deforestationRisk: pick(
+        eudrCompliant
+          ? { low: 0.88, medium: 0.12 }
+          : eudrStatus === 'needs_review'
+            ? { low: 0.25, medium: 0.55, high: 0.2 }
+            : { medium: 0.2, high: 0.8 },
+      ),
+      protectedAreaRisk: pick(
+        eudrCompliant
+          ? { low: 0.92, medium: 0.08 }
+          : eudrStatus === 'needs_review'
+            ? { low: 0.6, medium: 0.32, high: 0.08 }
+            : { low: 0.25, medium: 0.3, high: 0.45 },
+      ),
       // Always populated so the detail card never shows blank rows.
       // `none/yes` read green, `overlap/no` read red via the FE tone map.
-      overlap: eudrCompliant ? 'none' : eudrStatus === 'needs_review' ? 'review' : 'overlap',
+      overlap: pick(
+        eudrCompliant
+          ? { none: 0.9, review: 0.1 }
+          : eudrStatus === 'needs_review'
+            ? { none: 0.2, review: 0.65, overlap: 0.15 }
+            : { review: 0.25, overlap: 0.75 },
+      ),
       onLand: 'yes',
       inCountry: 'yes',
       eudrExplanation: eudrCompliant
