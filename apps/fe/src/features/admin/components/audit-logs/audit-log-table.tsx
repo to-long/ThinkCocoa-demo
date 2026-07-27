@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/table';
 import { truncateMiddle } from '@/lib/truncate-middle';
 import type { ApiAuditLog, ApiAuditLogChangePreviewEntry, AuditStatus } from '@/shared/api';
+import { RefCell } from '@/shared/components/composed/entity-ref-cell';
 import { StackedDateTime } from '@/shared/components/composed/stacked-date-time';
 
 /* -------------------------------------------------------------------------- */
@@ -209,7 +210,7 @@ function ApplyFilterButton({ onClick, label }: { onClick: () => void; label: str
       }}
       title={label}
       aria-label={label}
-      className="inline-flex size-6 shrink-0 cursor-pointer items-center justify-center rounded text-muted-foreground opacity-0 transition-opacity hover:bg-accent hover:text-foreground focus-visible:opacity-100 group-hover/row:opacity-100"
+      className="inline-flex size-5 shrink-0 cursor-pointer items-center justify-center rounded text-muted-foreground opacity-0 transition-opacity hover:bg-accent hover:text-foreground focus-visible:opacity-100 group-hover/row:opacity-100"
     >
       <ArrowUp className="size-3.5" />
     </button>
@@ -299,100 +300,68 @@ export function AuditLogTable({
                 </TableCell>
                 <TableCell className="text-[13px]">
                   {row.actorFullName || row.actorEmail || row.ipAddress ? (
-                    (() => {
-                      const inner = (
-                        <div className="flex min-w-0 flex-col gap-0.5">
-                          <span
-                            className="block truncate font-medium text-foreground"
-                            title={row.actorFullName ?? ''}
-                          >
-                            {row.actorFullName ?? '—'}
-                          </span>
-                          {row.actorEmail ? (
-                            <span
-                              className="inline-flex min-w-0 items-center gap-1 text-[12px] text-muted-foreground"
-                              title={row.actorEmail}
-                            >
-                              <span className="truncate">{row.actorEmail}</span>
-                            </span>
-                          ) : null}
-                        </div>
-                      );
-                      // Text inert; filtering is the icon only.
-                      return (
-                        <div className="flex min-w-0 items-center gap-1">
-                          <div className="min-w-0 flex-1">{inner}</div>
-                          {onPinUser && row.actorUserId ? (
-                            <ApplyFilterButton
-                              onClick={() => onPinUser(row.actorUserId!)}
-                              label={t('auditLogs.actions.applyFilter')}
-                            />
-                          ) : null}
-                        </div>
-                      );
-                    })()
+                    // Text inert; filtering is the arrow only.
+                    <RefCell
+                      name={row.actorFullName ?? '—'}
+                      code={row.actorEmail}
+                      action={
+                        onPinUser && row.actorUserId ? (
+                          <ApplyFilterButton
+                            onClick={() => onPinUser(row.actorUserId!)}
+                            label={t('auditLogs.actions.applyFilter')}
+                          />
+                        ) : null
+                      }
+                    />
                   ) : (
                     <span className="text-muted-foreground">—</span>
                   )}
                 </TableCell>
                 <TableCell>
-                  <div className="flex min-w-0 flex-col gap-0.5">
-                    <span
-                      className={`inline-flex w-fit items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ${aTone.bg} ${aTone.text}`}
-                    >
-                      {row.action}
-                    </span>
-                    {row.ipAddress ? (
+                  <RefCell
+                    name={
                       <span
-                        className="block truncate font-mono text-[11px] text-muted-foreground"
-                        title={row.ipAddress}
+                        className={`inline-flex w-fit items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ${aTone.bg} ${aTone.text}`}
                       >
-                        {row.ipAddress}
+                        {row.action}
                       </span>
-                    ) : null}
-                  </div>
+                    }
+                    code={row.ipAddress}
+                  />
                 </TableCell>
                 <TableCell className="text-[13px]">
-                  <div className="flex min-w-0 flex-col gap-0.5">
-                    {/* Entity NAME — plain text. When onPinEntity is
-                        provided (notifications page) the arrow button
-                        beside it pins this entity to the URL filter. */}
-                    <div className="flex min-w-0 items-center gap-1">
-                      <span
-                        className="block min-w-0 flex-1 truncate font-medium text-foreground"
-                        title={entityName}
-                      >
-                        {entityName}
-                      </span>
-                      {onPinEntity && row.entityId ? (
-                        <ApplyFilterButton
-                          onClick={() => onPinEntity(row.entityTable, row.entityId!)}
-                          label={t('auditLogs.actions.applyFilter')}
-                        />
-                      ) : null}
-                    </div>
-                    {row.entityId ? (
-                      <div className="flex min-w-0 items-center gap-1.5">
-                        {onPinEntity ? (
-                          // ID inert too — the icon above filters, the eye at
-                          // the row's end opens the audit detail.
-                          <span className="inline-flex min-w-0 items-center gap-1 truncate font-mono text-[12px] text-muted-foreground">
-                            <span className="truncate">{truncateMiddle(row.entityId, 10, 4)}</span>
-                          </span>
+                  {/* Entity name over id. When onPinEntity is provided
+                      (notifications page) both are inert and the arrow
+                      pins this entity to the URL filter; otherwise the id
+                      links to the audit detail. */}
+                  <RefCell
+                    name={entityName}
+                    code={
+                      row.entityId ? (
+                        onPinEntity ? (
+                          truncateMiddle(row.entityId, 10, 4)
                         ) : (
                           <Link
                             to={`/notifications/${row.id}`}
                             onClick={(e) => e.stopPropagation()}
-                            className="inline-flex min-w-0 items-center gap-1 truncate font-mono text-[12px] text-muted-foreground hover:text-foreground hover:underline"
+                            className="inline-flex min-w-0 items-center gap-1 hover:text-foreground hover:underline"
                             title={entityDetailHref(row.entityTable, row.entityId) ?? row.entityId}
                           >
                             <span className="truncate">{truncateMiddle(row.entityId, 10, 4)}</span>
                             <ExternalLink className="size-3 shrink-0" />
                           </Link>
-                        )}
-                      </div>
-                    ) : null}
-                  </div>
+                        )
+                      ) : null
+                    }
+                    action={
+                      onPinEntity && row.entityId ? (
+                        <ApplyFilterButton
+                          onClick={() => onPinEntity(row.entityTable, row.entityId!)}
+                          label={t('auditLogs.actions.applyFilter')}
+                        />
+                      ) : null
+                    }
+                  />
                 </TableCell>
                 <TableCell className="text-[12px]">
                   {(() => {
@@ -405,8 +374,11 @@ export function AuditLogTable({
                     // rides the second line instead of adding one.
                     const visible = all.slice(0, MAX_CHANGE_LINES);
                     const hidden = (row.changesPreview?.total ?? 0) - visible.length;
+                    // gap-1 (4px) + leading-tight — the same line spacing
+                    // `RefCell` uses, so every stacked cell in the row
+                    // lines up.
                     return (
-                      <div className="flex min-w-0 flex-col gap-0.5">
+                      <div className="flex min-w-0 flex-col gap-1 leading-tight">
                         {visible.map((ch: ApiAuditLogChangePreviewEntry, i) => {
                           const oldStr = previewValue(ch.oldValue);
                           const newStr = previewValue(ch.newValue);
@@ -447,15 +419,13 @@ export function AuditLogTable({
                   })()}
                 </TableCell>
                 <TableCell>
-                  {row.status ? (
-                    <span
-                      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium capitalize ${sTone.bg} ${sTone.text}`}
-                    >
-                      {t(`auditLogs.status.${row.status}`)}
-                    </span>
-                  ) : (
-                    <span className="text-muted-foreground">—</span>
-                  )}
+                  row.status ? (
+                  <span
+                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium capitalize ${sTone.bg} ${sTone.text}`}
+                  >
+                    {t(`auditLogs.status.${row.status}`)}
+                  </span>
+                  ) : (<span className="text-muted-foreground">—</span>)
                 </TableCell>
                 <TableCell className="text-right">
                   <button

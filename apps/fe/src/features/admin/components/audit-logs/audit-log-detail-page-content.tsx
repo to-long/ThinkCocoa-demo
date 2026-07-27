@@ -313,11 +313,7 @@ export function AuditLogDetailPageContent() {
                       ? entityHref.replace(data.entityId, trunc)
                       : `/${data.entityTable}/${trunc}`;
                   return entityHref ? (
-                    <Link
-                      to={entityHref}
-                      className=" hover:underline"
-                      title={data.entityId}
-                    >
+                    <Link to={entityHref} className=" hover:underline" title={data.entityId}>
                       {label}
                     </Link>
                   ) : (

@@ -3,9 +3,15 @@
  * top, date (dd-MM-yyyy) underneath in a smaller, muted font. Both lines
  * are pinned to Ghana's timezone. Renders a muted placeholder when the
  * value is null/invalid.
+ *
+ * Built on `RefCell` so a timestamp column stacks exactly like every other
+ * two-line cell (name over code) instead of being its own near-miss.
+ * `tabular-nums` on both lines keeps the digits column-aligned down the
+ * table.
  */
 
 import { formatGhanaClock, formatGhanaDateDMY } from '@/lib/datetime';
+import { RefCell } from './entity-ref-cell';
 
 export function StackedDateTime({
   value,
@@ -18,11 +24,9 @@ export function StackedDateTime({
     return <span className="text-muted-foreground">{placeholder}</span>;
   }
   return (
-    <span className="flex flex-col leading-tight">
-      <span className="font-semibold text-foreground tabular-nums">{formatGhanaClock(value)}</span>
-      <span className="text-[11px] text-muted-foreground tabular-nums">
-        {formatGhanaDateDMY(value)}
-      </span>
-    </span>
+    <RefCell
+      name={<span className="tabular-nums">{formatGhanaClock(value)}</span>}
+      code={<span className="tabular-nums">{formatGhanaDateDMY(value)}</span>}
+    />
   );
 }

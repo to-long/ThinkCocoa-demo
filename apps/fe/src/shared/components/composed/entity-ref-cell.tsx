@@ -9,6 +9,10 @@
  * `farmer:read`); `ParcelRefCell` links to `/farms/:code` (gated by
  * `parcel:read`). Both wrap the same internal `EntityRefCell`.
  *
+ * `name` and `code` are both `ReactNode`, so the same two-line rhythm
+ * covers cells that aren't a name/code pair at all — a timestamp
+ * (`StackedDateTime`), or an action chip over an IP in the audit table.
+ *
  * Behaviour:
  *   - No code → renders the name (or "—") as plain text; no link.
  *   - No name → renders just the linked code on one line (e.g. an
@@ -53,6 +57,15 @@ interface EntityRefCellProps {
   meta?: ReactNode;
   /** Horizontal alignment — `end` for numeric columns. Default `start`. */
   align?: 'start' | 'end';
+  /** Trailing control pinned to the FIRST line (e.g. the audit table's
+   *  "apply to filter" arrow). On the first line rather than beside the
+   *  block so it aligns with the title, not the two lines' midpoint. */
+  action?: ReactNode;
+}
+
+/** `title` is only useful when the node is text we may have ellipsized. */
+function titleOf(v: ReactNode): string | undefined {
+  return typeof v === 'string' ? v : undefined;
 }
 
 /**
@@ -68,9 +81,48 @@ export function RefCell({
   stopRowClick,
   meta,
   align = 'start',
+  action,
 }: EntityRefCellProps) {
+  // leading-tight + a 4px gap so the name + code read as one two-line
+  // block (matches the CLMRS / coaching cells). `min-w-0` is what lets the
+  // truncation below actually bite inside a fixed-width column.
+  const wrap = (children: ReactNode) => (
+    <div
+      className={cn(
+        'flex min-w-0 flex-col gap-1 leading-tight',
+        align === 'end' ? 'items-end text-right' : 'items-start',
+      )}
+    >
+      {children}
+    </div>
+  );
+
+  // Both lines ellipsize rather than wrap: these cells live in columns with
+  // a fixed width, and a long name pushing the row to three lines breaks
+  // the table's rhythm.
+  const line = (node: ReactNode, className: string, title?: string) => (
+    <span className={cn('min-w-0 max-w-full flex-1 truncate', className)} title={title}>
+      {node}
+    </span>
+  );
+
+  // The first line is a FIXED 20px box, always. Its content varies wildly —
+  // plain text (17.5px), a status chip (19.25px), a 20px icon button — and
+  // letting each one set its own height is what made the 4px gap *look*
+  // different from cell to cell even though it never changed. Pinning the
+  // line means every stacked cell in a row is 20 + 4 + text.
+  // `action` rides this line, so a name-less cell still gets its control.
+  const firstLine = (node: ReactNode) => (
+    <span className="flex h-5 w-full min-w-0 items-center gap-1">
+      {node}
+      {action}
+    </span>
+  );
+
   if (!code) {
-    return <span className="text-muted-foreground text-sm">{name ?? '—'}</span>;
+    // No code → plain (muted) single line; deliberately not bold, it has
+    // no reference to point at.
+    return wrap(firstLine(line(name ?? '—', 'text-muted-foreground text-sm', titleOf(name))));
   }
 
   // Route segment: an explicit `codeValue`, else `code` when it's a plain
@@ -78,7 +130,7 @@ export function RefCell({
   // link.
   const segment = codeValue ?? (typeof code === 'string' ? code : null);
   const href = basePath && segment ? `${basePath}/${encodeURIComponent(segment)}` : null;
-  const plainCode = <span className="font-mono text-[11px] text-muted-foreground">{code}</span>;
+  const plainCode = line(code, 'font-mono text-[11px] text-muted-foreground', titleOf(code));
 
   const codeLink = !href ? (
     plainCode
@@ -87,38 +139,33 @@ export function RefCell({
       <Link
         to={href}
         onClick={stopRowClick ? (e) => e.stopPropagation() : undefined}
-        className={LIST_SUB_LINK}
+        className={cn(LIST_SUB_LINK, 'max-w-full')}
+        title={titleOf(code)}
       >
-        {code}
-        <SquareArrowOutUpRight className="size-3" />
+        <span className="min-w-0 truncate">{code}</span>
+        <SquareArrowOutUpRight className="size-3 shrink-0" />
       </Link>
     </PermissionGate>
   );
 
   const codeLine = meta ? (
-    <span className="inline-flex items-center gap-1">
+    <span className="flex min-w-0 max-w-full items-center gap-1">
       {codeLink}
-      <span className="font-mono text-[11px] text-muted-foreground">· {meta}</span>
+      <span className="shrink-0 font-mono text-[11px] text-muted-foreground">· {meta}</span>
     </span>
   ) : (
     codeLink
   );
 
-  // No name → single linked-code line (e.g. parcel with only an ID).
-  if (!name) return codeLine;
+  // No name → the code becomes the first line (e.g. a parcel with only an
+  // ID) and keeps that line's height.
+  if (!name) return wrap(firstLine(codeLine));
 
-  return (
-    // leading-tight + a 4px gap so the name + code read as one two-line
-    // block (matches the CLMRS / coaching cells).
-    <div
-      className={cn(
-        'flex flex-col gap-1 leading-tight',
-        align === 'end' ? 'items-end' : 'items-start',
-      )}
-    >
-      <span className="font-medium">{name}</span>
+  return wrap(
+    <>
+      {firstLine(line(name, 'font-medium', titleOf(name)))}
       {codeLine}
-    </div>
+    </>,
   );
 }
 
