@@ -89,7 +89,6 @@ import { CertificationOutcomeBadge } from './certification-outcome-badge';
 import { FarmerDialog } from './farmer-dialog';
 import { FarmersCsvImportDialog } from './farmers-csv-import-dialog';
 import { FarmersSlimStats } from './farmers-slim-stats';
-import { ShadeSurvivalBadge } from './shade-survival-badge';
 
 const PAGE_LIMIT = 10;
 
@@ -588,12 +587,6 @@ export function FarmersPageContent() {
                       label={t('farmers.table.certificate')}
                     />
                   </TableHead>
-                  <TableHead className="w-[110px] p-0">
-                    <ColumnSorter
-                      {...sorterPropsFor('shade_survival')}
-                      label={t('farmers.table.shadeSurvival')}
-                    />
-                  </TableHead>
                   <TableHead className="w-[100px] p-0">
                     <ColumnSorter {...sorterPropsFor('clmrs')} label={t('farmers.table.clmrs')} />
                   </TableHead>
@@ -689,9 +682,6 @@ export function FarmersPageContent() {
                           <CertificationOutcomeBadge
                             outcome={f.latestCertification?.outcome ?? null}
                           />
-                        </TableCell>
-                        <TableCell className="w-[110px]">
-                          <ShadeSurvivalBadge pct={f.shadeSurvivalPct} />
                         </TableCell>
                         <TableCell className="w-[100px]">
                           <ClmrsStatusPill status={farmerClmrsStatus(f.id)} showNone />
