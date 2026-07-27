@@ -29,7 +29,7 @@
  */
 
 import 'dotenv/config';
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray, isNull } from 'drizzle-orm';
 import { auth } from '../../src/auth';
 import { db } from '../../src/db/client';
 import {
@@ -48,6 +48,18 @@ import { DEMO_COOPERATIVES } from './cooperatives';
 const DEFAULT_COOP_CODE = DEMO_COOPERATIVES[0].code;
 
 const TEST_PASSWORD = 'ThinkData2026!';
+
+/** Deterministic "last seen" within the past 10 days — derived from the
+ *  email so a re-seed doesn't reshuffle the column. */
+function seededLastLogin(email: string): Date {
+  let h = 2166136261;
+  for (let i = 0; i < email.length; i++) {
+    h ^= email.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  const minutesAgo = (h >>> 0) % (10 * 24 * 60);
+  return new Date(Date.now() - minutesAgo * 60_000);
+}
 
 interface TestUser {
   email: string;
@@ -156,6 +168,14 @@ async function ensureUser(tu: TestUser, coopId: string): Promise<{ id: string; c
     if (existing.name !== tu.name) {
       await db.update(users).set({ name: tu.name }).where(eq(users.id, existing.id));
     }
+    // Give the users list a populated "Last Login" column. Only stamped when
+    // it's still NULL, so a real sign-in during the demo is never overwritten
+    // by a re-seed. Spread deterministically over the past ~10 days from the
+    // email, so the column sorts meaningfully instead of showing one instant.
+    await db
+      .update(users)
+      .set({ lastLoginAt: seededLastLogin(tu.email) })
+      .where(and(eq(users.id, existing.id), isNull(users.lastLoginAt)));
     return { id: existing.id, created: false };
   }
 

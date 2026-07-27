@@ -19,8 +19,8 @@ export function StackedDateTime({
   }
   return (
     <span className="flex flex-col leading-tight">
-      <span className="font-mono text-[13px] text-foreground">{formatGhanaClock(value)}</span>
-      <span className="font-mono text-[11px] text-muted-foreground">
+      <span className="font-semibold text-foreground tabular-nums">{formatGhanaClock(value)}</span>
+      <span className="text-[11px] text-muted-foreground tabular-nums">
         {formatGhanaDateDMY(value)}
       </span>
     </span>

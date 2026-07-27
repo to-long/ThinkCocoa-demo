@@ -22,8 +22,11 @@
  * including edited `perms` — fails closed.
  */
 
+import { eq } from 'drizzle-orm';
 import { createLocalJWKSet, type JSONWebKeySet, type JWTPayload, jwtVerify } from 'jose';
 import { auth } from '../auth';
+import { db } from '../db/client';
+import { users } from '../db/schema/iam';
 import { clearRevocation } from './token-revocation';
 
 /** Cookie carrying the access token. Prefixed like better-auth's own so
@@ -78,7 +81,19 @@ export async function mintAccessToken(headers: Headers): Promise<string | null> 
     // The mint just re-read status + permissions from the database, so this
     // token supersedes anything the blacklist was holding against the user.
     const sub = decodeSubject(res.token);
-    if (sub) clearRevocation(sub);
+    if (sub) {
+      clearRevocation(sub);
+      // Last-login stamp. The old per-request UPDATE lived in `requireAuth`
+      // and went away when that stopped touching the database — leaving the
+      // users list's "Last Login" column frozen. Minting is the better home:
+      // it happens on sign-in and on refresh, so it means "last login", not
+      // "last request", and costs one write per token instead of per call.
+      void db
+        .update(users)
+        .set({ lastLoginAt: new Date() })
+        .where(eq(users.id, sub))
+        .catch((err) => console.error('[access-token] lastLoginAt update failed:', err));
+    }
     return res.token;
   } catch {
     // No session, deleted user, or the plugin failed to reach `iam.jwks`.
