@@ -13,16 +13,20 @@ import {
   EllipsisVertical,
   Eye,
   History,
+  Layers,
   Leaf,
   Loader2,
   Pencil,
   Plus,
   RotateCcw,
+  ShieldAlert,
   Trash2,
+  TreePine,
   Trees,
   TriangleAlert,
   Upload,
 } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { useIntl } from 'react-intl';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
@@ -48,6 +52,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { PermissionGate } from '@/features/auth';
 import { ShadeSurvivalBadge } from '@/features/farmers/components/shade-survival-badge';
 import { formatGhanaDate } from '@/lib/datetime';
@@ -113,6 +118,43 @@ function formatCreatedDate(iso: string): string {
   return Number.isNaN(d.getTime()) ? '' : CREATED_DATE_FMT.format(d);
 }
 
+/**
+ * One EUDR verdict as a chip — or an em dash when the verdict is the
+ * benign one. Three columns share it so "Medium" means the same weight
+ * in all three, and so the benign case is rendered identically instead of
+ * three slightly different empty states.
+ */
+function RiskChip({
+  value,
+  benign,
+  label,
+  tooltip,
+  icon,
+  tone,
+}: {
+  value: string | null;
+  benign: string;
+  label: string;
+  tooltip: string;
+  icon: ReactNode;
+  tone: 'danger' | 'caution';
+}) {
+  if (!value || value === benign) return <span className="text-muted-foreground">—</span>;
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className="inline-flex">
+          <StatusTag tone={tone}>
+            {icon}
+            {label}
+          </StatusTag>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent side="top">{tooltip}</TooltipContent>
+    </Tooltip>
+  );
+}
+
 export function FarmsPageContent() {
   const intl = useIntl();
   const t = (k: string) => intl.formatMessage({ id: k });
@@ -126,6 +168,9 @@ export function FarmsPageContent() {
   const urlQ = searchParams.get('q') ?? '';
   const statusParam = searchParams.get('status') ?? '';
   const eudrParam = searchParams.get('eudr') ?? '';
+  const deforestParam = searchParams.get('deforestation') ?? '';
+  const protectedParam = searchParams.get('protectedArea') ?? '';
+  const overlapParam = searchParams.get('overlap') ?? '';
   const survivalParam = searchParams.get('survival') ?? '';
   const { sort, hasSort, sorterPropsFor } = useTableSort();
   const pageParsed = Number(searchParams.get('page') ?? '1');
@@ -158,6 +203,9 @@ export function FarmsPageContent() {
     q: urlQ.trim() || undefined,
     parcelStatus: statusParam && statusParam !== 'deleted' ? statusParam : undefined,
     eudr: eudrParam || undefined,
+    deforestation: deforestParam || undefined,
+    protectedArea: protectedParam || undefined,
+    overlap: overlapParam || undefined,
     survival: survivalParam || undefined,
     includeDeleted,
     sort,
@@ -331,6 +379,65 @@ export function FarmsPageContent() {
               <SelectItem value="unknown">{t('farms.eudr.unknown')}</SelectItem>
             </SelectContent>
           </Select>
+          {/* The three EUDR verdicts, each its own filter: a plot can sit
+              near cleared forest without overlapping a protected boundary,
+              so folding them into one control would hide the distinction a
+              buyer is actually asking about. */}
+          <Select
+            value={deforestParam || undefined}
+            onValueChange={(v) => updateUrl({ deforestation: v || null, page: null })}
+          >
+            <SelectTrigger
+              className="w-full"
+              onClear={
+                deforestParam ? () => updateUrl({ deforestation: null, page: null }) : undefined
+              }
+            >
+              <TreePine className="size-4 text-muted-foreground" />
+              <SelectValue placeholder={t('farms.filters.allDeforestation')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="high">{t('farms.risk.high')}</SelectItem>
+              <SelectItem value="medium">{t('farms.risk.medium')}</SelectItem>
+              <SelectItem value="low">{t('farms.risk.low')}</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select
+            value={protectedParam || undefined}
+            onValueChange={(v) => updateUrl({ protectedArea: v || null, page: null })}
+          >
+            <SelectTrigger
+              className="w-full"
+              onClear={
+                protectedParam ? () => updateUrl({ protectedArea: null, page: null }) : undefined
+              }
+            >
+              <ShieldAlert className="size-4 text-muted-foreground" />
+              <SelectValue placeholder={t('farms.filters.allProtectedArea')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="high">{t('farms.risk.high')}</SelectItem>
+              <SelectItem value="medium">{t('farms.risk.medium')}</SelectItem>
+              <SelectItem value="low">{t('farms.risk.low')}</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select
+            value={overlapParam || undefined}
+            onValueChange={(v) => updateUrl({ overlap: v || null, page: null })}
+          >
+            <SelectTrigger
+              className="w-full"
+              onClear={overlapParam ? () => updateUrl({ overlap: null, page: null }) : undefined}
+            >
+              <Layers className="size-4 text-muted-foreground" />
+              <SelectValue placeholder={t('farms.filters.allOverlap')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="overlap">{t('farms.overlap.overlap')}</SelectItem>
+              <SelectItem value="review">{t('farms.overlap.review')}</SelectItem>
+              <SelectItem value="none">{t('farms.overlap.none')}</SelectItem>
+            </SelectContent>
+          </Select>
           <Select
             value={survivalParam || undefined}
             onValueChange={(v) => updateUrl({ survival: v || null, page: null })}
@@ -367,7 +474,14 @@ export function FarmsPageContent() {
             </SelectContent>
           </Select>
         </div>
-        {(urlQ || statusParam || eudrParam || survivalParam || hasSort) && (
+        {(urlQ ||
+          statusParam ||
+          eudrParam ||
+          deforestParam ||
+          protectedParam ||
+          overlapParam ||
+          survivalParam ||
+          hasSort) && (
           <button
             type="button"
             onClick={() => {
@@ -398,18 +512,21 @@ export function FarmsPageContent() {
                 {/* Parcel = name (top) + field-ID with cross-ref link
                     (bottom); Farmer = name (top) + farmer-ID link
                     (bottom). Parcel is the sticky first column. */}
-                <TableHead className="sticky left-0 z-20 w-[190px] bg-muted p-0">
+                <TableHead className="sticky left-0 z-20 w-[150px] bg-muted p-0">
                   <ColumnSorter
                     {...sorterPropsFor('parcel_name')}
                     label={t('farms.table.parcel')}
                   />
                 </TableHead>
-                <TableHead className="w-[210px] p-0">
+                <TableHead className="w-[160px] p-0">
                   <ColumnSorter {...sorterPropsFor('farmer_id')} label={t('farms.table.farmer')} />
                 </TableHead>
                 <TableHead className="w-[140px] p-0">
                   <ColumnSorter {...sorterPropsFor('eudr')} label={t('farms.table.eudr')} />
                 </TableHead>
+                <TableHead className="w-[120px]">{t('farms.table.deforestation')}</TableHead>
+                <TableHead className="w-[120px]">{t('farms.table.protectedArea')}</TableHead>
+                <TableHead className="w-[110px]">{t('farms.table.overlap')}</TableHead>
                 <TableHead className="w-[80px] p-0">
                   <ColumnSorter
                     {...sorterPropsFor('tree_count')}
@@ -455,13 +572,13 @@ export function FarmsPageContent() {
             <TableBody style={refetching ? { opacity: 0.85 } : undefined}>
               {initialLoading ? (
                 <TableRow>
-                  <TableCell colSpan={11} className="py-8 text-center text-muted-foreground">
+                  <TableCell colSpan={14} className="py-8 text-center text-muted-foreground">
                     <Loader2 className="mx-auto size-5 animate-spin" />
                   </TableCell>
                 </TableRow>
               ) : items.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={11} className="py-8 text-center text-muted-foreground">
+                  <TableCell colSpan={14} className="py-8 text-center text-muted-foreground">
                     {t('farms.table.noFarms')}
                   </TableCell>
                 </TableRow>
@@ -492,6 +609,40 @@ export function FarmsPageContent() {
                         <StatusTag tone={EUDR_TONE[eudrKey] ?? 'neutral'} dot>
                           {t(`farms.eudr.${eudrKey}`)}
                         </StatusTag>
+                      </TableCell>
+                      {/* Only the non-benign verdicts get a chip. A "Low"
+                          chip on three quarters of the rows is noise, and an
+                          empty cell reads as "nothing here" faster than a
+                          green one does. */}
+                      <TableCell>
+                        <RiskChip
+                          value={p.deforestationRisk}
+                          benign="low"
+                          label={t(`farms.risk.${p.deforestationRisk ?? 'low'}`)}
+                          tooltip={t('farms.risk.deforestationTooltip')}
+                          icon={<TreePine className="size-3" />}
+                          tone={p.deforestationRisk === 'high' ? 'danger' : 'caution'}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <RiskChip
+                          value={p.protectedAreaRisk}
+                          benign="low"
+                          label={t(`farms.risk.${p.protectedAreaRisk ?? 'low'}`)}
+                          tooltip={t('farms.risk.protectedAreaTooltip')}
+                          icon={<ShieldAlert className="size-3" />}
+                          tone={p.protectedAreaRisk === 'high' ? 'danger' : 'caution'}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <RiskChip
+                          value={p.overlap}
+                          benign="none"
+                          label={t(`farms.overlap.${p.overlap ?? 'none'}`)}
+                          tooltip={t('farms.risk.overlapTooltip')}
+                          icon={<Layers className="size-3" />}
+                          tone={p.overlap === 'overlap' ? 'danger' : 'caution'}
+                        />
                       </TableCell>
                       <TableCell className="text-right">{p.cocoaTreeCount ?? '—'}</TableCell>
                       <TableCell className="text-right">

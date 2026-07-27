@@ -95,6 +95,16 @@ export const listParcelsQuerySchema = z.object({
   // warning (40–59) | danger (<40) | none (no shade profiles) —
   // bucketed server-side against `parcels.shade_survival_pct`.
   survival: z.string().optional(),
+  /** The three EUDR assessment verdicts from `gis.eudr_status`, each
+   *  comma-separated like the other multi-selects:
+   *    deforestation  — `high` | `medium` | `low`
+   *    protectedArea  — `high` | `medium` | `low`
+   *    overlap        — `overlap` | `review` | `none`
+   *  Separate filters because they answer different questions: a plot can
+   *  sit near cleared forest without overlapping a protected boundary. */
+  deforestation: z.string().optional(),
+  protectedArea: z.string().optional(),
+  overlap: z.string().optional(),
   /** Exact farmer-id filter — used by the farmer detail page's
    *  Parcels card to pull only the parcels owned by that farmer. */
   farmerId: z.string().optional(),

@@ -132,5 +132,20 @@
   "farms.restoreDialog.description": "Restore \"{name}\"? The farm will reappear in lists and become editable again.",
   "farms.restoreDialog.cancel": "Cancel",
   "farms.restoreDialog.confirm": "Restore",
-  "farms.table.parcel": "Lô đất"
+  "farms.table.parcel": "Lô đất",
+  "farms.table.deforestation": "Mất rừng",
+  "farms.table.protectedArea": "Khu bảo tồn",
+  "farms.table.overlap": "Chồng lấn",
+  "farms.filters.allDeforestation": "Mọi mức mất rừng",
+  "farms.filters.allProtectedArea": "Mọi mức khu bảo tồn",
+  "farms.filters.allOverlap": "Mọi mức chồng lấn",
+  "farms.risk.high": "Cao",
+  "farms.risk.medium": "Trung bình",
+  "farms.risk.low": "Thấp",
+  "farms.overlap.overlap": "Chồng lấn",
+  "farms.overlap.review": "Cần rà soát",
+  "farms.overlap.none": "Không",
+  "farms.risk.deforestationTooltip": "Rủi ro mất rừng theo đánh giá EUDR. Mở thửa để xem các vùng đã phá trên bản đồ.",
+  "farms.risk.protectedAreaTooltip": "Khoảng cách tới khu bảo tồn. Mở thửa để xem ranh giới trên bản đồ.",
+  "farms.risk.overlapTooltip": "Ranh giới thửa có chồng lấn vùng rủi ro hay không. Mở thửa để xem phần chồng lấn trên bản đồ."
 }

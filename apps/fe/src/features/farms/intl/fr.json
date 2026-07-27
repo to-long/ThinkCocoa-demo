@@ -132,5 +132,20 @@
   "farms.restoreDialog.description": "Restore \"{name}\"? The farm will reappear in lists and become editable again.",
   "farms.restoreDialog.cancel": "Cancel",
   "farms.restoreDialog.confirm": "Restore",
-  "farms.table.parcel": "Parcelle"
+  "farms.table.parcel": "Parcelle",
+  "farms.table.deforestation": "Déforestation",
+  "farms.table.protectedArea": "Aire protégée",
+  "farms.table.overlap": "Chevauchement",
+  "farms.filters.allDeforestation": "Toute déforestation",
+  "farms.filters.allProtectedArea": "Toute aire protégée",
+  "farms.filters.allOverlap": "Tout chevauchement",
+  "farms.risk.high": "Élevé",
+  "farms.risk.medium": "Moyen",
+  "farms.risk.low": "Faible",
+  "farms.overlap.overlap": "Chevauchement",
+  "farms.overlap.review": "À vérifier",
+  "farms.overlap.none": "Aucun",
+  "farms.risk.deforestationTooltip": "Risque de déforestation selon l'évaluation EUDR. Ouvrez la parcelle pour voir les zones défrichées sur la carte.",
+  "farms.risk.protectedAreaTooltip": "Proximité d'une aire protégée. Ouvrez la parcelle pour voir la limite sur la carte.",
+  "farms.risk.overlapTooltip": "Indique si la parcelle chevauche une zone à risque. Ouvrez la parcelle pour voir le chevauchement sur la carte."
 }

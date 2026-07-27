@@ -36,6 +36,10 @@ export interface ListParcelsFilters {
   cropTypes: string[];
   parcelStatuses: string[];
   eudrStatuses: string[];
+  /** `gis.eudr_status` verdicts — see the shared query schema. */
+  deforestationRisks: string[];
+  protectedAreaRisks: string[];
+  overlaps: string[];
   /** Shade-survival band filter — one of healthy | caution | warning |
    *  danger | none. Bucketed against `parcels.shade_survival_pct`. */
   survivalBand?: string;
@@ -56,6 +60,11 @@ export interface ParcelRow {
   farmerFirstName: string;
   farmerLastName: string;
   eudrStatus: string | null;
+  /** Flattened out of the assessment for the LIST — `high` means the plot
+   *  abuts a deforestation patch or protected area. */
+  deforestationRisk?: string | null;
+  protectedAreaRisk?: string | null;
+  overlap?: string | null;
   /** Number of shade tree profiles recorded on this parcel. 0 when
    *  no records exist. Sourced from `shade.survival_checks`. */
   shadeTreeCount: number;
@@ -139,6 +148,22 @@ export async function listParcels(f: ListParcelsFilters): Promise<ListParcelsRes
     // parcel that simply has no row yet (i.e. almost all of them).
     whereClauses.push(inArray(dsql`COALESCE(${eudrStatus.status}, 'unknown')`, f.eudrStatuses));
   }
+  // Same COALESCE reasoning as the EUDR filter above: a parcel with no
+  // assessment row shows the benign value in the list, so picking that
+  // value has to match it.
+  if (f.deforestationRisks.length > 0) {
+    whereClauses.push(
+      inArray(dsql`COALESCE(${eudrStatus.deforestationRisk}, 'low')`, f.deforestationRisks),
+    );
+  }
+  if (f.protectedAreaRisks.length > 0) {
+    whereClauses.push(
+      inArray(dsql`COALESCE(${eudrStatus.protectedAreaRisk}, 'low')`, f.protectedAreaRisks),
+    );
+  }
+  if (f.overlaps.length > 0) {
+    whereClauses.push(inArray(dsql`COALESCE(${eudrStatus.overlap}, 'none')`, f.overlaps));
+  }
   if (f.survivalBand) {
     // Bands mirror the ShadeSurvivalBadge scale (FE): ≥80 healthy,
     // 60–79 caution, 40–59 warning, <40 danger, no row = none. `< n`
@@ -205,6 +230,9 @@ export async function listParcels(f: ListParcelsFilters): Promise<ListParcelsRes
         farmerFirstName: farmers.firstName,
         farmerLastName: farmers.lastName,
         eudrStatus: eudrStatus.status,
+        deforestationRisk: eudrStatus.deforestationRisk,
+        protectedAreaRisk: eudrStatus.protectedAreaRisk,
+        overlap: eudrStatus.overlap,
         shadeTreeCount: survivalChecks.totalTrees,
         // Outstanding (not-done) corrective actions across this parcel's
         // inspections — index-backed on corrective_actions(parcel_id).

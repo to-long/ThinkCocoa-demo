@@ -32,6 +32,11 @@ export interface ApiParcel {
   willingToRehabilitate: boolean | null;
   landOwnershipType: string | null;
   eudrStatus: string | null;
+  /** The three EUDR verdicts, flattened onto the list row so the table
+   *  can badge and filter them. */
+  deforestationRisk: string | null;
+  protectedAreaRisk: string | null;
+  overlap: string | null;
   /** Full EUDR assessment fields (detail endpoint only). Null when the
    *  parcel has no EUDR row. */
   eudr?: {
@@ -95,6 +100,9 @@ export interface ParcelsListParams {
   cropType?: string;
   parcelStatus?: string;
   eudr?: string;
+  deforestation?: string;
+  protectedArea?: string;
+  overlap?: string;
   /** Shade-survival band: healthy (≥80) | caution (60–79) |
    *  warning (40–59) | danger (<40) | none (no shade profiles). */
   survival?: string;
@@ -136,6 +144,9 @@ function normalizeListParams(p: ParcelsListParams) {
   if (p.cropType) out.cropType = p.cropType;
   if (p.parcelStatus) out.parcelStatus = p.parcelStatus;
   if (p.eudr) out.eudr = p.eudr;
+  if (p.deforestation) out.deforestation = p.deforestation;
+  if (p.protectedArea) out.protectedArea = p.protectedArea;
+  if (p.overlap) out.overlap = p.overlap;
   if (p.survival) out.survival = p.survival;
   if (p.farmerId) out.farmerId = p.farmerId;
   if (p.includeDeleted) out.includeDeleted = true;
@@ -152,6 +163,9 @@ function buildQuery(p: ParcelsListParams): string {
   if (p.cropType) sp.set('cropType', p.cropType);
   if (p.parcelStatus) sp.set('parcelStatus', p.parcelStatus);
   if (p.eudr) sp.set('eudr', p.eudr);
+  if (p.deforestation) sp.set('deforestation', p.deforestation);
+  if (p.protectedArea) sp.set('protectedArea', p.protectedArea);
+  if (p.overlap) sp.set('overlap', p.overlap);
   if (p.survival) sp.set('survival', p.survival);
   if (p.farmerId) sp.set('farmerId', p.farmerId);
   if (p.includeDeleted) sp.set('includeDeleted', 'true');

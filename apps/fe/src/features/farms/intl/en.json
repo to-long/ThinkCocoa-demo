@@ -152,5 +152,20 @@
   "farms.eudrImport.summary.upserted": "Updated",
   "farms.eudrImport.skippedRows": "Skipped {n} {n, plural, one {row} other {rows}}",
   "farms.eudrImport.mappingTitle": "Map Headers",
-  "farms.eudrImport.close": "Close"
+  "farms.eudrImport.close": "Close",
+  "farms.table.deforestation": "Deforestation",
+  "farms.table.protectedArea": "Protected area",
+  "farms.table.overlap": "Overlap",
+  "farms.filters.allDeforestation": "All deforestation",
+  "farms.filters.allProtectedArea": "All protected area",
+  "farms.filters.allOverlap": "All overlap",
+  "farms.risk.high": "High",
+  "farms.risk.medium": "Medium",
+  "farms.risk.low": "Low",
+  "farms.overlap.overlap": "Overlap",
+  "farms.overlap.review": "Review",
+  "farms.overlap.none": "None",
+  "farms.risk.deforestationTooltip": "Deforestation risk from the EUDR assessment. Open the parcel to see the cleared patches on the map.",
+  "farms.risk.protectedAreaTooltip": "Proximity to a protected area. Open the parcel to see the boundary on the map.",
+  "farms.risk.overlapTooltip": "Whether the plot boundary overlaps a risk zone. Open the parcel to see the overlap on the map."
 }

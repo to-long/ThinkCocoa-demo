@@ -15,6 +15,7 @@
  * `updateParcelSchema` via `zodResolver`, matching the farmers feature.
  */
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   type CreateParcelInput,
   createParcelSchema,
@@ -23,7 +24,6 @@ import {
   type UpdateParcelInput,
   updateParcelSchema,
 } from '@thinkcocoa/shared';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Check,
   ChevronsUpDown,
@@ -230,112 +230,37 @@ export function FarmDialog({ open, onOpenChange, onSubmit, initialData }: Props)
                 pinned + reachable when the form outgrows the dialog on
                 short viewports. */}
             <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-0.5">
-            {/* Field ID */}
-            <FormField
-              control={form.control}
-              name="id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('farms.field.fieldId')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="e.g. AK001WP009"
-                      {...field}
-                      disabled={isEdit}
-                      title={isEdit ? t('farms.field.fieldIdHint') : undefined}
-                      className={isEdit ? 'bg-muted text-foreground' : undefined}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Farm Name */}
-            <FormField
-              control={form.control}
-              name="parcelName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('farms.field.farmName')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="e.g. Mensah Farm A"
-                      value={field.value ?? ''}
-                      onChange={(e) =>
-                        field.onChange(e.target.value === '' ? null : e.target.value)
-                      }
-                      onBlur={field.onBlur}
-                      ref={field.ref}
-                      name={field.name}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Farmer — searchable combobox. Full-width trigger
-                (default shadcn SelectTrigger has w-fit which made the
-                empty state collapse to a tiny pill). Search is
-                server-side via `?q=` so the dropdown stays fast on
-                coops with 1000+ farmers. */}
-            <FormField
-              control={form.control}
-              name="farmerId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('farms.field.farmer')}</FormLabel>
-                  <FormControl>
-                    <FarmerCombobox
-                      value={field.value}
-                      onChange={field.onChange}
-                      initialLabel={initialData?.farmerFullName}
-                      enabled={open}
-                      placeholder={t('farms.field.selectFarmer')}
-                      searchPlaceholder={t('farms.field.searchFarmer')}
-                      emptyLabel={t('farms.field.noFarmerFound')}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Crop + Planting Date */}
-            <div className="grid grid-cols-2 gap-4">
-              {/* Crop — locked to Cocoa for now. Cooperative scope
-                  is cocoa-only; coffee/other are placeholders the
-                  product roadmap will revisit. Render as a disabled
-                  read-only input so it visually matches the other
-                  fields but can't be changed. */}
+              {/* Field ID */}
               <FormField
                 control={form.control}
-                name="cropType"
-                render={() => (
+                name="id"
+                render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('farms.field.crop')}</FormLabel>
+                    <FormLabel>{t('farms.field.fieldId')}</FormLabel>
                     <FormControl>
                       <Input
-                        value={t('farms.crop.cocoa')}
-                        disabled
-                        readOnly
-                        className="bg-muted text-foreground"
+                        placeholder="e.g. AK001WP009"
+                        {...field}
+                        disabled={isEdit}
+                        title={isEdit ? t('farms.field.fieldIdHint') : undefined}
+                        className={isEdit ? 'bg-muted text-foreground' : undefined}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              {/* Farm Name */}
               <FormField
                 control={form.control}
-                name="plantingDate"
+                name="parcelName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('farms.field.plantingDate')}</FormLabel>
+                    <FormLabel>{t('farms.field.farmName')}</FormLabel>
                     <FormControl>
                       <Input
-                        type="date"
+                        placeholder="e.g. Mensah Farm A"
                         value={field.value ?? ''}
                         onChange={(e) =>
                           field.onChange(e.target.value === '' ? null : e.target.value)
@@ -349,152 +274,229 @@ export function FarmDialog({ open, onOpenChange, onSubmit, initialData }: Props)
                   </FormItem>
                 )}
               />
-            </div>
 
-            {/* Tree Count + Total Area */}
-            <div className="grid grid-cols-2 gap-4">
+              {/* Farmer — searchable combobox. Full-width trigger
+                (default shadcn SelectTrigger has w-fit which made the
+                empty state collapse to a tiny pill). Search is
+                server-side via `?q=` so the dropdown stays fast on
+                coops with 1000+ farmers. */}
               <FormField
                 control={form.control}
-                name="cocoaTreeCount"
+                name="farmerId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('farms.field.treeCount')}</FormLabel>
+                    <FormLabel>{t('farms.field.farmer')}</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
-                        min={0}
-                        placeholder="e.g. 650"
-                        value={field.value ?? ''}
-                        onChange={(e) => {
-                          const v = e.target.value;
-                          field.onChange(v === '' ? null : Number(v));
-                        }}
-                        onBlur={field.onBlur}
-                        ref={field.ref}
-                        name={field.name}
+                      <FarmerCombobox
+                        value={field.value}
+                        onChange={field.onChange}
+                        initialLabel={initialData?.farmerFullName}
+                        enabled={open}
+                        placeholder={t('farms.field.selectFarmer')}
+                        searchPlaceholder={t('farms.field.searchFarmer')}
+                        emptyLabel={t('farms.field.noFarmerFound')}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="calculatedAreaHa"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('farms.field.totalArea')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min={0}
-                        placeholder={t('farms.field.areaPlaceholder')}
-                        value={field.value ?? ''}
-                        onChange={(e) => {
-                          const v = e.target.value;
-                          field.onChange(v === '' ? null : Number(v));
-                        }}
-                        onBlur={field.onBlur}
-                        ref={field.ref}
-                        name={field.name}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
 
-            {/* Map Geometry — GeoJSON boundary upload */}
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">{t('farms.field.mapGeometry')}</span>
-                {geometry && (
-                  <button
-                    type="button"
-                    onClick={clearGeometry}
-                    className="inline-flex items-center gap-1 text-muted-foreground text-xs hover:text-foreground"
-                  >
-                    <X className="size-3" />
-                    {t('farms.field.mapClear')}
-                  </button>
-                )}
+              {/* Crop + Planting Date */}
+              <div className="grid grid-cols-2 gap-4">
+                {/* Crop — locked to Cocoa for now. Cooperative scope
+                  is cocoa-only; coffee/other are placeholders the
+                  product roadmap will revisit. Render as a disabled
+                  read-only input so it visually matches the other
+                  fields but can't be changed. */}
+                <FormField
+                  control={form.control}
+                  name="cropType"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>{t('farms.field.crop')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          value={t('farms.crop.cocoa')}
+                          disabled
+                          readOnly
+                          className="bg-muted text-foreground"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="plantingDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('farms.field.plantingDate')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="date"
+                          value={field.value ?? ''}
+                          onChange={(e) =>
+                            field.onChange(e.target.value === '' ? null : e.target.value)
+                          }
+                          onBlur={field.onBlur}
+                          ref={field.ref}
+                          name={field.name}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".geojson,.json,application/geo+json,application/json"
-                className="hidden"
-                onChange={(e) => {
-                  void handleFile(e.target.files?.[0]);
-                }}
-              />
+              {/* Tree Count + Total Area */}
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="cocoaTreeCount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('farms.field.treeCount')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={0}
+                          placeholder="e.g. 650"
+                          value={field.value ?? ''}
+                          onChange={(e) => {
+                            const v = e.target.value;
+                            field.onChange(v === '' ? null : Number(v));
+                          }}
+                          onBlur={field.onBlur}
+                          ref={field.ref}
+                          name={field.name}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="calculatedAreaHa"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('farms.field.totalArea')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min={0}
+                          placeholder={t('farms.field.areaPlaceholder')}
+                          value={field.value ?? ''}
+                          onChange={(e) => {
+                            const v = e.target.value;
+                            field.onChange(v === '' ? null : Number(v));
+                          }}
+                          onBlur={field.onBlur}
+                          ref={field.ref}
+                          name={field.name}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-              {geometry ? (
-                <div className="flex flex-col gap-1 rounded-md border border-green-300 border-dashed bg-green-50/40 px-4 py-6 text-center dark:bg-green-950/20">
-                  <FileCheck2 className="mx-auto h-6 w-6 text-green-600" />
-                  <div className="truncate font-medium text-foreground text-sm">{geoFileName}</div>
-                  <div className="text-muted-foreground text-xs">
-                    {intl.formatMessage(
-                      { id: 'farms.field.mapPolygonCount' },
-                      { count: geoPolygonCount },
-                    )}
-                  </div>
+              {/* Map Geometry — GeoJSON boundary upload */}
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">{t('farms.field.mapGeometry')}</span>
+                  {geometry && (
+                    <button
+                      type="button"
+                      onClick={clearGeometry}
+                      className="inline-flex items-center gap-1 text-muted-foreground text-xs hover:text-foreground"
+                    >
+                      <X className="size-3" />
+                      {t('farms.field.mapClear')}
+                    </button>
+                  )}
                 </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    setDragOver(true);
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".geojson,.json,application/geo+json,application/json"
+                  className="hidden"
+                  onChange={(e) => {
+                    void handleFile(e.target.files?.[0]);
                   }}
-                  onDragLeave={() => setDragOver(false)}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    setDragOver(false);
-                    void handleFile(e.dataTransfer.files?.[0]);
-                  }}
-                  className={cn(
-                    'flex w-full flex-col gap-1 rounded-md border border-dashed px-4 py-6 text-center transition-colors',
-                    geoError
-                      ? 'border-destructive/50 bg-destructive/5'
-                      : dragOver
-                        ? 'border-ring bg-accent/50'
-                        : 'border-border bg-muted/30 hover:bg-muted/50',
-                  )}
-                >
-                  {geoError ? (
-                    <TriangleAlert className="mx-auto h-6 w-6 text-destructive" />
-                  ) : (
-                    <CloudUpload className="mx-auto h-6 w-6 text-muted-foreground" />
-                  )}
-                  <div className="font-medium text-foreground text-sm">
-                    {t('farms.field.mapUploadHint')}
+                />
+
+                {geometry ? (
+                  <div className="flex flex-col gap-1 rounded-md border border-green-300 border-dashed bg-green-50/40 px-4 py-6 text-center dark:bg-green-950/20">
+                    <FileCheck2 className="mx-auto h-6 w-6 text-green-600" />
+                    <div className="truncate font-medium text-foreground text-sm">
+                      {geoFileName}
+                    </div>
+                    <div className="text-muted-foreground text-xs">
+                      {intl.formatMessage(
+                        { id: 'farms.field.mapPolygonCount' },
+                        { count: geoPolygonCount },
+                      )}
+                    </div>
                   </div>
-                  <div
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setDragOver(true);
+                    }}
+                    onDragLeave={() => setDragOver(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setDragOver(false);
+                      void handleFile(e.dataTransfer.files?.[0]);
+                    }}
                     className={cn(
-                      'text-xs',
-                      geoError ? 'text-destructive' : 'text-muted-foreground',
+                      'flex w-full flex-col gap-1 rounded-md border border-dashed px-4 py-6 text-center transition-colors',
+                      geoError
+                        ? 'border-destructive/50 bg-destructive/5'
+                        : dragOver
+                          ? 'border-ring bg-accent/50'
+                          : 'border-border bg-muted/30 hover:bg-muted/50',
                     )}
                   >
-                    {geoError ? t(geoError) : t('farms.field.mapUploadSub')}
-                  </div>
-                </button>
-              )}
+                    {geoError ? (
+                      <TriangleAlert className="mx-auto h-6 w-6 text-destructive" />
+                    ) : (
+                      <CloudUpload className="mx-auto h-6 w-6 text-muted-foreground" />
+                    )}
+                    <div className="font-medium text-foreground text-sm">
+                      {t('farms.field.mapUploadHint')}
+                    </div>
+                    <div
+                      className={cn(
+                        'text-xs',
+                        geoError ? 'text-destructive' : 'text-muted-foreground',
+                      )}
+                    >
+                      {geoError ? t(geoError) : t('farms.field.mapUploadSub')}
+                    </div>
+                  </button>
+                )}
 
-              {isEdit && !geometry && initialData?.calculatedAreaHa != null && (
-                <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
-                  <MapPin className="size-3 text-green-600" />
-                  {intl.formatMessage(
-                    { id: 'farms.field.mapExisting' },
-                    { area: initialData.calculatedAreaHa },
-                  )}
-                </div>
-              )}
-            </div>
+                {isEdit && !geometry && initialData?.calculatedAreaHa != null && (
+                  <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+                    <MapPin className="size-3 text-green-600" />
+                    {intl.formatMessage(
+                      { id: 'farms.field.mapExisting' },
+                      { area: initialData.calculatedAreaHa },
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
             <DialogFooter>

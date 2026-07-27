@@ -5,12 +5,8 @@
  * metadata. Mirrors `apps/be/src/features/farmers/schemas.ts`.
  */
 
-import {
-  createParcelSchema,
-  listParcelsQuerySchema,
-  updateParcelSchema,
-} from '@thinkcocoa/shared';
 import { z } from '@hono/zod-openapi';
+import { createParcelSchema, listParcelsQuerySchema, updateParcelSchema } from '@thinkcocoa/shared';
 
 // ── Response schemas ─────────────────────────────────────────
 export const parcelCoreSchema = z
@@ -37,6 +33,11 @@ export const parcelCoreSchema = z
      *  `non_compliant`, `needs_review`, `unknown`, or `null` when
      *  there's no EUDR row yet. */
     eudrStatus: z.string().nullable(),
+    /** The three EUDR verdicts, flattened out of the assessment so the
+     *  LIST can badge and filter them without shipping the whole block. */
+    deforestationRisk: z.string().nullable(),
+    protectedAreaRisk: z.string().nullable(),
+    overlap: z.string().nullable(),
     /** Full EUDR assessment fields (detail endpoint). Null when the
      *  parcel has no `gis.eudr_status` row; omitted on list responses. */
     eudr: z

@@ -54,6 +54,13 @@ export function toParcelResponse(
     notes: string | null;
   } | null,
   riskZones?: unknown,
+  /** List rows carry only these three verdicts; the detail endpoint
+   *  passes the whole `eudr` block and we read them from there. */
+  verdicts?: {
+    deforestationRisk: string | null;
+    protectedAreaRisk: string | null;
+    overlap: string | null;
+  },
 ): z.infer<typeof parcelCoreSchema> {
   return {
     id: p.id,
@@ -75,6 +82,9 @@ export function toParcelResponse(
     willingToRehabilitate: p.willingToRehabilitate ?? null,
     landOwnershipType: p.landOwnershipType ?? null,
     eudrStatus: eudrStatus ?? null,
+    deforestationRisk: verdicts?.deforestationRisk ?? eudr?.deforestationRisk ?? null,
+    protectedAreaRisk: verdicts?.protectedAreaRisk ?? eudr?.protectedAreaRisk ?? null,
+    overlap: verdicts?.overlap ?? eudr?.overlap ?? null,
     eudr: eudr
       ? {
           overlap: eudr.overlap ?? null,
