@@ -49,3 +49,5 @@ coverage/
 backup_*/
 *.patch
 
+# BE storage root — generated reports + audit change diffs (STORAGE_ROOT)
+apps/be/storage/

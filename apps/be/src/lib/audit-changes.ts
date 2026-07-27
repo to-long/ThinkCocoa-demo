@@ -4,6 +4,7 @@
  * Layout under `STORAGE_ROOT` (gitignored):
  *
  *   <STORAGE_ROOT>/audit-changes/<YYYY-MM-DD>/audit/<auditLogId>/<sha16>.json
+ *   <STORAGE_ROOT>/reports/<YYYY-MM-DD>/<runId>/<file>        (reports-storage.ts)
  *
  * The key written into `audit.audit_attachment.storage_key` keeps the same
  * `<date>/<relPath>.json` shape the previous storage layer used, so existing
@@ -25,11 +26,13 @@
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
-/** Root for everything this module writes. Mirrors `STORAGE_ROOT` (the
- *  deploy sets an absolute path outside the code directory so a release
- *  untar can't wipe it); falls back to a repo-local folder in dev. */
+/** The ONE storage root: audit change diffs under `audit-changes/`,
+ *  generated reports under `reports/` (see `reports-storage.ts`). Mirrors
+ *  `STORAGE_ROOT` — the deploy sets an absolute path outside the code
+ *  directory so a release untar can't wipe it. The dev fallback is
+ *  `apps/be/storage`, matching what `.env.example` documents. */
 export function storageRoot(): string {
-  return process.env.STORAGE_ROOT ?? path.join(process.cwd(), '.local-storage');
+  return process.env.STORAGE_ROOT ?? path.join(process.cwd(), 'storage');
 }
 
 function changesRoot(): string {

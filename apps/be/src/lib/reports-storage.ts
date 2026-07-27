@@ -10,13 +10,27 @@
 
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { storageRoot } from './audit-changes';
 
-const REPORTS_DIR = process.env.REPORTS_DIR ?? path.join(process.cwd(), '.data', 'reports');
+/**
+ * The ONE storage root, beside the audit diffs — `<root>/reports/…` next to
+ * `<root>/audit-changes/…`. It used to be its own `.data/reports` tree,
+ * which meant two roots to configure, two to back up, and a "reset demo
+ * data" that emptied one of them and left generated reports behind.
+ *
+ * No `reports/` segment added here: every run record's `storageKey` already
+ * starts with one ("reports/<date>/<runId>/<file>"), and appending a second
+ * produced `storage/reports/reports/…` — the same doubling the old
+ * `.data/reports` layout quietly had. `REPORTS_DIR` still overrides.
+ */
+function reportsDir(): string {
+  return process.env.REPORTS_DIR ?? storageRoot();
+}
 
 /** Resolve a storageKey to an on-disk path, guarding against traversal. */
 function resolveKey(key: string): string {
   const safe = path.normalize(key).replace(/^(\.\.(\/|\\|$))+/, '');
-  return path.join(REPORTS_DIR, safe);
+  return path.join(reportsDir(), safe);
 }
 
 /** Persist a generated report to local disk. */
