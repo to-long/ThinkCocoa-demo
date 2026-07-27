@@ -17,7 +17,7 @@ export function AuthLayout({ locale, onLocaleChange }: AuthLayoutProps) {
       <header className="flex items-center justify-between border-border border-b px-8 py-4">
         <Link to="/" className="flex items-center gap-2.5">
           <img
-            src="/cocoa-traceability.webp"
+            src="/ThinkCocoaLogo.webp"
             alt="Think!Cocoa"
             className="size-7"
             width={28}

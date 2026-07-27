@@ -133,7 +133,7 @@ export function AppSidebar() {
       <SidebarHeader className="pl-4 pt-2">
         <Link to="/" className="flex items-center gap-2.5">
           <img
-            src="/cocoa-traceability.webp"
+            src="/ThinkCocoaLogo.webp"
             alt="Think!Cocoa"
             className="size-7"
             width={28}

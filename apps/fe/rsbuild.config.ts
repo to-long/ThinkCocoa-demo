@@ -92,7 +92,7 @@ export default defineConfig({
   },
   html: {
     title: 'Think!Cocoa',
-    favicon: 'public/cocoa-traceability.webp',
+    favicon: 'public/ThinkCocoaLogo.webp',
     // Meta-tag versions of the same headers — applies in any host
     // setup, including bare static servers without nginx in front.
     // X-Content-Type-Options + Strict-Transport-Security CANNOT be
