@@ -7,6 +7,7 @@ import { db } from './db/client';
 import { accounts, jwks, sessions, users, verifications } from './db/schema/iam';
 import { renderMagicLinkEmail, renderResetPasswordEmail, sendEmail } from './lib/email';
 import { resolvePermissionCodes } from './lib/permission-set';
+import { accessTokenTtlSeconds, refreshTokenTtlSeconds } from './lib/token-ttl';
 
 /**
  * better-auth configured against our domain `iam.*` schema.
@@ -58,19 +59,18 @@ export const auth = betterAuth({
     },
   },
 
-  // Session lifetime — env-driven so staging/prod can enforce a
-  // short idle timeout without forcing devs to re-login constantly.
-  //   • Local `.env`         SESSION_EXPIRES_SECONDS=604800 (7 days)
-  //   • Staging / prod (GH)  SESSION_EXPIRES_SECONDS=1800   (30 min)
+  // The session IS the refresh credential, so its lifetime is
+  // `REFRESH_TOKEN_TTL` — env-driven so the demo can enforce a short idle
+  // timeout without forcing devs to re-login all day.
+  //   • Local `.env`   REFRESH_TOKEN_TTL=7d
+  //   • Demo (GH var)  REFRESH_TOKEN_TTL=7d, ACCESS_TOKEN_TTL=30m
   //
   // updateAge = half of expiresIn (min 60s) → sliding refresh every
   // half-lifetime of activity. In practice: a user actively clicking
   // around never gets kicked out mid-task; walking away for the full
-  // lifetime does. For a 30-min lifetime that's a 15-min sliding
-  // window — matches the idle-timeout security expectation.
+  // lifetime does.
   session: (() => {
-    const raw = Number(process.env.SESSION_EXPIRES_SECONDS);
-    const expiresIn = Number.isFinite(raw) && raw > 0 ? Math.floor(raw) : 60 * 60 * 24 * 7;
+    const expiresIn = refreshTokenTtlSeconds();
     const updateAge = Math.max(60, Math.floor(expiresIn / 2));
     return { expiresIn, updateAge };
   })(),
@@ -125,9 +125,11 @@ export const auth = betterAuth({
     jwt({
       jwt: {
         // Short enough that a revoked/downgraded user can only keep their
-        // old scope for a few minutes, long enough that the refresh round
-        // trip is rare. Env-tunable for demos that want to SHOW a refresh.
-        expirationTime: process.env.ACCESS_TOKEN_TTL ?? '30m',
+        // old scope for a while, long enough that the refresh round trip is
+        // rare. `${n}s` rather than the raw env string so the plugin and the
+        // cookie cannot disagree about what `8h` means — both read the same
+        // parsed number.
+        expirationTime: `${accessTokenTtlSeconds()}s`,
         definePayload: async ({ user }) => {
           const [row] = await db
             .select({

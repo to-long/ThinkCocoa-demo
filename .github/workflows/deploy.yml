@@ -318,6 +318,11 @@ jobs:
           # the timeout too lax. Fixing here per-env keeps the
           # security posture explicit.
           SESSION_EXPIRES_SECONDS_VAR: ${{ vars.SESSION_EXPIRES_SECONDS }}
+          # Token lifetimes, both accepting `30m` / `8h` / `7d` / seconds.
+          # Unset → the BE keeps its own defaults (30m access, 7d refresh),
+          # so a missing variable never locks anyone out.
+          ACCESS_TOKEN_TTL_VAR: ${{ vars.ACCESS_TOKEN_TTL }}
+          REFRESH_TOKEN_TTL_VAR: ${{ vars.REFRESH_TOKEN_TTL }}
         run: |
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<EOF
             set -e
@@ -413,14 +418,33 @@ jobs:
             else
               echo "EMAIL_FROM=$EMAIL_FROM_VAR" >> .env
             fi
-            # SESSION_EXPIRES_SECONDS = env-scoped GH variable. auth.ts
-            # falls back to 7 days when unset, but staging+prod pin
-            # this to 1800 (30 min) to enforce idle timeout. Not
-            # secret, so kept as a variable (not a secret).
+            # SESSION_EXPIRES_SECONDS = the old name for the refresh
+            # lifetime; still written so a rollback to an older BE keeps
+            # its timeout. REFRESH_TOKEN_TTL wins when both are set.
             if grep -q "^SESSION_EXPIRES_SECONDS=" .env 2>/dev/null; then
               sed -i "s|^SESSION_EXPIRES_SECONDS=.*|SESSION_EXPIRES_SECONDS=$SESSION_EXPIRES_SECONDS_VAR|" .env
             else
               echo "SESSION_EXPIRES_SECONDS=$SESSION_EXPIRES_SECONDS_VAR" >> .env
+            fi
+            # Token lifetimes (`30m` / `8h` / `7d` / seconds). Written only
+            # when the variable is set — the BE's own defaults are the
+            # fallback, so a missing variable never locks anyone out.
+            # Every $VAR here is expanded by the RUNNER (the heredoc is
+            # unquoted), so the droplet receives literal values; no
+            # remote-side variables, same as the blocks above.
+            if [ -n "$ACCESS_TOKEN_TTL_VAR" ]; then
+              if grep -q "^ACCESS_TOKEN_TTL=" .env 2>/dev/null; then
+                sed -i "s|^ACCESS_TOKEN_TTL=.*|ACCESS_TOKEN_TTL=$ACCESS_TOKEN_TTL_VAR|" .env
+              else
+                echo "ACCESS_TOKEN_TTL=$ACCESS_TOKEN_TTL_VAR" >> .env
+              fi
+            fi
+            if [ -n "$REFRESH_TOKEN_TTL_VAR" ]; then
+              if grep -q "^REFRESH_TOKEN_TTL=" .env 2>/dev/null; then
+                sed -i "s|^REFRESH_TOKEN_TTL=.*|REFRESH_TOKEN_TTL=$REFRESH_TOKEN_TTL_VAR|" .env
+              else
+                echo "REFRESH_TOKEN_TTL=$REFRESH_TOKEN_TTL_VAR" >> .env
+              fi
             fi
           EOF
 

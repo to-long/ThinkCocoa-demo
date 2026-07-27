@@ -28,6 +28,7 @@ import { auth } from '../auth';
 import { db } from '../db/client';
 import { users } from '../db/schema/iam';
 import { clearRevocation } from './token-revocation';
+import { accessTokenTtlSeconds } from './token-ttl';
 
 /** Cookie carrying the access token. Shares better-auth's `cookiePrefix`
  *  (see `auth.ts`) so both halves of the pair are obviously ours in
@@ -40,17 +41,10 @@ export const ACCESS_COOKIE = `${COOKIE_PREFIX}.access_token`;
 
 const isProd = process.env.NODE_ENV === 'production';
 
-/** Seconds — mirrors `ACCESS_TOKEN_TTL` (auth.ts) so the cookie and the
- *  token expire together. Parsed from the same `15m` style string. */
-export function accessTokenTtlSeconds(): number {
-  const raw = process.env.ACCESS_TOKEN_TTL ?? '30m';
-  const m = /^(\d+)\s*([smhd])?$/.exec(raw.trim());
-  if (!m) return 30 * 60;
-  const n = Number(m[1]);
-  const unit = m[2] ?? 's';
-  const mult = unit === 'd' ? 86400 : unit === 'h' ? 3600 : unit === 'm' ? 60 : 1;
-  return n * mult;
-}
+// Re-exported so the many call sites reading the access TTL alongside the
+// cookie helpers don't each need a second import. The definition lives in
+// `token-ttl.ts` — `auth.ts` needs it too and cannot import this module.
+export { accessTokenTtlSeconds } from './token-ttl';
 
 /** `Set-Cookie` value for the access token. httpOnly so no script can
  *  read it, `lax` so a top-level navigation still carries it (the FE and
