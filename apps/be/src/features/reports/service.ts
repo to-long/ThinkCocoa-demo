@@ -44,6 +44,7 @@ import { generateGmrReport } from './generators/gmr';
 import { generateTraceabilityReport } from './generators/traceability';
 import { generateTrainingAttendanceReport } from './generators/training-attendance';
 import { seasonToDateRange } from './lib/season';
+import { xlsxToPdf } from './lib/xlsx-to-pdf';
 
 export type ReportCode =
   | 'farmer_coaching_v3'
@@ -53,7 +54,9 @@ export type ReportCode =
   | 'gmr_template'
   | 'eudr_compliance'
   | 'training_attendance';
-export type ReportFormat = CoachingReportFormat; // 'excel' | 'csv'
+/** `pdf` is the report's own XLSX printed by headless LibreOffice — see
+ *  `dispatchGenerator` — so generators still only know `excel` | `csv`. */
+export type ReportFormat = CoachingReportFormat | 'pdf';
 export type ReportStatus = 'queued' | 'running' | 'completed' | 'failed';
 
 export interface ReportRunSummary {
@@ -366,12 +369,26 @@ async function dispatchGenerator(
   // encode the season, not the raw range) and their WHERE clauses keep
   // using `seasonToDateRange()`. Once every generator moves to accept
   // `dateFrom`/`dateTo` directly, we can drop this adapter.
+  // PDF is the XLSX printed, not a third code path in every generator:
+  // the templates' merges, colours and cover pages ARE the report, and
+  // redrawing them in a PDF library means reimplementing Calc.
+  const wantsPdf = params.outputFormat === 'pdf';
   const generatorArgs = {
     cooperativeId: params.cooperativeId,
     season: seasonFromRange(params.dateFrom, params.dateTo),
     societyId: params.societyId,
-    outputFormat: params.outputFormat,
+    outputFormat: (wantsPdf ? 'excel' : params.outputFormat) as CoachingReportFormat,
   };
+  if (wantsPdf) {
+    const xlsx = await dispatchGenerator(reportCode, { ...params, outputFormat: 'excel' });
+    const fileName = xlsx.fileName.replace(/\.xlsx$/i, '.pdf');
+    return {
+      buffer: await xlsxToPdf(xlsx.buffer, fileName.replace(/\.pdf$/i, '')),
+      fileName,
+      mimeType: 'application/pdf',
+    };
+  }
+
   switch (reportCode) {
     case 'farmer_coaching_v3':
       return generateFarmerCoachingV3(generatorArgs);

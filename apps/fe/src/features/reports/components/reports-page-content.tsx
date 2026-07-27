@@ -143,10 +143,12 @@ const REPORTS: ReportType[] = [
 
 const REPORT_BY_SLUG = new Map(REPORTS.map((r) => [r.slug, r] as const));
 
-/** UI label → BE outputFormat enum. PDF excluded for v3. */
+/** UI label → BE outputFormat enum. PDF is rendered from the report's own
+ *  CSV server-side, so its columns always match the CSV export's. */
 const FORMAT_OPTIONS: ReadonlyArray<{ label: string; value: ReportFormat }> = [
   { label: 'XLSX', value: 'excel' },
   { label: 'CSV', value: 'csv' },
+  { label: 'PDF', value: 'pdf' },
 ];
 
 function formatLabel(value: string): string {

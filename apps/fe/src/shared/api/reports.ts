@@ -15,7 +15,7 @@ export type ReportCode =
   | 'corrective_actions'
   | 'gmr_template'
   | 'eudr_compliance';
-export type ReportFormat = 'excel' | 'csv';
+export type ReportFormat = 'excel' | 'csv' | 'pdf';
 export type ReportStatus = 'queued' | 'running' | 'completed' | 'failed';
 
 export interface ReportFile {

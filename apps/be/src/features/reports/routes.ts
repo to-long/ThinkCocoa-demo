@@ -46,7 +46,7 @@ const SUPPORTED_REPORT_CODES = [
   'eudr_compliance',
   'training_attendance',
 ] as const;
-const SUPPORTED_FORMATS = ['excel', 'csv'] as const;
+const SUPPORTED_FORMATS = ['excel', 'csv', 'pdf'] as const;
 
 const runBody = z.object({
   reportCode: z.enum(SUPPORTED_REPORT_CODES),
