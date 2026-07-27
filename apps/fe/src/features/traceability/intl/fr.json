@@ -55,6 +55,8 @@
   "traceability.detail.composition.title": "Composition du lot",
   "traceability.detail.composition.col.waybill": "Primary Waybill",
   "traceability.detail.composition.unmatchedTooltip": "Cet achat n'a pas pu être associé au registre des achats.",
+  "traceability.detail.composition.unresolvedPrimaryWbBanner": "Primary wb non résolu",
+  "traceability.detail.composition.openPrimaryEvac": "Ouvrir l'évacuation primaire {wb}",
   "traceability.detail.composition.unmatchedBanner": "{count} achat(s) non résolu(s)",
   "traceability.detail.composition.unresolvedPrefix": "Non résolu :",
   "traceability.detail.composition.unresolvedPurchases": "{count} achats",

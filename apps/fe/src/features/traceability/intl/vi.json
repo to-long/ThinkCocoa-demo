@@ -55,6 +55,8 @@
   "traceability.detail.composition.title": "Lot composition",
   "traceability.detail.composition.col.waybill": "Primary Waybill",
   "traceability.detail.composition.unmatchedTooltip": "Giao dịch mua này chưa khớp được với bản ghi trong purchase master.",
+  "traceability.detail.composition.unresolvedPrimaryWbBanner": "Primary wb chưa khớp",
+  "traceability.detail.composition.openPrimaryEvac": "Mở primary evacuation {wb}",
   "traceability.detail.composition.unmatchedBanner": "{count} giao dịch chưa khớp",
   "traceability.detail.composition.unresolvedPrefix": "Chưa khớp:",
   "traceability.detail.composition.unresolvedPurchases": "{count} giao dịch",

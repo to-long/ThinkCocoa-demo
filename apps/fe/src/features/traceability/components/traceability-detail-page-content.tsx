@@ -255,39 +255,54 @@ export function TraceabilityDetailPageContent() {
         </div>
         <div className="overflow-x-auto">
           <div className="min-w-[740px]">
-            <div
-              className={`${LOT_GRID} border-b bg-muted py-2 font-semibold text-[10px] text-muted-foreground uppercase tracking-wide`}
-            >
-              <span className="sticky left-0 z-20 flex items-center bg-muted pl-4">
-                {expandableKeys.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={allExpanded ? collapseAll : expandAll}
-                    aria-label={t(
-                      allExpanded
-                        ? 'traceability.detail.composition.collapseAll'
-                        : 'traceability.detail.composition.expandAll',
-                    )}
-                    className="inline-flex cursor-pointer text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    {allExpanded ? (
-                      <ChevronDown className="size-3.5" />
-                    ) : (
-                      <ChevronRight className="size-3.5" />
-                    )}
-                  </button>
-                )}
-              </span>
-              <span className="sticky left-9 z-10 bg-muted">
-                {t('traceability.detail.composition.col.waybill')}
-              </span>
-              <span>{t('traceability.detail.composition.col.purchases')}</span>
-              <span>{t('traceability.detail.composition.col.plots')}</span>
-              <span>{t('traceability.detail.composition.col.farmers')}</span>
-              <span className="pr-4 text-right">
-                {t('traceability.detail.composition.col.weight')}
-              </span>
-            </div>
+            {/* The whole header row toggles every drilldown, the same way
+                each lot row toggles its own — the chevron alone was a
+                14px target for the one control that drives the table.
+                A <button> (not a div + onClick) so it keeps keyboard
+                focus and Enter/Space for free, and the chevron stops
+                being a nested button, which isn't valid HTML anyway. */}
+            {(() => {
+              const expandable = expandableKeys.length > 0;
+              const label = t(
+                allExpanded
+                  ? 'traceability.detail.composition.collapseAll'
+                  : 'traceability.detail.composition.expandAll',
+              );
+              const Row = expandable ? 'button' : 'div';
+              return (
+                <Row
+                  {...(expandable
+                    ? {
+                        type: 'button' as const,
+                        onClick: allExpanded ? collapseAll : expandAll,
+                        'aria-label': label,
+                        title: label,
+                      }
+                    : {})}
+                  className={`${LOT_GRID} group/head w-full border-b bg-muted py-2 text-left font-semibold text-[10px] text-muted-foreground uppercase tracking-wide ${
+                    expandable ? 'cursor-pointer' : ''
+                  }`}
+                >
+                  <span className="sticky left-0 z-20 flex items-center bg-muted pl-4">
+                    {expandable &&
+                      (allExpanded ? (
+                        <ChevronDown className="size-3.5 transition-colors group-hover/head:text-foreground" />
+                      ) : (
+                        <ChevronRight className="size-3.5 transition-colors group-hover/head:text-foreground" />
+                      ))}
+                  </span>
+                  <span className="sticky left-9 z-10 bg-muted">
+                    {t('traceability.detail.composition.col.waybill')}
+                  </span>
+                  <span>{t('traceability.detail.composition.col.purchases')}</span>
+                  <span>{t('traceability.detail.composition.col.plots')}</span>
+                  <span>{t('traceability.detail.composition.col.farmers')}</span>
+                  <span className="pr-4 text-right">
+                    {t('traceability.detail.composition.col.weight')}
+                  </span>
+                </Row>
+              );
+            })()}
             <div className="divide-y">
               {data.primaryLots.length === 0 ? (
                 <div className="p-6 text-center text-muted-foreground text-sm">
@@ -448,88 +463,145 @@ function PrimaryLotRow({
   const isOrphan = !row.id;
   const wbLabel = row.primaryWaybillNumber ?? row.primaryWaybillRaw;
   const unmatchedCount = row.purchases.filter((p) => !p.matched).length;
+  // Only follow the row's hover when the row actually responds to it.
+  const stickyBg = hasDrilldown ? 'bg-card group-hover/lot:bg-muted' : 'bg-card';
   // Resolved rows first; unresolved ones sink to the bottom.
   const sortedPurchases = [...row.purchases].sort((a, b) => Number(b.matched) - Number(a.matched));
 
-  return (
-    <div>
-      <button
-        type="button"
-        onClick={() => hasDrilldown && onToggle()}
-        disabled={!hasDrilldown}
-        className={`${LOT_GRID} w-full items-center py-3 text-left ${
-          hasDrilldown ? 'cursor-pointer hover:bg-muted/40' : ''
-        }`}
-      >
-        <span className="sticky left-0 z-10 flex items-center bg-card pl-4">
-          {hasDrilldown ? (
-            expanded ? (
-              <ChevronDown className="size-3.5 text-muted-foreground" />
-            ) : (
-              <ChevronRight className="size-3.5 text-muted-foreground" />
-            )
+  // The row's six cells, rendered inside either an interactive wrapper or
+  // a plain one — see below.
+  const cells = (
+    <>
+      <span className={`sticky left-0 z-10 flex items-center pl-4 ${stickyBg}`}>
+        {hasDrilldown ? (
+          expanded ? (
+            <ChevronDown className="size-3.5 text-muted-foreground" />
           ) : (
-            <span className="size-3.5" />
-          )}
-        </span>
-        <span
-          className="sticky left-9 z-10 inline-flex min-w-0 max-w-full items-center gap-1.5 bg-card"
-          title={wbLabel}
-        >
-          <StatusTag tone="info" className="max-w-full">
-            <span className="min-w-0 truncate font-mono">{wbLabel}</span>
-          </StatusTag>
-          {isOrphan && (
-            <span
-              className="inline-flex shrink-0 text-amber-600 dark:text-amber-400"
-              title={t('traceability.detail.composition.orphanBanner')}
-            >
-              <TriangleAlert className="size-3.5" />
-            </span>
-          )}
-          {!isOrphan && unmatchedCount > 0 && !expanded && (
-            <span
-              className="inline-flex shrink-0"
+            <ChevronRight className="size-3.5 text-muted-foreground" />
+          )
+        ) : (
+          <span className="size-3.5" />
+        )}
+      </span>
+      <span
+        className={`sticky left-9 z-10 inline-flex min-w-0 max-w-full items-center gap-1.5 ${stickyBg}`}
+        title={wbLabel}
+      >
+        <StatusTag tone="info" className="max-w-full">
+          {/* Orphans have no primary-evacuation record to open, so they
+                  stay plain text. `stopPropagation` keeps the jump from also
+                  toggling the drilldown under it. */}
+          {row.primaryWaybillNumber ? (
+            <Link
+              to={`/primary-evacuation/${encodeURIComponent(row.primaryWaybillNumber)}`}
+              onClick={(e) => e.stopPropagation()}
+              className="min-w-0 truncate font-mono hover:underline"
               title={intl.formatMessage(
+                { id: 'traceability.detail.composition.openPrimaryEvac' },
+                { wb: wbLabel },
+              )}
+            >
+              {wbLabel}
+            </Link>
+          ) : (
+            <span className="min-w-0 truncate font-mono">{wbLabel}</span>
+          )}
+        </StatusTag>
+        {/* Both marks are a bare icon or a bare number — unreadable
+                without the reason. The app's Tooltip rather than `title`:
+                the browser's is a second late and unstyled. */}
+        {isOrphan && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="inline-flex shrink-0 text-amber-600 dark:text-amber-400">
+                <TriangleAlert className="size-3.5" />
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              {t('traceability.detail.composition.unresolvedPrimaryWbBanner')}
+            </TooltipContent>
+          </Tooltip>
+        )}
+        {!isOrphan && unmatchedCount > 0 && !expanded && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="inline-flex shrink-0">
+                <StatusTag tone="caution">
+                  <TriangleAlert className="size-3" />
+                  {unmatchedCount}
+                </StatusTag>
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              {intl.formatMessage(
                 { id: 'traceability.detail.composition.unmatchedBanner' },
                 { count: unmatchedCount },
               )}
-            >
-              <StatusTag tone="caution">
-                <TriangleAlert className="size-3" />
-                {unmatchedCount}
-              </StatusTag>
-            </span>
-          )}
-        </span>
-        <span className="text-muted-foreground text-xs">
-          {row.purchaseCount > 0
-            ? intl.formatMessage(
-                { id: 'traceability.detail.composition.row.purchases' },
-                { count: row.purchaseCount },
-              )
-            : '—'}
-        </span>
-        <span className="text-muted-foreground text-xs">
-          {row.plotCount > 0
-            ? intl.formatMessage(
-                { id: 'traceability.detail.composition.row.plots' },
-                { count: row.plotCount },
-              )
-            : '—'}
-        </span>
-        <span className="text-muted-foreground text-xs">
-          {row.farmerCount > 0
-            ? intl.formatMessage(
-                { id: 'traceability.detail.composition.row.farmers' },
-                { count: row.farmerCount },
-              )
-            : '—'}
-        </span>
-        <span className="pr-4 text-right font-medium text-foreground text-sm">
-          {fmtKg(row.kgReceived)}
-        </span>
-      </button>
+            </TooltipContent>
+          </Tooltip>
+        )}
+      </span>
+      <span className="text-muted-foreground text-xs">
+        {row.purchaseCount > 0
+          ? intl.formatMessage(
+              { id: 'traceability.detail.composition.row.purchases' },
+              { count: row.purchaseCount },
+            )
+          : '—'}
+      </span>
+      <span className="text-muted-foreground text-xs">
+        {row.plotCount > 0
+          ? intl.formatMessage(
+              { id: 'traceability.detail.composition.row.plots' },
+              { count: row.plotCount },
+            )
+          : '—'}
+      </span>
+      <span className="text-muted-foreground text-xs">
+        {row.farmerCount > 0
+          ? intl.formatMessage(
+              { id: 'traceability.detail.composition.row.farmers' },
+              { count: row.farmerCount },
+            )
+          : '—'}
+      </span>
+      <span className="pr-4 text-right font-medium text-foreground text-sm">
+        {fmtKg(row.kgReceived)}
+      </span>
+    </>
+  );
+  const rowClass = `${LOT_GRID} group/lot w-full items-center py-3 text-left ${
+    hasDrilldown ? 'cursor-pointer hover:bg-muted' : ''
+  }`;
+
+  return (
+    <div>
+      {/* A <div role="button"> rather than a real <button>: the waybill
+          inside is a LINK to the primary evacuation, and an <a> inside a
+          <button> is invalid HTML — the browser reparents it and the row
+          stops working. Keyboard parity is kept by hand (tabIndex +
+          Enter/Space). A row with nothing to drill into gets no role and no
+          handlers at all rather than a disabled one. */}
+      {hasDrilldown ? (
+        // biome-ignore lint/a11y/useSemanticElements: a real <button> cannot contain the waybill link
+        <div
+          role="button"
+          tabIndex={0}
+          aria-expanded={expanded}
+          onClick={onToggle}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onToggle();
+            }
+          }}
+          className={rowClass}
+        >
+          {cells}
+        </div>
+      ) : (
+        <div className={rowClass}>{cells}</div>
+      )}
 
       {expanded && hasDrilldown && (
         <div className="border-t bg-muted/20">
