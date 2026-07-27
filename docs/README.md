@@ -5,7 +5,7 @@ call, or use to put the environment back the way it was.
 
 | Path | What it is |
 |---|---|
-| [`SALES_DEMO_GUIDE.md`](SALES_DEMO_GUIDE.md) | The sales team's manual: sign-in, how the app works, a module-by-module tour, reset. `SALES_DEMO_GUIDE.pdf` beside it is the version to hand out — regenerate it after editing the markdown (see below) |
+| `secret/` | Not in git (see `.gitignore`). Holds the sales guide (`SALES_DEMO_GUIDE.md` + the PDF handed out) and the original assignment document — they carry real names, contact details and the staging URL |
 | [`import-samples/`](import-samples/) | Ready-to-upload farmers / parcel-polygon / EUDR files + their column reference |
 | `demo-db-dump.sql.gz.enc` | Encrypted snapshot of the whole demo database (see below) |
 
@@ -86,11 +86,11 @@ commit the result.
 
 ## Regenerating the sales guide PDF
 
-`SALES_DEMO_GUIDE.pdf` is a build artefact of the markdown next to it —
-edit the `.md`, never the PDF, then:
+Both live in `secret/`, which is gitignored. The PDF is a build artefact of
+the markdown next to it — edit the `.md`, never the PDF, then:
 
 ```bash
-cd docs && pandoc SALES_DEMO_GUIDE.md -o SALES_DEMO_GUIDE.pdf \
+cd docs/secret && pandoc SALES_DEMO_GUIDE.md -o SALES_DEMO_GUIDE.pdf \
   --pdf-engine=tectonic -V geometry:margin=2cm -V fontsize=10pt -V colorlinks=true
 ```
 

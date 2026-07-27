@@ -51,3 +51,7 @@ backup_*/
 
 # BE storage root — generated reports + audit change diffs (STORAGE_ROOT)
 apps/be/storage/
+
+# Anything the demo must not carry into git: the client's own assignment
+# document, and the sales guide (real names, contact details, staging URL).
+docs/secret/
