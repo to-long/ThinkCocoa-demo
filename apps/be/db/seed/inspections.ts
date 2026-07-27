@@ -318,59 +318,57 @@ export async function seedInspections(db: Db): Promise<void> {
       });
   }
 
-  // Reflect the latest outcome on the farmer's denormalised
-  // certification_status — and, in the SAME statement, the RA certificate
-  // details, because the two must agree: a farmer marked `expired` whose
-  // certificate expires next year is worse than no data at all.
+  // The farmer's RA certificate — presence, number, audit date, expiry —
+  // and the denormalised `certification_status` that must agree with it:
+  // a farmer marked `expired` whose certificate runs to next year is
+  // worse than no data at all.
   //
-  // Among farmers a recent inspection certified, the certificate splits
-  // 50 / 30 / 20 — valid, expiring inside the 90-day renewals window,
-  // already lapsed. That is a deliberately unhealthy book: a demo where
-  // everything is valid has nothing to show in the renewals view, which
-  // is the whole reason the expiry dates exist.
+  // Fixed proportions, because the demo has to show every state:
+  //   10% hold no certificate at all
+  //   of the 90% that do — 50% valid, 30% expiring inside the 90-day
+  //   renewals window, 20% already lapsed
+  // i.e. 10 / 45 / 27 / 18 of the whole book.
   //
-  // The split is an NTILE over a hash ORDER, not `hash % 100 < 20`. The
-  // ids are structured (ABM-0001, ABM-0002…) so their md5s do not spread
-  // evenly across 100 buckets — the modulo version delivered 17/32/51
-  // against a 20/30/50 target. Ranking splits by position, so the
-  // proportions are exact whatever the ids look like.
+  // The percentile is `row_number / count`, not `hash % 100` and not
+  // NTILE. Two lessons paid for here: farmer ids are structured
+  // (ABM-0001, ABM-0002…) so their md5s do not spread evenly across 100
+  // buckets — modulo delivered 17/32/51 against a 20/30/50 target — and
+  // NTILE hands its remainder to the FIRST tiles, so with 686 rows the
+  // last 18 tiles held 16.3% instead of 18%. A rank over the row count
+  // divides evenly wherever the boundaries fall, and stays deterministic
+  // across reseeds.
   //
-  // Farmers with no certifying inspection hold no certificate at all —
-  // mostly "unknown", ~20% "pending" a first assessment.
+  // Deliberately NOT keyed off the latest inspection outcome any more:
+  // inspection dates are relative to "now", so which inspection is latest
+  // shifts between reseeds and the split wandered with it.
   //
-  // Every bucket and offset is a deterministic hash of the farmer id, so
-  // a reseed reproduces the same certificates. Audit date is always 12
-  // months before expiry — an RA certificate runs a year from its audit,
-  // so the two cannot be drawn independently.
+  // Audit date is always 12 months before expiry — an RA certificate runs
+  // a year from its audit, so the two cannot be drawn independently.
   await db.execute(sql`
-    WITH latest AS (
-      SELECT DISTINCT ON (farmer_id) farmer_id, certification_outcome
-        FROM inspection.inspections
-       ORDER BY farmer_id, date_inspection DESC
-    ), graded AS (
+    WITH ranked AS (
       SELECT f.id,
              ('x' || substr(md5(f.id::text), 5, 4))::bit(16)::int AS h2,
-             latest.certification_outcome IN ('certified','certified_with_ca') AS certified,
-             NTILE(10) OVER (
-               PARTITION BY latest.certification_outcome IN ('certified','certified_with_ca')
-               ORDER BY md5(f.id::text)
-             ) AS decile
+             CEIL(
+               ROW_NUMBER() OVER (ORDER BY md5(f.id::text)) * 100.0 / COUNT(*) OVER ()
+             )::int AS pct
         FROM farmer.farmers f
-        JOIN latest ON latest.farmer_id = f.id
+       WHERE f.deleted_at IS NULL
     ), dated AS (
       SELECT id, h2,
              CASE
-               WHEN NOT certified THEN CASE WHEN decile <= 2 THEN 'pending' ELSE 'unknown' END
-               WHEN decile <= 2 THEN 'expired'          -- 2 deciles = 20% lapsed
-               ELSE 'rainforest_alliance'               -- 5 valid + 3 expiring
+               WHEN pct <= 10 THEN                         -- 10%: no certificate
+                 CASE WHEN pct <= 4 THEN 'pending' ELSE 'unknown' END
+               WHEN pct <= 55 THEN 'rainforest_alliance'   -- 45%: valid
+               WHEN pct <= 82 THEN 'rainforest_alliance'   -- 27%: renewal due
+               ELSE 'expired'                              -- 18%: lapsed
              END AS status,
              CASE
-               WHEN NOT certified THEN NULL
-               WHEN decile <= 2 THEN CURRENT_DATE - (10 + h2 % 320)  -- lapsed
-               WHEN decile <= 5 THEN CURRENT_DATE + (5 + h2 % 85)    -- renewal due (30%)
-               ELSE CURRENT_DATE + (120 + h2 % 400)                  -- comfortably valid (50%)
+               WHEN pct <= 10 THEN NULL
+               WHEN pct <= 55 THEN CURRENT_DATE + (120 + h2 % 400)
+               WHEN pct <= 82 THEN CURRENT_DATE + (5 + h2 % 85)
+               ELSE CURRENT_DATE - (10 + h2 % 320)
              END AS expiry
-        FROM graded
+        FROM ranked
     )
     UPDATE farmer.farmers f
        SET certification_status = d.status,
