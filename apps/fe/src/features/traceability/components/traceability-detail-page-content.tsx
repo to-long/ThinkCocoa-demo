@@ -304,7 +304,7 @@ export function TraceabilityDetailPageContent() {
               <div
                 className={`${LOT_GRID} items-center border-t bg-muted py-2.5 font-semibold text-foreground text-xs`}
               >
-                <span className="sticky left-0 z-10 bg-muted pl-4" />
+                <span className="sticky left-0 z-10 bg-muted pl-4 block h-full w-full" />
                 <span className="sticky left-12 z-10 bg-muted uppercase tracking-wide">
                   {t('traceability.detail.composition.total')}
                 </span>
@@ -530,7 +530,7 @@ function PrimaryLotRow({
           <div
             className={`${LOT_GRID} border-b bg-muted py-1.5 font-semibold text-[10px] text-muted-foreground uppercase tracking-wide`}
           >
-            <span className="sticky left-0 z-10 bg-muted pl-4" />
+            <span className="sticky left-0 z-10 bg-muted pl-4 block h-full w-full" />
             <span className="sticky left-12 z-10 bg-muted">
               {t('traceability.detail.composition.col.purchaseId')}
             </span>
@@ -544,7 +544,7 @@ function PrimaryLotRow({
               key={p.id}
               className={`${LOT_GRID} items-center border-b bg-card py-1.5 text-xs last:border-b-0`}
             >
-              <span className="sticky left-0 z-10 bg-card pl-4" />
+              <span className="sticky left-0 z-10 bg-card pl-4 block h-full w-full" />
               <span className="sticky left-12 z-10 inline-flex min-w-0 items-center gap-1.5 bg-card">
                 {p.matched ? (
                   <Link
