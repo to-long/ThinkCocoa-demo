@@ -13,11 +13,17 @@
  *   1. PAGE SETUP. The templates carry none, so Calc slices 19 columns
  *      into vertical strips and repeats the whole table for each —
  *      1091 pages for 1008 rows. We stamp landscape + fit-to-width onto
- *      every sheet before converting, and a print area that stops at the
- *      last row with data: the templates style a fixed-height data area,
- *      so without it Calc prints every leftover bordered-but-empty row.
- *      Only on the PDF path; the XLSX download keeps the template exactly
- *      as authored.
+ *      every sheet before converting, and HIDE every row past the last
+ *      one carrying a value. The templates style a fixed-height data area
+ *      — 5005 bordered rows for 112 of data — and Calc printed all of it:
+ *      64 pages, 62 of them an empty grid. Hiding those rows brings it to
+ *      2. Only on the PDF path; the XLSX download keeps the template
+ *      exactly as authored.
+ *
+ *      Two things that do NOT work, tried in this order: a print area
+ *      clipped to the content (ExcelJS writes `_xlnm.Print_Area`,
+ *      LibreOffice ignores it) and `spliceRows` (leaves `rowCount` and the
+ *      sheet `dimension` at 5005, so the rows come back on write).
  *
  *   2. RECALCULATION. ExcelJS writes `=COUNTA(...)` with no cached
  *      result, and LibreOffice does not recalculate xlsx on load by
@@ -51,40 +57,25 @@ function sofficeBin(): string {
 const TIMEOUT_MS = 60_000;
 
 /**
- * Last row and column that actually carry something.
+ * Last row that actually carries something.
  *
- * `rowCount` / `columnCount` count anything the template TOUCHED, which
- * includes the borders and fills painted down an empty data area — that is
- * how a 178-row report printed 116 pages. A cell counts as content when it
- * has a value or a formula; styling alone does not.
+ * `rowCount` counts anything the template TOUCHED, which includes the
+ * borders and fills painted down an empty data area. A cell counts as
+ * content when it holds a value; styling alone does not.
  */
-function contentExtent(ws: ExcelJS.Worksheet): { lastRow: number; lastCol: number } {
+function lastRowWithValue(ws: ExcelJS.Worksheet): number {
   let lastRow = 0;
-  let lastCol = 0;
   ws.eachRow({ includeEmpty: false }, (row, rowNumber) => {
     let rowHasContent = false;
-    row.eachCell({ includeEmpty: false }, (cell, colNumber) => {
+    row.eachCell({ includeEmpty: false }, (cell) => {
       const v = cell.value;
       const empty = v === null || v === undefined || v === '';
       if (empty) return;
       rowHasContent = true;
-      if (colNumber > lastCol) lastCol = colNumber;
     });
     if (rowHasContent && rowNumber > lastRow) lastRow = rowNumber;
   });
-  return { lastRow, lastCol };
-}
-
-/** 1 → A, 27 → AA. */
-function columnLetter(n: number): string {
-  let s = '';
-  let x = n;
-  while (x > 0) {
-    const rem = (x - 1) % 26;
-    s = String.fromCharCode(65 + rem) + s;
-    x = Math.floor((x - 1) / 26);
-  }
-  return s;
+  return lastRow;
 }
 
 /**
@@ -96,7 +87,7 @@ async function withPrintLayout(xlsx: Buffer): Promise<Buffer> {
   const wb = new ExcelJS.Workbook();
   await wb.xlsx.load(xlsx as unknown as ArrayBuffer);
   for (const ws of wb.worksheets) {
-    const { lastRow, lastCol } = contentExtent(ws);
+    const lastRow = lastRowWithValue(ws);
     ws.pageSetup = {
       ...ws.pageSetup,
       orientation: 'landscape',
@@ -106,10 +97,11 @@ async function withPrintLayout(xlsx: Buffer): Promise<Buffer> {
       fitToHeight: 0,
       paperSize: 9, // A4
       margins: { left: 0.3, right: 0.3, top: 0.4, bottom: 0.4, header: 0.2, footer: 0.2 },
-      // A sheet with nothing in it gets `A1` rather than an empty string,
-      // which Calc reads as "print everything".
-      printArea: lastRow > 0 && lastCol > 0 ? `A1:${columnLetter(lastCol)}${lastRow}` : 'A1:A1',
     };
+    // Hidden rows are not printed. This is the only one of the three
+    // approaches that LibreOffice actually respects — see the note at the
+    // top of the file.
+    for (let n = lastRow + 1; n <= ws.rowCount; n++) ws.getRow(n).hidden = true;
   }
   return Buffer.from(await wb.xlsx.writeBuffer());
 }
