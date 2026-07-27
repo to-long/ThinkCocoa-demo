@@ -63,34 +63,13 @@ export interface MenuSection {
   items: MenuItem[];
 }
 
-// 13-stop brand gradient pulled from the shared palette
-// (`@/lib/brand-palette` → Pencil `STuuC`). Reading top→bottom flows
-// espresso → cocoa → sienna → olive → leaf → golden yellow.
-// Stops are aliased here as `s1..s13` so the menu definitions below
-// stay readable; the source of truth lives in `brand-palette.ts`.
-// Each menu row consumes ONE gradient stop in render-order
-// top-to-bottom — the rendered sidebar reads as a smooth
-// brown → green → yellow column. With 16 visible rows and only
-// 13 stops in the palette, we deliberately STRETCH the green
-// band (s4..s9, six stops) across the operational + compliance
-// rows so the bulk of the menu reads as the brand's signature
-// green, and compress the yellow tail (s10..s13) into the
-// admin block.
-const C = {
-  s1: BRAND_GRADIENT[0], // dashboard            (espresso brown)
-  s2: BRAND_GRADIENT[1], // farmers              (cocoa)
-  s3: BRAND_GRADIENT[2], // farms                (sienna)
-  s4: BRAND_GRADIENT[3], // training             (deep forest — green start)
-  s5: BRAND_GRADIENT[4], // coaching             (forest)
-  s6: BRAND_GRADIENT[5], // society purchase     (olive)
-  s7: BRAND_GRADIENT[6], // primary evac         (apple)
-  s8: BRAND_GRADIENT[7], // secondary evac       (sprout)
-  s9: BRAND_GRADIENT[8], // inspections          (light green)
-  s10: BRAND_GRADIENT[9], // reports + coops      (lime — yellow start)
-  s11: BRAND_GRADIENT[10], // users               (mustard)
-  s12: BRAND_GRADIENT[11], // roles + permissions (golden yellow)
-  s13: BRAND_GRADIENT[12], // sync                (warm yellow tail)
-} as const;
+// Every icon carries the SAME brand green. The sidebar used to walk a
+// 13-stop gradient top-to-bottom — espresso → green → yellow, one stop per
+// row — which made the icon colour read as data ("why is Users yellow and
+// Inspections green?") when it carries no meaning at all. A single tint
+// lets the icons recede and the labels do the work; the active-row pill is
+// what marks position now.
+const MENU_ICON = BRAND_GRADIENT[7]; // sprout green — the brand's signature stop
 
 export const menuSections: MenuSection[] = [
   {
@@ -104,28 +83,28 @@ export const menuSections: MenuSection[] = [
         labelKey: 'navigation.dashboard',
         href: '/',
         icon: LayoutDashboard,
-        iconColor: C.s1,
+        iconColor: MENU_ICON,
         permission: 'dashboard:read',
       },
       {
         labelKey: 'navigation.farmers',
         href: '/farmers',
         icon: Users,
-        iconColor: C.s2,
+        iconColor: MENU_ICON,
         permission: 'farmer:read',
       },
       {
         labelKey: 'navigation.farms',
         href: '/farms',
         icon: LandPlot,
-        iconColor: C.s3,
+        iconColor: MENU_ICON,
         permission: 'parcel:read',
       },
       {
         labelKey: 'navigation.vsla',
         href: '/vsla',
         icon: PiggyBank,
-        iconColor: C.s3,
+        iconColor: MENU_ICON,
         // VSLA reuses `farmer:read` for now — same audience as farmers/
         // parcels. When a dedicated `vsla:read` lands we'll swap this.
         permission: 'farmer:read',
@@ -139,14 +118,14 @@ export const menuSections: MenuSection[] = [
         labelKey: 'navigation.training',
         href: '/training',
         icon: GraduationCap,
-        iconColor: C.s4,
+        iconColor: MENU_ICON,
         permission: 'training:read',
       },
       {
         labelKey: 'navigation.coaching',
         href: '/coaching',
         icon: Handshake,
-        iconColor: C.s5,
+        iconColor: MENU_ICON,
         permission: 'coaching:read',
       },
     ],
@@ -161,21 +140,21 @@ export const menuSections: MenuSection[] = [
         labelKey: 'navigation.purchases',
         href: '/purchases',
         icon: ShoppingCart,
-        iconColor: C.s6,
+        iconColor: MENU_ICON,
         permission: 'purchase:read',
       },
       {
         labelKey: 'navigation.primaryEvac',
         href: '/primary-evacuation',
         icon: Truck,
-        iconColor: C.s7,
+        iconColor: MENU_ICON,
         permission: 'primary_evac:read',
       },
       {
         labelKey: 'navigation.secondaryEvac',
         href: '/secondary-evacuation',
         icon: TruckLeft,
-        iconColor: C.s8,
+        iconColor: MENU_ICON,
         permission: 'secondary_evac:read',
       },
     ],
@@ -187,7 +166,7 @@ export const menuSections: MenuSection[] = [
         labelKey: 'navigation.inspections',
         href: '/inspections',
         icon: ClipboardCheck,
-        iconColor: C.s9,
+        iconColor: MENU_ICON,
         permission: 'inspection:read',
       },
       // CLMRS lands under Compliance next to Inspections. The single
@@ -199,7 +178,7 @@ export const menuSections: MenuSection[] = [
         labelKey: 'navigation.clmrs',
         href: '/clmrs',
         icon: ShieldAlert,
-        iconColor: C.s9,
+        iconColor: MENU_ICON,
         permission: 'farmer:read',
       },
     ],
@@ -211,7 +190,7 @@ export const menuSections: MenuSection[] = [
         labelKey: 'navigation.reports',
         href: '/reports',
         icon: FileBarChart,
-        iconColor: C.s10,
+        iconColor: MENU_ICON,
         permission: 'report:read',
       },
     ],
@@ -223,35 +202,35 @@ export const menuSections: MenuSection[] = [
         labelKey: 'navigation.adminCooperatives',
         href: '/admin/cooperatives',
         icon: Building2,
-        iconColor: C.s10,
+        iconColor: MENU_ICON,
         permission: 'cooperative:read',
       },
       {
         labelKey: 'navigation.adminUsers',
         href: '/admin/users',
         icon: UserCog,
-        iconColor: C.s11,
+        iconColor: MENU_ICON,
         permission: 'user:read',
       },
       {
         labelKey: 'navigation.adminRoles',
         href: '/admin/roles',
         icon: Shield,
-        iconColor: C.s12,
+        iconColor: MENU_ICON,
         permission: 'role:read',
       },
       {
         labelKey: 'navigation.adminPermissions',
         href: '/admin/permissions',
         icon: KeyRound,
-        iconColor: C.s12,
+        iconColor: MENU_ICON,
         permission: 'permission:read',
       },
       {
         labelKey: 'navigation.adminSync',
         href: '/admin/sync',
         icon: RefreshCw,
-        iconColor: C.s13,
+        iconColor: MENU_ICON,
         permission: 'sync:config',
       },
     ],
