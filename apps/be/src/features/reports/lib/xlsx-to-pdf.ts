@@ -26,13 +26,24 @@
  */
 
 import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import ExcelJS from 'exceljs';
 
-/** Override when the binary isn't on PATH (macOS: the app bundle). */
-const SOFFICE = process.env.SOFFICE_BIN ?? 'soffice';
+/**
+ * The `soffice` binary. `SOFFICE_BIN` wins; otherwise PATH, which is how
+ * the Debian package installs it. The macOS cask does NOT put anything on
+ * PATH — it drops an app bundle — so that path is probed too, or every
+ * developer on a Mac has to export the variable before `bun run dev`.
+ */
+const MAC_SOFFICE = '/Applications/LibreOffice.app/Contents/MacOS/soffice';
+function sofficeBin(): string {
+  if (process.env.SOFFICE_BIN) return process.env.SOFFICE_BIN;
+  if (process.platform === 'darwin' && existsSync(MAC_SOFFICE)) return MAC_SOFFICE;
+  return 'soffice';
+}
 /** Generous: a cold LibreOffice start is ~1s, a big sheet ~2s more. */
 const TIMEOUT_MS = 60_000;
 
@@ -69,7 +80,8 @@ const RECALC_PROFILE = `<?xml version="1.0" encoding="UTF-8"?>
 
 function runSoffice(args: string[], cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const child = spawn(SOFFICE, args, { cwd, stdio: ['ignore', 'pipe', 'pipe'] });
+    const bin = sofficeBin();
+    const child = spawn(bin, args, { cwd, stdio: ['ignore', 'pipe', 'pipe'] });
     let stderr = '';
     child.stderr?.on('data', (c: Buffer) => {
       stderr = (stderr + c.toString()).slice(-1000);
@@ -84,7 +96,7 @@ function runSoffice(args: string[], cwd: string): Promise<void> {
       reject(
         (err as NodeJS.ErrnoException).code === 'ENOENT'
           ? new Error(
-              `LibreOffice not found (tried "${SOFFICE}"). Install libreoffice-calc, or set SOFFICE_BIN.`,
+              `LibreOffice not found (tried "${bin}"). Install libreoffice-calc, or set SOFFICE_BIN.`,
             )
           : err,
       );
