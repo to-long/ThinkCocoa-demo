@@ -37,7 +37,7 @@
 import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
+import { homedir, tmpdir } from 'node:os';
 import path from 'node:path';
 import ExcelJS from 'exceljs';
 
@@ -48,10 +48,34 @@ import ExcelJS from 'exceljs';
  * developer on a Mac has to export the variable before `bun run dev`.
  */
 const MAC_SOFFICE = '/Applications/LibreOffice.app/Contents/MacOS/soffice';
+/** The Docker shim, relative to the BE's cwd (apps/be in dev and prod). */
+const DOCKER_SHIM = 'scripts/soffice-docker.sh';
+
 function sofficeBin(): string {
-  if (process.env.SOFFICE_BIN) return process.env.SOFFICE_BIN;
+  const fromEnv = process.env.SOFFICE_BIN;
+  // A path that no longer exists is worse than no setting at all: it is
+  // usually a stale value from a `.env` the running process read before it
+  // changed, and the error it produces names a binary nobody asked for.
+  if (fromEnv && !fromEnv.includes('/')) return fromEnv; // bare name → PATH
+  if (fromEnv && existsSync(fromEnv)) return path.resolve(fromEnv);
+  // `spawn` hands a relative path to execvp, which searches PATH rather
+  // than the working directory — so the shim has to be absolute.
+  if (existsSync(DOCKER_SHIM)) return path.resolve(DOCKER_SHIM);
   if (process.platform === 'darwin' && existsSync(MAC_SOFFICE)) return MAC_SOFFICE;
   return 'soffice';
+}
+
+/**
+ * Where to do the work.
+ *
+ * NOT `$TMPDIR` on macOS: the shim bind-mounts this directory into the
+ * container, and Docker Desktop refuses everything under /private/tmp and
+ * under ~/Documents ("operation not permitted", macOS privacy). $HOME is
+ * allowed, so that is where it goes — no env var to get stale, and one
+ * fewer trap to document.
+ */
+function workRoot(): string {
+  return process.platform === 'darwin' ? path.join(homedir(), '.thinkcocoa-tmp') : tmpdir();
 }
 /** Generous: a cold LibreOffice start is ~1s, a big sheet ~2s more. */
 const TIMEOUT_MS = 60_000;
@@ -147,7 +171,9 @@ function runSoffice(args: string[], cwd: string): Promise<void> {
 }
 
 export async function xlsxToPdf(xlsx: Buffer, baseName: string): Promise<Buffer> {
-  const dir = await mkdtemp(path.join(tmpdir(), 'tc-pdf-'));
+  const root = workRoot();
+  await mkdir(root, { recursive: true });
+  const dir = await mkdtemp(path.join(root, 'tc-pdf-'));
   try {
     const src = path.join(dir, `${baseName}.xlsx`);
     await writeFile(src, await withPrintLayout(xlsx));
