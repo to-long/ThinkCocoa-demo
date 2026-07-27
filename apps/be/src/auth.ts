@@ -42,6 +42,16 @@ export const auth = betterAuth({
   }),
 
   advanced: {
+    // Own the cookie namespace instead of better-auth's default
+    // `better-auth.*`. Cookies are keyed by HOST, not origin — the port is
+    // ignored — so every better-auth app a developer runs on `localhost`
+    // writes the SAME `better-auth.session_token` / `.access_token` pair
+    // and they silently overwrite each other. That is what kept ending
+    // sessions here mid-work: a neighbouring app's token arrives on our
+    // request, its `kid` is unknown to our JWKS, verification fails, and
+    // the client treats it as a dead login. Our own prefix keeps the two
+    // jars apart.
+    cookiePrefix: 'thinkcocoa',
     database: {
       // Let Postgres generate UUIDs via the column default.
       generateId: false,

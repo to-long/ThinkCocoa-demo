@@ -29,9 +29,14 @@ import { db } from '../db/client';
 import { users } from '../db/schema/iam';
 import { clearRevocation } from './token-revocation';
 
-/** Cookie carrying the access token. Prefixed like better-auth's own so
- *  both are obviously one auth pair in devtools. */
-export const ACCESS_COOKIE = 'better-auth.access_token';
+/** Cookie carrying the access token. Shares better-auth's `cookiePrefix`
+ *  (see `auth.ts`) so both halves of the pair are obviously ours in
+ *  devtools — and, more importantly, so a different better-auth app on
+ *  another `localhost` port cannot overwrite it: cookies are keyed by
+ *  host, and the port is not part of the key. */
+export const COOKIE_PREFIX = 'thinkcocoa';
+export const SESSION_COOKIE = `${COOKIE_PREFIX}.session_token`;
+export const ACCESS_COOKIE = `${COOKIE_PREFIX}.access_token`;
 
 const isProd = process.env.NODE_ENV === 'production';
 

@@ -40,6 +40,7 @@ import {
   accessTokenTtlSeconds,
   clearedAccessCookie,
   mintAccessToken,
+  SESSION_COOKIE,
   verifyAccessToken,
 } from './lib/access-token';
 import { notifyPermChanged } from './lib/perm-signal';
@@ -227,7 +228,7 @@ app.on(['POST', 'GET'], '/api/auth/*', async (c) => {
   // ~20 endpoints and most of them must not touch the access cookie.
   const issuedSession = res.headers
     .getSetCookie()
-    .some((ck) => ck.startsWith('better-auth.session_token=') && !/session_token=;/.test(ck));
+    .some((ck) => ck.startsWith(`${SESSION_COOKIE}=`) && !/session_token=;/.test(ck));
   if (!res.ok || !issuedSession) return res;
 
   // Mint against the session that was just issued: it exists in the

@@ -164,7 +164,19 @@ export function toApiError(error: unknown, response?: Response): ApiError {
 // One shared in-flight promise: a dashboard fires a dozen requests at once
 // and they all fail together, so they must all await the SAME refresh
 // rather than each minting a token and racing to overwrite the cookie.
-const REFRESHABLE_CODES = new Set(['token_expired', 'token_revoked', 'no_access_token']);
+// `token_invalid` is in here too, and deliberately so: an access token we
+// cannot verify says nothing about the SESSION, which is the credential
+// that decides whether the user is logged in. It shows up for a token left
+// over from a rotated signing key — or, on a dev box, for a token another
+// app dropped in the shared `localhost` cookie jar (see `auth.ts`'s
+// cookiePrefix). Refreshing overwrites the bad token with a good one; only
+// the refresh endpoint's own 401 ends the session.
+const REFRESHABLE_CODES = new Set([
+  'token_expired',
+  'token_revoked',
+  'token_invalid',
+  'no_access_token',
+]);
 
 /**
  * Three outcomes, NOT two. Collapsing them into a boolean is what made a

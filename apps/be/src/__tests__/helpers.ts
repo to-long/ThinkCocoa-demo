@@ -38,7 +38,8 @@ export async function signInAs(
   if (!res.ok) {
     throw new Error(`Sign-in failed for ${email}: ${res.status} ${await res.text()}`);
   }
-  // better-auth uses `Set-Cookie` to install `better-auth.session_token=...`.
+  // better-auth uses `Set-Cookie` to install `thinkcocoa.session_token=...`
+  // (the prefix is ours — see `auth.ts`).
   // We accumulate every Set-Cookie header into one Cookie value.
   const setCookies = res.headers.getSetCookie?.() ?? [];
   const cookie = setCookies

@@ -24,7 +24,7 @@ const baseURL = isDev
 export const authClient = createAuthClient({
   baseURL,
   // `credentials: 'include'` is mandatory: better-auth issues a
-  // `__Secure-better-auth.session_token` cookie on the BE origin
+  // `__Secure-thinkcocoa.session_token` cookie on the BE origin
   // and every subsequent request (get-session, sign-out, every
   // /api/* call gated by `requireAuth`) needs the browser to send
   // it back. Without this, fetch defaults to `same-origin` in dev

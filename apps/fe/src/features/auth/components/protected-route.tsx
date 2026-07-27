@@ -30,9 +30,15 @@ function AuthedShell({ userId }: { userId: string }) {
 }
 
 export function ProtectedRoute() {
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session, isPending, error } = authClient.useSession();
 
-  if (isPending) {
+  // `error` = we never got an answer (backend restarting, connection
+  // dropped), which says nothing about whether the session is valid. Only
+  // a clean "no session" answer means signed out. Kicking to /login on a
+  // failed request is what made every backend blip look like a logout —
+  // same distinction the API fetcher draws between `rejected` and
+  // `unavailable`.
+  if (isPending || error) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="size-8 animate-spin rounded-full border-2 border-muted-foreground border-t-primary" />
