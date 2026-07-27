@@ -132,5 +132,16 @@
   "farms.restoreDialog.description": "Restore \"{name}\"? The farm will reappear in lists and become editable again.",
   "farms.restoreDialog.cancel": "Cancel",
   "farms.restoreDialog.confirm": "Restore",
-  "farms.table.parcel": "Parcelle"
+  "farms.table.parcel": "Parcelle",
+  "farmMap.title": "Carte des parcelles",
+  "farmMap.subtitle": "Toutes les parcelles cartographiées de cette coopérative, colorées par statut EUDR, au-dessus des zones de déforestation et des aires protégées.",
+  "farmMap.legend.total": "{count} parcelles cartographiées",
+  "farmMap.legend.compliant": "{count} conformes",
+  "farmMap.legend.needsReview": "{count} à vérifier",
+  "farmMap.legend.nonCompliant": "{count} non conformes",
+  "farmMap.legend.flagged": "{count} signalées près de la forêt",
+  "farmMap.layer.riskZones": "Déforestation / aires protégées",
+  "farmMap.popup.deforestation": "Zone de déforestation",
+  "farmMap.popup.protectedArea": "Aire protégée",
+  "farmMap.popup.flagged": "Signalée — risque de déforestation élevé"
 }

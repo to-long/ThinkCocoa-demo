@@ -152,5 +152,16 @@
   "farms.eudrImport.summary.upserted": "Updated",
   "farms.eudrImport.skippedRows": "Skipped {n} {n, plural, one {row} other {rows}}",
   "farms.eudrImport.mappingTitle": "Map Headers",
-  "farms.eudrImport.close": "Close"
+  "farms.eudrImport.close": "Close",
+  "farmMap.title": "Farm map",
+  "farmMap.subtitle": "Every mapped plot in this cooperative, coloured by EUDR status, over the deforestation and protected-area zones.",
+  "farmMap.legend.total": "{count} plots mapped",
+  "farmMap.legend.compliant": "{count} compliant",
+  "farmMap.legend.needsReview": "{count} needs review",
+  "farmMap.legend.nonCompliant": "{count} non-compliant",
+  "farmMap.legend.flagged": "{count} flagged near forest",
+  "farmMap.layer.riskZones": "Deforestation / protected areas",
+  "farmMap.popup.deforestation": "Deforestation patch",
+  "farmMap.popup.protectedArea": "Protected area",
+  "farmMap.popup.flagged": "Flagged — high deforestation risk"
 }

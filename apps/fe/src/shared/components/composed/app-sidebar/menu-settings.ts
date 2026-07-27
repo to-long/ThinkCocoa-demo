@@ -9,6 +9,7 @@ import {
   KeyRound,
   LandPlot,
   LayoutDashboard,
+  Map,
   PiggyBank,
   RefreshCw,
   Shield,
@@ -118,6 +119,16 @@ export const menuSections: MenuSection[] = [
         labelKey: 'navigation.farms',
         href: '/farms',
         icon: LandPlot,
+        iconColor: C.s3,
+        permission: 'parcel:read',
+      },
+      {
+        // The compliance picture in one screen — every plot, coloured by
+        // EUDR status, over the deforestation zones. Its own entry because
+        // it is the view a buyer asks for, not a sub-tab of the plot list.
+        labelKey: 'farmMap.title',
+        href: '/farms/map',
+        icon: Map,
         iconColor: C.s3,
         permission: 'parcel:read',
       },

@@ -26,12 +26,14 @@ import {
   listParcelsQuery,
   parcelDetailSchema,
   parcelListResponseSchema,
+  parcelMapSchema,
   parcelStatsSchema,
   updateParcelBody,
 } from './schemas';
 import {
   createParcel,
   getParcel,
+  getParcelMap,
   getParcelStats,
   listParcels,
   restoreParcel,
@@ -132,6 +134,24 @@ parcelsRoutes.openapi(
     const stats = await getParcelStats(c.get('activeCoopId'));
     return c.json(stats, 200);
   },
+);
+
+// ── MAP ──────────────────────────────────────────────────────
+// Also before `/{id}` — same reason as `/stats`.
+parcelsRoutes.openapi(
+  createRoute({
+    method: 'get',
+    path: '/api/parcels/map',
+    tags: ['Parcels'],
+    responses: {
+      200: {
+        description: 'All mapped parcels + EUDR risk zones as GeoJSON',
+        content: { 'application/json': { schema: parcelMapSchema } },
+      },
+    },
+    middleware: [requirePermission('parcel:read')],
+  }),
+  async (c) => c.json(await getParcelMap(c.get('activeCoopId')), 200),
 );
 
 // ── GET detail ───────────────────────────────────────────────
