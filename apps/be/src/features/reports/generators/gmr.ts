@@ -313,11 +313,28 @@ function writeDataSheet(
     for (const col of formulaCols) row.getCell(col).value = null;
   }
 
+  // The template only styles a fixed number of data rows — borders, banded
+  // fills, per-column alignment and number formats. Past that, rows written
+  // by ExcelJS are bare, and the report visibly falls apart mid-table (it
+  // did: everything from ABM-0066-F1 onward printed as plain text). So the
+  // style travels with the data, taken from the template's first two data
+  // rows so the banding keeps alternating instead of flattening to one
+  // colour.
+  const bandTemplates = [sheet.getRow(DATA_START_ROW), sheet.getRow(DATA_START_ROW + 1)];
+  const lastCol = sheet.columnCount;
+
   // Write data + propagate formulas per row.
   for (let i = 0; i < rows.length; i++) {
     const data = rows[i]!;
     const rowIdx = DATA_START_ROW + i;
     const row = sheet.getRow(rowIdx);
+    const band = bandTemplates[i % 2]!;
+    if (rowIdx > DATA_START_ROW + 1) {
+      row.height = band.height;
+      for (let c = 1; c <= lastCol; c++) {
+        row.getCell(c).style = { ...band.getCell(c).style };
+      }
+    }
     for (const m of cellMap) {
       const v = m.value(data);
       row.getCell(m.col).value = (v ?? null) as ExcelJS.CellValue;
