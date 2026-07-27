@@ -248,5 +248,7 @@
   "farmers.detail.raValidUntilShort": "đến {date}",
   "farmers.detail.delivered": "Đã giao",
   "farmers.detail.deliveredNone": "Chưa có giao dịch",
-  "farmers.detail.deliveredSummary": "{n} giao dịch · ₵{amount}"
+  "farmers.detail.deliveredSummary": "{n} giao dịch · ₵{amount}",
+  "farmers.detail.raValidUntil": "Hiệu lực đến {date}",
+  "farmers.detail.raExpiredOn": "Hết hạn ngày {date}"
 }

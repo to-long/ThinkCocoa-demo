@@ -258,5 +258,7 @@
   "farmers.detail.raValidUntilShort": "until {date}",
   "farmers.detail.delivered": "Delivered",
   "farmers.detail.deliveredNone": "No purchases recorded",
-  "farmers.detail.deliveredSummary": "{n} {n, plural, one {purchase} other {purchases}} · ₵{amount}"
+  "farmers.detail.deliveredSummary": "{n} {n, plural, one {purchase} other {purchases}} · ₵{amount}",
+  "farmers.detail.raValidUntil": "Valid until {date}",
+  "farmers.detail.raExpiredOn": "Expired on {date}"
 }

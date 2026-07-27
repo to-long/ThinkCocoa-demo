@@ -248,5 +248,7 @@
   "farmers.detail.raValidUntilShort": "jusqu'au {date}",
   "farmers.detail.delivered": "Livré",
   "farmers.detail.deliveredNone": "Aucun achat enregistré",
-  "farmers.detail.deliveredSummary": "{n} {n, plural, one {achat} other {achats}} · ₵{amount}"
+  "farmers.detail.deliveredSummary": "{n} {n, plural, one {achat} other {achats}} · ₵{amount}",
+  "farmers.detail.raValidUntil": "Valide jusqu'au {date}",
+  "farmers.detail.raExpiredOn": "Expiré le {date}"
 }

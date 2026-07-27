@@ -111,16 +111,36 @@ const RENEWAL_WINDOW_DAYS = 90;
  * farmer is certified today.
  */
 function certificateValidity(expiry: string | null): {
-  key: string;
   tone: 'success' | 'caution' | 'danger' | 'neutral';
-  days: number;
+  /** Sentence for the date line — "Valid until …" / "Expired on …". */
+  dateKey: string;
+  /** Colour for that line: muted while there is nothing to do, amber
+   *  inside the renewals window, red once lapsed. */
+  dateTone: string;
 } {
-  if (!expiry) return { key: 'farmers.detail.raNoCertificate', tone: 'neutral', days: 0 };
+  if (!expiry) {
+    return {
+      tone: 'neutral',
+      dateKey: 'farmers.detail.raNoCertificate',
+      dateTone: 'text-muted-foreground',
+    };
+  }
   const days = Math.ceil((new Date(expiry).getTime() - Date.now()) / 86_400_000);
-  if (days < 0) return { key: 'farmers.detail.raExpired', tone: 'danger', days: -days };
-  if (days <= RENEWAL_WINDOW_DAYS)
-    return { key: 'farmers.detail.raExpiringIn', tone: 'caution', days };
-  return { key: 'farmers.detail.raValid', tone: 'success', days };
+  if (days < 0) {
+    return { tone: 'danger', dateKey: 'farmers.detail.raExpiredOn', dateTone: 'text-destructive' };
+  }
+  if (days <= RENEWAL_WINDOW_DAYS) {
+    return {
+      tone: 'caution',
+      dateKey: 'farmers.detail.raValidUntil',
+      dateTone: 'text-amber-600 dark:text-amber-400',
+    };
+  }
+  return {
+    tone: 'success',
+    dateKey: 'farmers.detail.raValidUntil',
+    dateTone: 'text-muted-foreground',
+  };
 }
 
 /**
@@ -441,15 +461,19 @@ export function FarmerDetailPageContent({ farmerId }: Props) {
                   <span className="text-xs text-muted-foreground uppercase tracking-wide">
                     {t('farmers.detail.certificationCard')}
                   </span>
+                  {/* The chip states the audit's verdict — the certificate's
+                      real status, "Certified with CA" and not a paraphrase.
+                      Validity moves to the line under it, where the colour
+                      carries the urgency. */}
                   <span className="inline-flex py-0.5">
-                    <StatusTag tone={certValidity.tone} dot>
-                      {intl.formatMessage({ id: certValidity.key }, { n: certValidity.days })}
-                    </StatusTag>
+                    <CertificationOutcomeBadge
+                      outcome={farmer.latestCertification?.outcome ?? null}
+                    />
                   </span>
                   {farmer.raExpiryDate ? (
-                    <span className="text-muted-foreground text-xs">
+                    <span className={`text-xs ${certValidity.dateTone}`}>
                       {intl.formatMessage(
-                        { id: 'farmers.detail.raValidUntilShort' },
+                        { id: certValidity.dateKey },
                         { date: formatGhanaDate(farmer.raExpiryDate) },
                       )}
                     </span>
