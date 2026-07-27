@@ -419,13 +419,15 @@ export function AuditLogTable({
                   })()}
                 </TableCell>
                 <TableCell>
-                  row.status ? (
-                  <span
-                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium capitalize ${sTone.bg} ${sTone.text}`}
-                  >
-                    {t(`auditLogs.status.${row.status}`)}
-                  </span>
-                  ) : (<span className="text-muted-foreground">—</span>)
+                  {row.status ? (
+                    <span
+                      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium capitalize ${sTone.bg} ${sTone.text}`}
+                    >
+                      {t(`auditLogs.status.${row.status}`)}
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground">—</span>
+                  )}
                 </TableCell>
                 <TableCell className="text-right">
                   <button
