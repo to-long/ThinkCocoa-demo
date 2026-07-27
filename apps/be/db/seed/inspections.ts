@@ -323,11 +323,20 @@ export async function seedInspections(db: Db): Promise<void> {
   // details, because the two must agree: a farmer marked `expired` whose
   // certificate expires next year is worse than no data at all.
   //
-  // The mix across certified farmers: ~67% currently RA-certified, ~18%
-  // expired, ~15% pending renewal; uncertified farmers are mostly
-  // "unknown" with ~20% "pending" (awaiting a first assessment). Of the
-  // valid certificates, a fifth expire inside 90 days — that slice is the
-  // renewals queue, and without it the "expiring soon" view is empty.
+  // Among farmers a recent inspection certified, the certificate splits
+  // 50 / 30 / 20 — valid, expiring inside the 90-day renewals window,
+  // already lapsed. That is a deliberately unhealthy book: a demo where
+  // everything is valid has nothing to show in the renewals view, which
+  // is the whole reason the expiry dates exist.
+  //
+  // The split is an NTILE over a hash ORDER, not `hash % 100 < 20`. The
+  // ids are structured (ABM-0001, ABM-0002…) so their md5s do not spread
+  // evenly across 100 buckets — the modulo version delivered 17/32/51
+  // against a 20/30/50 target. Ranking splits by position, so the
+  // proportions are exact whatever the ids look like.
+  //
+  // Farmers with no certifying inspection hold no certificate at all —
+  // mostly "unknown", ~20% "pending" a first assessment.
   //
   // Every bucket and offset is a deterministic hash of the farmer id, so
   // a reseed reproduces the same certificates. Audit date is always 12
@@ -341,30 +350,25 @@ export async function seedInspections(db: Db): Promise<void> {
     ), graded AS (
       SELECT f.id,
              ('x' || substr(md5(f.id::text), 5, 4))::bit(16)::int AS h2,
-             CASE
-               WHEN latest.certification_outcome IN ('certified','certified_with_ca')
-                 THEN CASE
-                        WHEN ('x' || substr(md5(f.id::text), 1, 4))::bit(16)::int % 100 < 18 THEN 'expired'
-                        WHEN ('x' || substr(md5(f.id::text), 1, 4))::bit(16)::int % 100 < 33 THEN 'pending'
-                        ELSE 'rainforest_alliance'
-                      END
-               ELSE CASE
-                      WHEN ('x' || substr(md5(f.id::text), 1, 4))::bit(16)::int % 100 < 20 THEN 'pending'
-                      ELSE 'unknown'
-                    END
-             END AS status
+             latest.certification_outcome IN ('certified','certified_with_ca') AS certified,
+             NTILE(10) OVER (
+               PARTITION BY latest.certification_outcome IN ('certified','certified_with_ca')
+               ORDER BY md5(f.id::text)
+             ) AS decile
         FROM farmer.farmers f
         JOIN latest ON latest.farmer_id = f.id
     ), dated AS (
-      SELECT id, h2, status,
+      SELECT id, h2,
              CASE
-               WHEN status = 'rainforest_alliance' AND h2 % 100 < 20
-                 THEN CURRENT_DATE + (5 + h2 % 85)          -- renewal due
-               WHEN status = 'rainforest_alliance'
-                 THEN CURRENT_DATE + (120 + h2 % 400)       -- comfortably valid
-               WHEN status = 'expired'
-                 THEN CURRENT_DATE - (10 + h2 % 320)        -- lapsed
-               ELSE NULL                                     -- never certified
+               WHEN NOT certified THEN CASE WHEN decile <= 2 THEN 'pending' ELSE 'unknown' END
+               WHEN decile <= 2 THEN 'expired'          -- 2 deciles = 20% lapsed
+               ELSE 'rainforest_alliance'               -- 5 valid + 3 expiring
+             END AS status,
+             CASE
+               WHEN NOT certified THEN NULL
+               WHEN decile <= 2 THEN CURRENT_DATE - (10 + h2 % 320)  -- lapsed
+               WHEN decile <= 5 THEN CURRENT_DATE + (5 + h2 % 85)    -- renewal due (30%)
+               ELSE CURRENT_DATE + (120 + h2 % 400)                  -- comfortably valid (50%)
              END AS expiry
         FROM graded
     )
