@@ -18,7 +18,6 @@
   "farmers.csvImport.unknownCoopsTitle": "Unknown cooperative labels — rows skipped",
   "farmers.csvImport.skippedRows": "{n} rows skipped — click to review",
   "farmers.csvImport.skippedTruncated": "… and {n} more not shown",
-
   "farmers.stats.total": "Total farmers",
   "farmers.stats.count": "Farmer count",
   "farmers.stats.raCertified": "RA Certified",
@@ -59,7 +58,6 @@
   "farmers.table.certificate": "RA Certificate",
   "farmers.table.shadeSurvival": "Shade %",
   "farmers.table.correctiveActions": "Corrective actions",
-
   "farmers.filters.searchPlaceholder": "Search by code, name, or phone",
   "farmers.filters.allCooperatives": "All cooperatives",
   "farmers.filters.allSocieties": "All societies",
@@ -72,11 +70,9 @@
   "farmers.filters.clmrsNone": "No records",
   "farmers.filters.reset": "Reset",
   "farmers.filters.clear": "Clear",
-
   "farmers.status.active": "Active",
   "farmers.status.inactive": "Inactive",
   "farmers.status.deleted": "Deleted",
-
   "farmers.certification.rainforest_alliance": "RA Certified",
   "farmers.certification.pending": "Cert Pending",
   "farmers.certification.expired": "Cert Expired",
@@ -99,7 +95,6 @@
   "farmers.detail.eudrParcelsCompliant": "parcels compliant",
   "farmers.detail.shadeTree": "Shade Tree",
   "farmers.detail.shadeSurvivalRateLabel": "Survival Rate",
-
   "farmers.table.farmerCode": "Farmer ID",
   "farmers.table.farmer": "Farmer",
   "farmers.table.name": "Name",
@@ -112,12 +107,10 @@
   "farmers.table.actions": "Actions",
   "farmers.table.noFarmers": "No farmers match the current filters",
   "farmers.table.resultCount": "{count, plural, one {# result} other {# results}}",
-
   "farmers.actions.view": "View",
   "farmers.actions.edit": "Edit",
   "farmers.actions.delete": "Delete",
   "farmers.actions.restore": "Restore",
-
   "farmers.dialog.createTitle": "Add Farmer",
   "farmers.dialog.createDescription": "Register a new farmer in a cooperative.",
   "farmers.dialog.editTitle": "Edit Farmer",
@@ -126,7 +119,6 @@
   "farmers.dialog.createSubmit": "Add Farmer",
   "farmers.dialog.editSubmit": "Save Changes",
   "farmers.dialog.submitting": "Saving…",
-
   "farmers.field.cooperative": "Cooperative",
   "farmers.field.farmerCode": "Farmer Code (ID)",
   "farmers.field.farmerCodeHint": "Unique within the cooperative (e.g. AK001)",
@@ -146,7 +138,6 @@
   "farmers.field.householdSize": "Household Size",
   "farmers.field.childrenCount": "Children Count",
   "farmers.field.isActive": "Active",
-
   "farmers.detail.title": "Farmer Detail",
   "farmers.detail.subtitle": "Manage farmer profile and information",
   "farmers.detail.backToList": "Back to Farmers",
@@ -213,28 +204,23 @@
   "farmers.field.certificationIdStatus": "Certification ID / Status",
   "farmers.field.idTypeNumber": "ID Type / ID Number",
   "farmers.field.householdSizeChildren": "Household Size / Children Count",
-
   "farmers.consent.yes": "Consented",
   "farmers.consent.no": "Declined",
   "farmers.consent.unknown": "Not recorded",
-
   "farmers.deleteDialog.title": "Delete Farmer",
   "farmers.deleteDialog.description": "Are you sure you want to delete \"{name}\"? The farmer will be deactivated and hidden from lists — their data stays in the database and can be restored by an admin later.",
   "farmers.deleteDialog.cancel": "Cancel",
   "farmers.deleteDialog.confirm": "Delete Farmer",
-
   "farmers.restoreDialog.title": "Restore Farmer",
   "farmers.restoreDialog.description": "Restore \"{name}\" from the deleted bin? The account will return with the status it had before deletion.",
   "farmers.restoreDialog.cancel": "Cancel",
   "farmers.restoreDialog.confirm": "Restore",
-
   "farmers.deactivateDialog.title": "Deactivate Farmer",
   "farmers.deactivateDialog.description": "Deactivate \"{name}\"? The farmer won't appear in active queries; their data is kept intact.",
   "farmers.deactivateDialog.confirm": "Deactivate",
   "farmers.reactivateDialog.title": "Reactivate Farmer",
   "farmers.reactivateDialog.description": "Reactivate \"{name}\"? The farmer will appear in active lists again.",
   "farmers.reactivateDialog.confirm": "Reactivate",
-
   "farmers.history.title": "Farmer History",
   "farmers.history.subtitle": "Track all changes made to farmer records",
   "farmers.history.backToFarmers": "Back to Farmers",
@@ -245,11 +231,17 @@
   "farmers.history.table.action": "Action / IP",
   "farmers.history.table.farmer": "Farmer / Code",
   "farmers.history.table.changes": "Changes",
-
   "farmers.toast.created": "New farmer {name} is created",
   "farmers.toast.updated": "Farmer {name} is updated",
   "farmers.toast.deleted": "Farmer {name} is deleted",
   "farmers.toast.restored": "Farmer {name} is restored",
   "farmers.toast.deactivated": "Farmer {name} is deactivated",
-  "farmers.toast.reactivated": "Farmer {name} is reactivated"
+  "farmers.toast.reactivated": "Farmer {name} is reactivated",
+  "farmers.filters.allCertExpiry": "All certificate validity",
+  "farmers.certExpiry.valid": "Valid",
+  "farmers.certExpiry.expiring": "Expiring in 90 days",
+  "farmers.certExpiry.expired": "Expired",
+  "farmers.certExpiry.none": "No certificate",
+  "farmers.certExpiry.lapsed": "lapsed",
+  "farmers.certExpiry.inDays": "in {n}d"
 }

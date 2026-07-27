@@ -80,6 +80,11 @@ export const listFarmersQuerySchema = z.object({
   cooperativeCode: z.string().optional(),
   society: z.string().optional(),
   certificationStatus: z.string().optional(),
+  /** RA certificate validity band — `valid` | `expiring` (inside 90 days)
+   *  | `expired` | `none`. Separate from `certificationStatus` because a
+   *  buyer's question is "what renews this quarter?", which the status
+   *  word cannot answer. */
+  certExpiry: z.string().optional(),
   isActive: z.enum(['true', 'false']).optional(),
   includeDeleted: z.enum(['true', 'false']).optional(),
   sort: z.string().optional(),

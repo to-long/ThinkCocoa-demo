@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { DeleteApiCooperativesByIdData, DeleteApiCooperativesByIdErrors, DeleteApiCooperativesByIdResponses, DeleteApiCooperativesByIdUsersByUserIdData, DeleteApiCooperativesByIdUsersByUserIdErrors, DeleteApiCooperativesByIdUsersByUserIdResponses, DeleteApiFarmersByIdData, DeleteApiFarmersByIdErrors, DeleteApiFarmersByIdResponses, DeleteApiPermissionsByIdData, DeleteApiPermissionsByIdErrors, DeleteApiPermissionsByIdResponses, DeleteApiPermissionsGroupsByResourceData, DeleteApiPermissionsGroupsByResourceErrors, DeleteApiPermissionsGroupsByResourceResponses, DeleteApiRolesByIdData, DeleteApiRolesByIdErrors, DeleteApiRolesByIdResponses, DeleteApiUsersByIdData, DeleteApiUsersByIdErrors, DeleteApiUsersByIdResponses, GetApiAuditLogsByIdData, GetApiAuditLogsByIdErrors, GetApiAuditLogsByIdResponses, GetApiAuditLogsData, GetApiAuditLogsResponses, GetApiAuditLogsStatsData, GetApiAuditLogsStatsResponses, GetApiCooperativesByIdData, GetApiCooperativesByIdErrors, GetApiCooperativesByIdResponses, GetApiCooperativesByIdUsersData, GetApiCooperativesByIdUsersErrors, GetApiCooperativesByIdUsersResponses, GetApiCooperativesData, GetApiCooperativesResponses, GetApiData, GetApiFarmersByIdData, GetApiFarmersByIdErrors, GetApiFarmersByIdResponses, GetApiFarmersData, GetApiFarmersFullStatsData, GetApiFarmersFullStatsResponses, GetApiFarmersResponses, GetApiFarmersStatsData, GetApiFarmersStatsResponses, GetApiNotificationsPreferencesData, GetApiNotificationsPreferencesResponses, GetApiNotificationsUnreadCountData, GetApiNotificationsUnreadCountErrors, GetApiNotificationsUnreadCountResponses, GetApiPermissionsByIdData, GetApiPermissionsByIdErrors, GetApiPermissionsByIdResponses, GetApiPermissionsData, GetApiPermissionsGroupsData, GetApiPermissionsGroupsResponses, GetApiPermissionsResponses, GetApiPermissionsStatsData, GetApiPermissionsStatsResponses, GetApiResponses, GetApiRolesByIdData, GetApiRolesByIdErrors, GetApiRolesByIdResponses, GetApiRolesData, GetApiRolesResponses, GetApiRolesStatsData, GetApiRolesStatsResponses, GetApiUsersByIdData, GetApiUsersByIdErrors, GetApiUsersByIdResponses, GetApiUsersData, GetApiUsersMeData, GetApiUsersMeErrors, GetApiUsersMeResponses, GetApiUsersResponses, GetApiUsersStatsData, GetApiUsersStatsResponses, GetHealthData, GetHealthResponses, PatchApiCooperativesByIdData, PatchApiCooperativesByIdErrors, PatchApiCooperativesByIdResponses, PatchApiFarmersByIdData, PatchApiFarmersByIdErrors, PatchApiFarmersByIdResponses, PatchApiPermissionsByIdData, PatchApiPermissionsByIdErrors, PatchApiPermissionsByIdResponses, PatchApiRolesByIdData, PatchApiRolesByIdErrors, PatchApiRolesByIdResponses, PatchApiUsersByIdData, PatchApiUsersByIdErrors, PatchApiUsersByIdResponses, PostApiCooperativesData, PostApiCooperativesErrors, PostApiCooperativesResponses, PostApiFarmersByIdRestoreData, PostApiFarmersByIdRestoreErrors, PostApiFarmersByIdRestoreResponses, PostApiFarmersData, PostApiFarmersErrors, PostApiFarmersResponses, PostApiPermissionsData, PostApiPermissionsErrors, PostApiPermissionsGroupsData, PostApiPermissionsGroupsErrors, PostApiPermissionsGroupsResponses, PostApiPermissionsResponses, PostApiRolesData, PostApiRolesErrors, PostApiRolesResponses, PostApiUsersByIdCooperativesData, PostApiUsersByIdCooperativesErrors, PostApiUsersByIdCooperativesResponses, PostApiUsersByIdRestoreData, PostApiUsersByIdRestoreErrors, PostApiUsersByIdRestoreResponses, PostApiUsersData, PostApiUsersErrors, PostApiUsersResponses, PutApiNotificationsPreferencesData, PutApiNotificationsPreferencesResponses, PutApiPermissionsGroupsByResourceData, PutApiPermissionsGroupsByResourceResponses, PutApiRolesByIdPermissionsData, PutApiRolesByIdPermissionsErrors, PutApiRolesByIdPermissionsResponses, PutApiUsersByIdRolesData, PutApiUsersByIdRolesErrors, PutApiUsersByIdRolesResponses } from './types.gen';
+import type { DeleteApiCooperativesByIdData, DeleteApiCooperativesByIdErrors, DeleteApiCooperativesByIdResponses, DeleteApiCooperativesByIdUsersByUserIdData, DeleteApiCooperativesByIdUsersByUserIdErrors, DeleteApiCooperativesByIdUsersByUserIdResponses, DeleteApiFarmersByIdData, DeleteApiFarmersByIdErrors, DeleteApiFarmersByIdResponses, DeleteApiParcelsByIdData, DeleteApiParcelsByIdErrors, DeleteApiParcelsByIdResponses, DeleteApiPermissionsByIdData, DeleteApiPermissionsByIdErrors, DeleteApiPermissionsByIdResponses, DeleteApiPermissionsGroupsByResourceData, DeleteApiPermissionsGroupsByResourceErrors, DeleteApiPermissionsGroupsByResourceResponses, DeleteApiRolesByIdData, DeleteApiRolesByIdErrors, DeleteApiRolesByIdResponses, DeleteApiUsersByIdData, DeleteApiUsersByIdErrors, DeleteApiUsersByIdResponses, GetApiAuditLogsByIdData, GetApiAuditLogsByIdErrors, GetApiAuditLogsByIdResponses, GetApiAuditLogsData, GetApiAuditLogsResponses, GetApiAuditLogsStatsData, GetApiAuditLogsStatsResponses, GetApiClmrsRecordsByChildIdData, GetApiClmrsRecordsByChildIdErrors, GetApiClmrsRecordsByChildIdResponses, GetApiClmrsRecordsData, GetApiClmrsRecordsResponses, GetApiCoachingVisitsByIdData, GetApiCoachingVisitsByIdErrors, GetApiCoachingVisitsByIdResponses, GetApiCoachingVisitsData, GetApiCoachingVisitsResponses, GetApiCoachingVisitsStatsData, GetApiCoachingVisitsStatsResponses, GetApiCooperativesByIdData, GetApiCooperativesByIdErrors, GetApiCooperativesByIdResponses, GetApiCooperativesByIdUsersData, GetApiCooperativesByIdUsersErrors, GetApiCooperativesByIdUsersResponses, GetApiCooperativesData, GetApiCooperativesResponses, GetApiData, GetApiFarmersByIdData, GetApiFarmersByIdErrors, GetApiFarmersByIdResponses, GetApiFarmersData, GetApiFarmersFullStatsData, GetApiFarmersFullStatsResponses, GetApiFarmersResponses, GetApiFarmersStatsData, GetApiFarmersStatsResponses, GetApiInspectionsByIdComparisonData, GetApiInspectionsByIdComparisonErrors, GetApiInspectionsByIdComparisonResponses, GetApiInspectionsByIdData, GetApiInspectionsByIdErrors, GetApiInspectionsByIdResponses, GetApiInspectionsCorrectiveActionsData, GetApiInspectionsCorrectiveActionsResponses, GetApiInspectionsCorrectiveActionsStatsData, GetApiInspectionsCorrectiveActionsStatsResponses, GetApiInspectionsData, GetApiInspectionsResponses, GetApiInspectionsStatsData, GetApiInspectionsStatsResponses, GetApiIntegrationsSyncSettingsByJobKeyData, GetApiIntegrationsSyncSettingsByJobKeyErrors, GetApiIntegrationsSyncSettingsByJobKeyResponses, GetApiIntegrationsSyncSettingsData, GetApiIntegrationsSyncSettingsResponses, GetApiNotificationsPreferencesData, GetApiNotificationsPreferencesResponses, GetApiNotificationsUnreadCountData, GetApiNotificationsUnreadCountErrors, GetApiNotificationsUnreadCountResponses, GetApiParcelsByIdData, GetApiParcelsByIdErrors, GetApiParcelsByIdResponses, GetApiParcelsData, GetApiParcelsResponses, GetApiParcelsStatsData, GetApiParcelsStatsResponses, GetApiPermissionsByIdData, GetApiPermissionsByIdErrors, GetApiPermissionsByIdResponses, GetApiPermissionsData, GetApiPermissionsGroupsData, GetApiPermissionsGroupsResponses, GetApiPermissionsResponses, GetApiPermissionsStatsData, GetApiPermissionsStatsResponses, GetApiPrimaryEvacByIdData, GetApiPrimaryEvacByIdErrors, GetApiPrimaryEvacByIdResponses, GetApiPrimaryEvacData, GetApiPrimaryEvacResponses, GetApiPrimaryEvacStatsData, GetApiPrimaryEvacStatsResponses, GetApiPurchasesByIdData, GetApiPurchasesByIdErrors, GetApiPurchasesByIdResponses, GetApiPurchasesData, GetApiPurchasesResponses, GetApiPurchasesStatsData, GetApiPurchasesStatsResponses, GetApiReportsRunsByIdData, GetApiReportsRunsByIdDownloadData, GetApiReportsRunsByIdDownloadErrors, GetApiReportsRunsByIdDownloadResponses, GetApiReportsRunsByIdErrors, GetApiReportsRunsByIdResponses, GetApiReportsRunsData, GetApiReportsRunsResponses, GetApiReportsSocietiesData, GetApiReportsSocietiesResponses, GetApiResponses, GetApiRolesByIdData, GetApiRolesByIdErrors, GetApiRolesByIdResponses, GetApiRolesData, GetApiRolesResponses, GetApiRolesStatsData, GetApiRolesStatsResponses, GetApiSecondaryEvacByIdData, GetApiSecondaryEvacByIdErrors, GetApiSecondaryEvacByIdResponses, GetApiSecondaryEvacData, GetApiSecondaryEvacResponses, GetApiSecondaryEvacStatsData, GetApiSecondaryEvacStatsResponses, GetApiShadeTreesByIdData, GetApiShadeTreesByIdErrors, GetApiShadeTreesByIdResponses, GetApiShadeTreesData, GetApiShadeTreesResponses, GetApiShadeTreesStatsData, GetApiShadeTreesStatsResponses, GetApiTrainingSessionsByIdData, GetApiTrainingSessionsByIdErrors, GetApiTrainingSessionsByIdResponses, GetApiTrainingSessionsData, GetApiTrainingSessionsResponses, GetApiTrainingSessionsStatsData, GetApiTrainingSessionsStatsResponses, GetApiUsersByIdData, GetApiUsersByIdErrors, GetApiUsersByIdResponses, GetApiUsersData, GetApiUsersMeData, GetApiUsersMeErrors, GetApiUsersMeResponses, GetApiUsersResponses, GetApiUsersStatsData, GetApiUsersStatsResponses, GetApiVslaByIdData, GetApiVslaByIdErrors, GetApiVslaByIdMembersByFarmerIdData, GetApiVslaByIdMembersByFarmerIdErrors, GetApiVslaByIdMembersByFarmerIdResponses, GetApiVslaByIdMembersData, GetApiVslaByIdMembersErrors, GetApiVslaByIdMembersResponses, GetApiVslaByIdResponses, GetApiVslaData, GetApiVslaResponses, GetApiVslaStatsData, GetApiVslaStatsResponses, GetHealthData, GetHealthResponses, PatchApiClmrsRecordsByChildIdCaseData, PatchApiClmrsRecordsByChildIdCaseErrors, PatchApiClmrsRecordsByChildIdCaseResponses, PatchApiCooperativesByIdData, PatchApiCooperativesByIdErrors, PatchApiCooperativesByIdResponses, PatchApiFarmersByIdData, PatchApiFarmersByIdErrors, PatchApiFarmersByIdResponses, PatchApiInspectionsCorrectiveActionsByIdData, PatchApiInspectionsCorrectiveActionsByIdErrors, PatchApiInspectionsCorrectiveActionsByIdResponses, PatchApiIntegrationsSyncSettingsByJobKeyData, PatchApiIntegrationsSyncSettingsByJobKeyErrors, PatchApiIntegrationsSyncSettingsByJobKeyResponses, PatchApiParcelsByIdData, PatchApiParcelsByIdErrors, PatchApiParcelsByIdResponses, PatchApiPermissionsByIdData, PatchApiPermissionsByIdErrors, PatchApiPermissionsByIdResponses, PatchApiRolesByIdData, PatchApiRolesByIdErrors, PatchApiRolesByIdResponses, PatchApiUsersByIdData, PatchApiUsersByIdErrors, PatchApiUsersByIdResponses, PostApiClmrsRecordsByChildIdCaseData, PostApiClmrsRecordsByChildIdCaseErrors, PostApiClmrsRecordsByChildIdCaseResponses, PostApiCooperativesByIdRestoreData, PostApiCooperativesByIdRestoreErrors, PostApiCooperativesByIdRestoreResponses, PostApiCooperativesData, PostApiCooperativesErrors, PostApiCooperativesResponses, PostApiFarmersByIdRestoreData, PostApiFarmersByIdRestoreErrors, PostApiFarmersByIdRestoreResponses, PostApiFarmersData, PostApiFarmersErrors, PostApiFarmersResponses, PostApiInspectionsByIdApplyChangesData, PostApiInspectionsByIdApplyChangesErrors, PostApiInspectionsByIdApplyChangesResponses, PostApiIntegrationsResetDemoDataData, PostApiIntegrationsResetDemoDataErrors, PostApiIntegrationsResetDemoDataResponses, PostApiNotificationsMarkReadData, PostApiNotificationsMarkReadResponses, PostApiParcelsByIdRestoreData, PostApiParcelsByIdRestoreErrors, PostApiParcelsByIdRestoreResponses, PostApiParcelsData, PostApiParcelsErrors, PostApiParcelsResponses, PostApiPermissionsData, PostApiPermissionsErrors, PostApiPermissionsGroupsData, PostApiPermissionsGroupsErrors, PostApiPermissionsGroupsResponses, PostApiPermissionsResponses, PostApiReportsRunData, PostApiReportsRunResponses, PostApiRolesData, PostApiRolesErrors, PostApiRolesResponses, PostApiUsersByIdCooperativesData, PostApiUsersByIdCooperativesErrors, PostApiUsersByIdCooperativesResponses, PostApiUsersByIdRestoreData, PostApiUsersByIdRestoreErrors, PostApiUsersByIdRestoreResponses, PostApiUsersData, PostApiUsersErrors, PostApiUsersResponses, PutApiNotificationsPreferencesData, PutApiNotificationsPreferencesResponses, PutApiPermissionsGroupsByResourceData, PutApiPermissionsGroupsByResourceResponses, PutApiRolesByIdPermissionsData, PutApiRolesByIdPermissionsErrors, PutApiRolesByIdPermissionsResponses, PutApiUsersByIdRolesData, PutApiUsersByIdRolesErrors, PutApiUsersByIdRolesResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -187,6 +187,8 @@ export const getApiCooperativesByIdUsers = <ThrowOnError extends boolean = false
 
 export const deleteApiCooperativesByIdUsersByUserId = <ThrowOnError extends boolean = false>(options: Options<DeleteApiCooperativesByIdUsersByUserIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteApiCooperativesByIdUsersByUserIdResponses, DeleteApiCooperativesByIdUsersByUserIdErrors, ThrowOnError>({ url: '/api/cooperatives/{id}/users/{userId}', ...options });
 
+export const postApiCooperativesByIdRestore = <ThrowOnError extends boolean = false>(options: Options<PostApiCooperativesByIdRestoreData, ThrowOnError>) => (options.client ?? client).post<PostApiCooperativesByIdRestoreResponses, PostApiCooperativesByIdRestoreErrors, ThrowOnError>({ url: '/api/cooperatives/{id}/restore', ...options });
+
 export const getApiFarmersStats = <ThrowOnError extends boolean = false>(options?: Options<GetApiFarmersStatsData, ThrowOnError>) => (options?.client ?? client).get<GetApiFarmersStatsResponses, unknown, ThrowOnError>({ url: '/api/farmers/stats', ...options });
 
 export const getApiFarmersFullStats = <ThrowOnError extends boolean = false>(options?: Options<GetApiFarmersFullStatsData, ThrowOnError>) => (options?.client ?? client).get<GetApiFarmersFullStatsResponses, unknown, ThrowOnError>({ url: '/api/farmers/full-stats', ...options });
@@ -217,6 +219,34 @@ export const patchApiFarmersById = <ThrowOnError extends boolean = false>(option
 
 export const postApiFarmersByIdRestore = <ThrowOnError extends boolean = false>(options: Options<PostApiFarmersByIdRestoreData, ThrowOnError>) => (options.client ?? client).post<PostApiFarmersByIdRestoreResponses, PostApiFarmersByIdRestoreErrors, ThrowOnError>({ url: '/api/farmers/{id}/restore', ...options });
 
+export const getApiParcels = <ThrowOnError extends boolean = false>(options?: Options<GetApiParcelsData, ThrowOnError>) => (options?.client ?? client).get<GetApiParcelsResponses, unknown, ThrowOnError>({ url: '/api/parcels', ...options });
+
+export const postApiParcels = <ThrowOnError extends boolean = false>(options?: Options<PostApiParcelsData, ThrowOnError>) => (options?.client ?? client).post<PostApiParcelsResponses, PostApiParcelsErrors, ThrowOnError>({
+    url: '/api/parcels',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers
+    }
+});
+
+export const getApiParcelsStats = <ThrowOnError extends boolean = false>(options?: Options<GetApiParcelsStatsData, ThrowOnError>) => (options?.client ?? client).get<GetApiParcelsStatsResponses, unknown, ThrowOnError>({ url: '/api/parcels/stats', ...options });
+
+export const deleteApiParcelsById = <ThrowOnError extends boolean = false>(options: Options<DeleteApiParcelsByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteApiParcelsByIdResponses, DeleteApiParcelsByIdErrors, ThrowOnError>({ url: '/api/parcels/{id}', ...options });
+
+export const getApiParcelsById = <ThrowOnError extends boolean = false>(options: Options<GetApiParcelsByIdData, ThrowOnError>) => (options.client ?? client).get<GetApiParcelsByIdResponses, GetApiParcelsByIdErrors, ThrowOnError>({ url: '/api/parcels/{id}', ...options });
+
+export const patchApiParcelsById = <ThrowOnError extends boolean = false>(options: Options<PatchApiParcelsByIdData, ThrowOnError>) => (options.client ?? client).patch<PatchApiParcelsByIdResponses, PatchApiParcelsByIdErrors, ThrowOnError>({
+    url: '/api/parcels/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const postApiParcelsByIdRestore = <ThrowOnError extends boolean = false>(options: Options<PostApiParcelsByIdRestoreData, ThrowOnError>) => (options.client ?? client).post<PostApiParcelsByIdRestoreResponses, PostApiParcelsByIdRestoreErrors, ThrowOnError>({ url: '/api/parcels/{id}/restore', ...options });
+
 export const getApiAuditLogs = <ThrowOnError extends boolean = false>(options?: Options<GetApiAuditLogsData, ThrowOnError>) => (options?.client ?? client).get<GetApiAuditLogsResponses, unknown, ThrowOnError>({ url: '/api/audit-logs', ...options });
 
 export const getApiAuditLogsStats = <ThrowOnError extends boolean = false>(options?: Options<GetApiAuditLogsStatsData, ThrowOnError>) => (options?.client ?? client).get<GetApiAuditLogsStatsResponses, unknown, ThrowOnError>({ url: '/api/audit-logs/stats', ...options });
@@ -224,6 +254,15 @@ export const getApiAuditLogsStats = <ThrowOnError extends boolean = false>(optio
 export const getApiAuditLogsById = <ThrowOnError extends boolean = false>(options: Options<GetApiAuditLogsByIdData, ThrowOnError>) => (options.client ?? client).get<GetApiAuditLogsByIdResponses, GetApiAuditLogsByIdErrors, ThrowOnError>({ url: '/api/audit-logs/{id}', ...options });
 
 export const getApiNotificationsUnreadCount = <ThrowOnError extends boolean = false>(options?: Options<GetApiNotificationsUnreadCountData, ThrowOnError>) => (options?.client ?? client).get<GetApiNotificationsUnreadCountResponses, GetApiNotificationsUnreadCountErrors, ThrowOnError>({ url: '/api/notifications/unread-count', ...options });
+
+export const postApiNotificationsMarkRead = <ThrowOnError extends boolean = false>(options?: Options<PostApiNotificationsMarkReadData, ThrowOnError>) => (options?.client ?? client).post<PostApiNotificationsMarkReadResponses, unknown, ThrowOnError>({
+    url: '/api/notifications/mark-read',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers
+    }
+});
 
 export const getApiNotificationsPreferences = <ThrowOnError extends boolean = false>(options?: Options<GetApiNotificationsPreferencesData, ThrowOnError>) => (options?.client ?? client).get<GetApiNotificationsPreferencesResponses, unknown, ThrowOnError>({ url: '/api/notifications/preferences', ...options });
 
@@ -235,3 +274,133 @@ export const putApiNotificationsPreferences = <ThrowOnError extends boolean = fa
         ...options?.headers
     }
 });
+
+export const getApiInspectionsStats = <ThrowOnError extends boolean = false>(options?: Options<GetApiInspectionsStatsData, ThrowOnError>) => (options?.client ?? client).get<GetApiInspectionsStatsResponses, unknown, ThrowOnError>({ url: '/api/inspections/stats', ...options });
+
+export const getApiInspectionsCorrectiveActionsStats = <ThrowOnError extends boolean = false>(options?: Options<GetApiInspectionsCorrectiveActionsStatsData, ThrowOnError>) => (options?.client ?? client).get<GetApiInspectionsCorrectiveActionsStatsResponses, unknown, ThrowOnError>({ url: '/api/inspections/corrective-actions/stats', ...options });
+
+export const getApiInspectionsCorrectiveActions = <ThrowOnError extends boolean = false>(options?: Options<GetApiInspectionsCorrectiveActionsData, ThrowOnError>) => (options?.client ?? client).get<GetApiInspectionsCorrectiveActionsResponses, unknown, ThrowOnError>({ url: '/api/inspections/corrective-actions', ...options });
+
+export const getApiInspections = <ThrowOnError extends boolean = false>(options?: Options<GetApiInspectionsData, ThrowOnError>) => (options?.client ?? client).get<GetApiInspectionsResponses, unknown, ThrowOnError>({ url: '/api/inspections', ...options });
+
+export const patchApiInspectionsCorrectiveActionsById = <ThrowOnError extends boolean = false>(options: Options<PatchApiInspectionsCorrectiveActionsByIdData, ThrowOnError>) => (options.client ?? client).patch<PatchApiInspectionsCorrectiveActionsByIdResponses, PatchApiInspectionsCorrectiveActionsByIdErrors, ThrowOnError>({
+    url: '/api/inspections/corrective-actions/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const getApiInspectionsById = <ThrowOnError extends boolean = false>(options?: Options<GetApiInspectionsByIdData, ThrowOnError>) => (options?.client ?? client).get<GetApiInspectionsByIdResponses, GetApiInspectionsByIdErrors, ThrowOnError>({ url: '/api/inspections/{id}', ...options });
+
+export const getApiInspectionsByIdComparison = <ThrowOnError extends boolean = false>(options?: Options<GetApiInspectionsByIdComparisonData, ThrowOnError>) => (options?.client ?? client).get<GetApiInspectionsByIdComparisonResponses, GetApiInspectionsByIdComparisonErrors, ThrowOnError>({ url: '/api/inspections/{id}/comparison', ...options });
+
+export const postApiInspectionsByIdApplyChanges = <ThrowOnError extends boolean = false>(options?: Options<PostApiInspectionsByIdApplyChangesData, ThrowOnError>) => (options?.client ?? client).post<PostApiInspectionsByIdApplyChangesResponses, PostApiInspectionsByIdApplyChangesErrors, ThrowOnError>({
+    url: '/api/inspections/{id}/apply-changes',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers
+    }
+});
+
+export const getApiCoachingVisitsStats = <ThrowOnError extends boolean = false>(options?: Options<GetApiCoachingVisitsStatsData, ThrowOnError>) => (options?.client ?? client).get<GetApiCoachingVisitsStatsResponses, unknown, ThrowOnError>({ url: '/api/coaching-visits/stats', ...options });
+
+export const getApiCoachingVisitsById = <ThrowOnError extends boolean = false>(options: Options<GetApiCoachingVisitsByIdData, ThrowOnError>) => (options.client ?? client).get<GetApiCoachingVisitsByIdResponses, GetApiCoachingVisitsByIdErrors, ThrowOnError>({ url: '/api/coaching-visits/{id}', ...options });
+
+export const getApiCoachingVisits = <ThrowOnError extends boolean = false>(options?: Options<GetApiCoachingVisitsData, ThrowOnError>) => (options?.client ?? client).get<GetApiCoachingVisitsResponses, unknown, ThrowOnError>({ url: '/api/coaching-visits', ...options });
+
+export const getApiIntegrationsSyncSettings = <ThrowOnError extends boolean = false>(options?: Options<GetApiIntegrationsSyncSettingsData, ThrowOnError>) => (options?.client ?? client).get<GetApiIntegrationsSyncSettingsResponses, unknown, ThrowOnError>({ url: '/api/integrations/sync-settings', ...options });
+
+export const getApiIntegrationsSyncSettingsByJobKey = <ThrowOnError extends boolean = false>(options: Options<GetApiIntegrationsSyncSettingsByJobKeyData, ThrowOnError>) => (options.client ?? client).get<GetApiIntegrationsSyncSettingsByJobKeyResponses, GetApiIntegrationsSyncSettingsByJobKeyErrors, ThrowOnError>({ url: '/api/integrations/sync-settings/{jobKey}', ...options });
+
+export const patchApiIntegrationsSyncSettingsByJobKey = <ThrowOnError extends boolean = false>(options: Options<PatchApiIntegrationsSyncSettingsByJobKeyData, ThrowOnError>) => (options.client ?? client).patch<PatchApiIntegrationsSyncSettingsByJobKeyResponses, PatchApiIntegrationsSyncSettingsByJobKeyErrors, ThrowOnError>({
+    url: '/api/integrations/sync-settings/{jobKey}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const postApiIntegrationsResetDemoData = <ThrowOnError extends boolean = false>(options?: Options<PostApiIntegrationsResetDemoDataData, ThrowOnError>) => (options?.client ?? client).post<PostApiIntegrationsResetDemoDataResponses, PostApiIntegrationsResetDemoDataErrors, ThrowOnError>({ url: '/api/integrations/reset-demo-data', ...options });
+
+export const getApiClmrsRecords = <ThrowOnError extends boolean = false>(options?: Options<GetApiClmrsRecordsData, ThrowOnError>) => (options?.client ?? client).get<GetApiClmrsRecordsResponses, unknown, ThrowOnError>({ url: '/api/clmrs-records', ...options });
+
+export const getApiClmrsRecordsByChildId = <ThrowOnError extends boolean = false>(options: Options<GetApiClmrsRecordsByChildIdData, ThrowOnError>) => (options.client ?? client).get<GetApiClmrsRecordsByChildIdResponses, GetApiClmrsRecordsByChildIdErrors, ThrowOnError>({ url: '/api/clmrs-records/{childId}', ...options });
+
+export const patchApiClmrsRecordsByChildIdCase = <ThrowOnError extends boolean = false>(options: Options<PatchApiClmrsRecordsByChildIdCaseData, ThrowOnError>) => (options.client ?? client).patch<PatchApiClmrsRecordsByChildIdCaseResponses, PatchApiClmrsRecordsByChildIdCaseErrors, ThrowOnError>({
+    url: '/api/clmrs-records/{childId}/case',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const postApiClmrsRecordsByChildIdCase = <ThrowOnError extends boolean = false>(options: Options<PostApiClmrsRecordsByChildIdCaseData, ThrowOnError>) => (options.client ?? client).post<PostApiClmrsRecordsByChildIdCaseResponses, PostApiClmrsRecordsByChildIdCaseErrors, ThrowOnError>({
+    url: '/api/clmrs-records/{childId}/case',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const getApiTrainingSessionsStats = <ThrowOnError extends boolean = false>(options?: Options<GetApiTrainingSessionsStatsData, ThrowOnError>) => (options?.client ?? client).get<GetApiTrainingSessionsStatsResponses, unknown, ThrowOnError>({ url: '/api/training-sessions/stats', ...options });
+
+export const getApiTrainingSessionsById = <ThrowOnError extends boolean = false>(options: Options<GetApiTrainingSessionsByIdData, ThrowOnError>) => (options.client ?? client).get<GetApiTrainingSessionsByIdResponses, GetApiTrainingSessionsByIdErrors, ThrowOnError>({ url: '/api/training-sessions/{id}', ...options });
+
+export const getApiTrainingSessions = <ThrowOnError extends boolean = false>(options?: Options<GetApiTrainingSessionsData, ThrowOnError>) => (options?.client ?? client).get<GetApiTrainingSessionsResponses, unknown, ThrowOnError>({ url: '/api/training-sessions', ...options });
+
+export const getApiPurchasesStats = <ThrowOnError extends boolean = false>(options?: Options<GetApiPurchasesStatsData, ThrowOnError>) => (options?.client ?? client).get<GetApiPurchasesStatsResponses, unknown, ThrowOnError>({ url: '/api/purchases/stats', ...options });
+
+export const getApiPurchasesById = <ThrowOnError extends boolean = false>(options: Options<GetApiPurchasesByIdData, ThrowOnError>) => (options.client ?? client).get<GetApiPurchasesByIdResponses, GetApiPurchasesByIdErrors, ThrowOnError>({ url: '/api/purchases/{id}', ...options });
+
+export const getApiPurchases = <ThrowOnError extends boolean = false>(options?: Options<GetApiPurchasesData, ThrowOnError>) => (options?.client ?? client).get<GetApiPurchasesResponses, unknown, ThrowOnError>({ url: '/api/purchases', ...options });
+
+export const getApiPrimaryEvacStats = <ThrowOnError extends boolean = false>(options?: Options<GetApiPrimaryEvacStatsData, ThrowOnError>) => (options?.client ?? client).get<GetApiPrimaryEvacStatsResponses, unknown, ThrowOnError>({ url: '/api/primary-evac/stats', ...options });
+
+export const getApiPrimaryEvacById = <ThrowOnError extends boolean = false>(options: Options<GetApiPrimaryEvacByIdData, ThrowOnError>) => (options.client ?? client).get<GetApiPrimaryEvacByIdResponses, GetApiPrimaryEvacByIdErrors, ThrowOnError>({ url: '/api/primary-evac/{id}', ...options });
+
+export const getApiPrimaryEvac = <ThrowOnError extends boolean = false>(options?: Options<GetApiPrimaryEvacData, ThrowOnError>) => (options?.client ?? client).get<GetApiPrimaryEvacResponses, unknown, ThrowOnError>({ url: '/api/primary-evac', ...options });
+
+export const getApiSecondaryEvacStats = <ThrowOnError extends boolean = false>(options?: Options<GetApiSecondaryEvacStatsData, ThrowOnError>) => (options?.client ?? client).get<GetApiSecondaryEvacStatsResponses, unknown, ThrowOnError>({ url: '/api/secondary-evac/stats', ...options });
+
+export const getApiSecondaryEvacById = <ThrowOnError extends boolean = false>(options: Options<GetApiSecondaryEvacByIdData, ThrowOnError>) => (options.client ?? client).get<GetApiSecondaryEvacByIdResponses, GetApiSecondaryEvacByIdErrors, ThrowOnError>({ url: '/api/secondary-evac/{id}', ...options });
+
+export const getApiSecondaryEvac = <ThrowOnError extends boolean = false>(options?: Options<GetApiSecondaryEvacData, ThrowOnError>) => (options?.client ?? client).get<GetApiSecondaryEvacResponses, unknown, ThrowOnError>({ url: '/api/secondary-evac', ...options });
+
+export const getApiShadeTreesStats = <ThrowOnError extends boolean = false>(options?: Options<GetApiShadeTreesStatsData, ThrowOnError>) => (options?.client ?? client).get<GetApiShadeTreesStatsResponses, unknown, ThrowOnError>({ url: '/api/shade-trees/stats', ...options });
+
+export const getApiShadeTreesById = <ThrowOnError extends boolean = false>(options: Options<GetApiShadeTreesByIdData, ThrowOnError>) => (options.client ?? client).get<GetApiShadeTreesByIdResponses, GetApiShadeTreesByIdErrors, ThrowOnError>({ url: '/api/shade-trees/{id}', ...options });
+
+export const getApiShadeTrees = <ThrowOnError extends boolean = false>(options?: Options<GetApiShadeTreesData, ThrowOnError>) => (options?.client ?? client).get<GetApiShadeTreesResponses, unknown, ThrowOnError>({ url: '/api/shade-trees', ...options });
+
+export const getApiVslaStats = <ThrowOnError extends boolean = false>(options?: Options<GetApiVslaStatsData, ThrowOnError>) => (options?.client ?? client).get<GetApiVslaStatsResponses, unknown, ThrowOnError>({ url: '/api/vsla/stats', ...options });
+
+export const getApiVslaByIdMembers = <ThrowOnError extends boolean = false>(options: Options<GetApiVslaByIdMembersData, ThrowOnError>) => (options.client ?? client).get<GetApiVslaByIdMembersResponses, GetApiVslaByIdMembersErrors, ThrowOnError>({ url: '/api/vsla/{id}/members', ...options });
+
+export const getApiVslaByIdMembersByFarmerId = <ThrowOnError extends boolean = false>(options: Options<GetApiVslaByIdMembersByFarmerIdData, ThrowOnError>) => (options.client ?? client).get<GetApiVslaByIdMembersByFarmerIdResponses, GetApiVslaByIdMembersByFarmerIdErrors, ThrowOnError>({ url: '/api/vsla/{id}/members/{farmerId}', ...options });
+
+export const getApiVslaById = <ThrowOnError extends boolean = false>(options: Options<GetApiVslaByIdData, ThrowOnError>) => (options.client ?? client).get<GetApiVslaByIdResponses, GetApiVslaByIdErrors, ThrowOnError>({ url: '/api/vsla/{id}', ...options });
+
+export const getApiVsla = <ThrowOnError extends boolean = false>(options?: Options<GetApiVslaData, ThrowOnError>) => (options?.client ?? client).get<GetApiVslaResponses, unknown, ThrowOnError>({ url: '/api/vsla', ...options });
+
+export const postApiReportsRun = <ThrowOnError extends boolean = false>(options?: Options<PostApiReportsRunData, ThrowOnError>) => (options?.client ?? client).post<PostApiReportsRunResponses, unknown, ThrowOnError>({
+    url: '/api/reports/run',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers
+    }
+});
+
+export const getApiReportsRuns = <ThrowOnError extends boolean = false>(options?: Options<GetApiReportsRunsData, ThrowOnError>) => (options?.client ?? client).get<GetApiReportsRunsResponses, unknown, ThrowOnError>({ url: '/api/reports/runs', ...options });
+
+export const getApiReportsSocieties = <ThrowOnError extends boolean = false>(options: Options<GetApiReportsSocietiesData, ThrowOnError>) => (options.client ?? client).get<GetApiReportsSocietiesResponses, unknown, ThrowOnError>({ url: '/api/reports/societies', ...options });
+
+export const getApiReportsRunsById = <ThrowOnError extends boolean = false>(options: Options<GetApiReportsRunsByIdData, ThrowOnError>) => (options.client ?? client).get<GetApiReportsRunsByIdResponses, GetApiReportsRunsByIdErrors, ThrowOnError>({ url: '/api/reports/runs/{id}', ...options });
+
+export const getApiReportsRunsByIdDownload = <ThrowOnError extends boolean = false>(options: Options<GetApiReportsRunsByIdDownloadData, ThrowOnError>) => (options.client ?? client).get<GetApiReportsRunsByIdDownloadResponses, GetApiReportsRunsByIdDownloadErrors, ThrowOnError>({ url: '/api/reports/runs/{id}/download', ...options });

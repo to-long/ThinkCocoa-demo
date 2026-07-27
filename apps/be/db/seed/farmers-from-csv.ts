@@ -261,7 +261,7 @@ function parcelExtras(
   | 'shadeSurvivalPct'
 > {
   const rng = rngFor(fieldId);
-  const pick = <T,>(arr: readonly T[]): T => arr[Math.floor(rng() * arr.length)] as T;
+  const pick = <T>(arr: readonly T[]): T => arr[Math.floor(rng() * arr.length)] as T;
   // Planting year 1998–2020, mid-month for a clean date.
   const year = 1998 + Math.floor(rng() * 23);
   const month = 1 + Math.floor(rng() * 12);
@@ -271,9 +271,7 @@ function parcelExtras(
   const area = areaHa ? Number(areaHa) : null;
   const density = 1000 + Math.floor(rng() * 300);
   const cocoaTreeCount =
-    area && area > 0
-      ? Math.max(120, Math.round(area * density))
-      : 300 + Math.floor(rng() * 1200);
+    area && area > 0 ? Math.max(120, Math.round(area * density)) : 300 + Math.floor(rng() * 1200);
   return {
     plantingDate,
     cocoaVariety: pick(COCOA_VARIETIES),
@@ -319,6 +317,8 @@ function toFarmerInsert(row: Record<string, string>, cooperativeId: string): Far
     society: nullish(row.Society),
     householdSize: toCount(row.Hhsize),
     childrenCount: toCount(row.NumberChildren),
+    // `certification_status` + the RA certificate columns are written by
+    // the inspections seed, which owns the verdict they must agree with.
     certificationStatus: 'unknown',
     // Membership start date — the list's "Start Date" column reads this and
     // showed "—" for every farmer because nothing ever wrote it. Derived

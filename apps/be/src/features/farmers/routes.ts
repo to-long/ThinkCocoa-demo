@@ -81,6 +81,7 @@ farmersRoutes.get('/api/farmers/export-csv', requirePermission('farmer:read'), a
     cooperativeCodes: splitCsv(c.req.query('cooperativeCode')),
     societies: splitCsv(c.req.query('society')),
     certificationStatuses: splitCsv(c.req.query('certificationStatus')),
+    certExpiryBands: splitCsv(c.req.query('certExpiry')),
     isActive: isActiveRaw === 'true' || isActiveRaw === 'false' ? isActiveRaw : undefined,
     includeDeleted: parseBoolFlag(c.req.query('includeDeleted')),
   });
@@ -191,6 +192,7 @@ farmersRoutes.openapi(
       cooperativeCodes: splitCsv(query.cooperativeCode),
       societies: splitCsv(query.society),
       certificationStatuses: splitCsv(query.certificationStatus),
+      certExpiryBands: splitCsv(query.certExpiry),
       isActive: query.isActive,
       includeDeleted,
       page,

@@ -50,6 +50,8 @@ export interface ListFarmersFilters {
   cooperativeCodes: string[];
   societies: string[];
   certificationStatuses: string[];
+  /** `valid` | `expiring` | `expired` | `none` — see the shared schema. */
+  certExpiryBands: string[];
   isActive?: 'true' | 'false';
   includeDeleted: boolean;
   page: number;
@@ -175,6 +177,21 @@ export async function listFarmers(f: ListFarmersFilters): Promise<ListFarmersRes
     whereClauses.push(eq(farmers.society, f.societies[0]!));
   } else if (f.societies.length > 1) {
     whereClauses.push(inArray(farmers.society, f.societies));
+  }
+  if (f.certExpiryBands.length > 0) {
+    // 90 days is the renewals window: long enough for an audit to be
+    // booked and run, short enough that the list stays actionable.
+    const exp = farmers.raExpiryDate;
+    const band: Record<string, ReturnType<typeof dsql> | undefined> = {
+      valid: dsql`${exp} >= CURRENT_DATE + 90`,
+      expiring: dsql`${exp} >= CURRENT_DATE AND ${exp} < CURRENT_DATE + 90`,
+      expired: dsql`${exp} < CURRENT_DATE`,
+      none: dsql`${exp} IS NULL`,
+    };
+    const picked = f.certExpiryBands.map((b) => band[b]).filter(Boolean) as ReturnType<
+      typeof dsql
+    >[];
+    if (picked.length > 0) whereClauses.push(or(...picked)!);
   }
   if (f.certificationStatuses.length > 0) {
     // The filter matches against the DERIVED outcome of the farmer's

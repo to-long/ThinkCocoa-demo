@@ -42,10 +42,13 @@ export interface ApiFarmer {
   phoneNumber: string | null;
   nationalIdNumber: string | null;
   nationalIdType: string | null;
-  village: string | null;
-  section: string | null;
   dataCollectionConsent: boolean | null;
   certificationStatus: string;
+  /** RA certificate — number, who audited, when, and when it lapses. */
+  raCertificateNumber: string | null;
+  raAuditDate: string | null;
+  raExpiryDate: string | null;
+  raCertifyingBody: string | null;
   registrationDate: string | null;
   householdSize: number | null;
   childrenCount: number | null;
@@ -138,6 +141,8 @@ export interface FarmersListParams {
   cooperativeCode?: string;
   society?: string;
   certificationStatus?: string;
+  /** `valid` | `expiring` | `expired` | `none`. */
+  certExpiry?: string;
   isActive?: boolean;
   includeDeleted?: boolean;
   /** JSON:API sort spec — `field` (asc) / `-field` (desc). Supported
@@ -184,6 +189,7 @@ function normalizeListParams(p: FarmersListParams) {
   if (p.cooperativeCode) out.cooperativeCode = p.cooperativeCode;
   if (p.society) out.society = p.society;
   if (p.certificationStatus) out.certificationStatus = p.certificationStatus;
+  if (p.certExpiry) out.certExpiry = p.certExpiry;
   if (p.isActive !== undefined) out.isActive = p.isActive;
   if (p.includeDeleted) out.includeDeleted = true;
   if (p.sort) out.sort = p.sort;
@@ -203,6 +209,7 @@ export function useFarmersList(params: FarmersListParams = {}) {
       if (params.cooperativeCode) query.cooperativeCode = params.cooperativeCode;
       if (params.society) query.society = params.society;
       if (params.certificationStatus) query.certificationStatus = params.certificationStatus;
+      if (params.certExpiry) query.certExpiry = params.certExpiry;
       if (params.isActive !== undefined) query.isActive = params.isActive ? 'true' : 'false';
       if (params.includeDeleted) query.includeDeleted = 'true';
       if (params.sort) query.sort = params.sort;

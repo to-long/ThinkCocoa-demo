@@ -68,6 +68,13 @@ export const farmers = farmerSchema.table(
     // registration — null means "not asked yet", not "refused".
     dataCollectionConsent: boolean('data_collection_consent'),
     certificationStatus: text('certification_status').notNull().default('unknown'),
+    // Rainforest Alliance certificate details (migration 0010). On the
+    // farmer because RA certifies the producer through the group — one
+    // certificate covers every plot that producer farms.
+    raCertificateNumber: text('ra_certificate_number'),
+    raAuditDate: date('ra_audit_date'),
+    raExpiryDate: date('ra_expiry_date'),
+    raCertifyingBody: text('ra_certifying_body'),
     // FE label is "Date of Membership".
     registrationDate: date('registration_date'),
     householdSize: smallint('household_size'),

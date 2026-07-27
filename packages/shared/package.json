@@ -17,7 +17,7 @@
     "kobo-client:snapshot": "curl -sSfL https://kf.kobotoolbox.org/api/v2/schema/ -o src/openApi/kobo-client/schema.yaml && echo 'kobo-client schema saved (YAML) to src/openApi/kobo-client/schema.yaml'",
     "kobo-client:generate": "openapi-ts --file openapi-ts.kobo-client.config.ts",
     "kobo-client:refresh": "bun run kobo-client:snapshot && bun run kobo-client:generate",
-    "think-cocoa-client:snapshot": "curl -sSf http://localhost:8000/doc -o src/openApi/think-cocoa-client/schema.json && bun run scripts/format-json.ts src/openApi/think-cocoa-client/schema.json",
+    "think-cocoa-client:snapshot": "curl -sSf http://localhost:8100/doc -o src/openApi/think-cocoa-client/schema.json && bun run scripts/format-json.ts src/openApi/think-cocoa-client/schema.json",
     "think-cocoa-client:generate": "openapi-ts --file openapi-ts.think-cocoa-client.config.ts",
     "think-cocoa-client:refresh": "bun run think-cocoa-client:snapshot && bun run think-cocoa-client:generate"
   },

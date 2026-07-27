@@ -6,12 +6,8 @@
  * the route handlers stay focused on HTTP wiring.
  */
 
-import {
-  createFarmerSchema,
-  listFarmersQuerySchema,
-  updateFarmerSchema,
-} from '@thinkcocoa/shared';
 import { z } from '@hono/zod-openapi';
+import { createFarmerSchema, listFarmersQuerySchema, updateFarmerSchema } from '@thinkcocoa/shared';
 
 // ── Response schemas ─────────────────────────────────────────
 export const farmerCoreSchema = z
@@ -40,6 +36,10 @@ export const farmerCoreSchema = z
     society: z.string().nullable(),
     dataCollectionConsent: z.boolean().nullable(),
     certificationStatus: z.string(),
+    raCertificateNumber: z.string().nullable(),
+    raAuditDate: z.string().nullable(),
+    raExpiryDate: z.string().nullable(),
+    raCertifyingBody: z.string().nullable(),
     registrationDate: z.string().nullable(),
     householdSize: z.number().int().nullable(),
     childrenCount: z.number().int().nullable(),

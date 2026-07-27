@@ -17,6 +17,7 @@
 import type { CreateFarmerInput, UpdateFarmerInput } from '@thinkcocoa/shared';
 import {
   Building2,
+  CalendarClock,
   CircleDot,
   Download,
   EllipsisVertical,
@@ -79,7 +80,7 @@ import {
   useFarmersList,
 } from '@/shared/api';
 import { useClmrsRecords } from '@/shared/api/clmrs';
-import { FarmerRefCell } from '@/shared/components/composed/entity-ref-cell';
+import { FarmerRefCell, RefCell } from '@/shared/components/composed/entity-ref-cell';
 import { ListSearch } from '@/shared/components/composed/list-search';
 import { useBreadcrumb } from '@/shared/contexts/breadcrumb-context';
 import { useTableSort } from '@/shared/hooks/use-table-sort';
@@ -97,6 +98,35 @@ const STATUS_TONE: Record<FarmerStatusBucket, StatusTone> = {
   inactive: 'danger',
   deleted: 'neutral',
 };
+
+/** Renewals window — long enough to book and run an audit, short enough
+ *  that the list stays actionable. Mirrors the BE's `expiring` band. */
+const RENEWAL_WINDOW_DAYS = 90;
+
+/**
+ * The certificate's expiry, as the second line of the certificate cell.
+ * Calls out the two states someone has to act on — lapsed, and lapsing
+ * inside the renewals window. A certificate with a year left is just a
+ * date: no colour, nothing to do.
+ */
+function CertificateExpiry({ farmer }: { farmer: ApiFarmer }) {
+  const intl = useIntl();
+  if (!farmer.raExpiryDate) return <span className="text-muted-foreground">—</span>;
+  const days = Math.ceil((new Date(farmer.raExpiryDate).getTime() - Date.now()) / 86_400_000);
+  const tone = days < 0 ? 'text-destructive' : days <= RENEWAL_WINDOW_DAYS ? 'text-amber-600' : '';
+  const suffix =
+    days < 0
+      ? intl.formatMessage({ id: 'farmers.certExpiry.lapsed' })
+      : days <= RENEWAL_WINDOW_DAYS
+        ? intl.formatMessage({ id: 'farmers.certExpiry.inDays' }, { n: days })
+        : '';
+  return (
+    <span className={tone} title={farmer.raCertificateNumber ?? undefined}>
+      {formatGhanaDate(farmer.raExpiryDate)}
+      {suffix ? ` · ${suffix}` : ''}
+    </span>
+  );
+}
 
 export function FarmersPageContent() {
   const intl = useIntl();
@@ -123,6 +153,7 @@ export function FarmersPageContent() {
   const societyParam = searchParams.get('society') ?? '';
   const statusParam = searchParams.get('status') ?? '';
   const certificationParam = searchParams.get('certification') ?? '';
+  const certExpiryParam = searchParams.get('certExpiry') ?? '';
   const clmrsParam = searchParams.get('clmrs') ?? '';
   // URL-backed single-column sort shared with every other list screen.
   // `sort` is the encoded token forwarded to `useFarmersList`; `hasSort`
@@ -155,6 +186,7 @@ export function FarmersPageContent() {
   const setSociety = (next: string) => updateUrl({ society: next || null, page: null });
   const setStatus = (next: string) => updateUrl({ status: next || null, page: null });
   const setCertification = (next: string) => updateUrl({ certification: next || null, page: null });
+  const setCertExpiry = (next: string) => updateUrl({ certExpiry: next || null, page: null });
   const setClmrs = (next: string) => updateUrl({ clmrs: next || null, page: null });
   const setPage = (next: number) => updateUrl({ page: next <= 1 ? null : next });
 
@@ -178,6 +210,7 @@ export function FarmersPageContent() {
         q: urlQ || undefined,
         society: societyParam || undefined,
         certificationStatus: certificationParam || undefined,
+        certExpiry: certExpiryParam || undefined,
         includeDeleted: includeDeleted ? 'true' : undefined,
       });
     } catch (err) {
@@ -208,6 +241,7 @@ export function FarmersPageContent() {
     q: urlQ || undefined,
     society: societyParam || undefined,
     certificationStatus: certificationParam || undefined,
+    certExpiry: certExpiryParam || undefined,
     includeDeleted: includeDeleted || undefined,
     // Forward the URL sort token verbatim so the BE handles ordering.
     // Skipping when undefined lets the BE keep its desc(createdAt) default.
@@ -495,6 +529,24 @@ export function FarmersPageContent() {
                 <SelectItem value="none">{t('farmers.certification.outcome.none')}</SelectItem>
               </SelectContent>
             </Select>
+            {/* Certificate validity, separate from the outcome above: the
+                buyer's question is "what renews this quarter?", and an
+                outcome word cannot answer it. */}
+            <Select value={certExpiryParam || undefined} onValueChange={(v) => setCertExpiry(v)}>
+              <SelectTrigger
+                className="w-full"
+                onClear={certExpiryParam ? () => setCertExpiry('') : undefined}
+              >
+                <CalendarClock className="size-4 text-muted-foreground" />
+                <SelectValue placeholder={t('farmers.filters.allCertExpiry')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="expiring">{t('farmers.certExpiry.expiring')}</SelectItem>
+                <SelectItem value="expired">{t('farmers.certExpiry.expired')}</SelectItem>
+                <SelectItem value="valid">{t('farmers.certExpiry.valid')}</SelectItem>
+                <SelectItem value="none">{t('farmers.certExpiry.none')}</SelectItem>
+              </SelectContent>
+            </Select>
             <Select value={clmrsParam || undefined} onValueChange={(v) => setClmrs(v)}>
               <SelectTrigger
                 className="w-full"
@@ -679,8 +731,13 @@ export function FarmersPageContent() {
                           {f.registrationDate ? formatGhanaDate(f.registrationDate) : '—'}
                         </TableCell>
                         <TableCell className="w-[150px]">
-                          <CertificationOutcomeBadge
-                            outcome={f.latestCertification?.outcome ?? null}
+                          <RefCell
+                            name={
+                              <CertificationOutcomeBadge
+                                outcome={f.latestCertification?.outcome ?? null}
+                              />
+                            }
+                            code={<CertificateExpiry farmer={f} />}
                           />
                         </TableCell>
                         <TableCell className="w-[100px]">

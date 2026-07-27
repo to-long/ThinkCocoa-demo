@@ -319,32 +319,65 @@ export async function seedInspections(db: Db): Promise<void> {
   }
 
   // Reflect the latest outcome on the farmer's denormalised
-  // certification_status so the list "RA Certified" stat lights up.
-  // We spread the certified pool across a realistic sample mix:
-  // ~67% currently RA-certified, ~18% expired, ~15% pending renewal;
-  // uncertified farmers are mostly "unknown" with ~20% "pending"
-  // (awaiting their first assessment). The bucket is a deterministic
-  // hash of the farmer id so reseeds land on the same distribution.
+  // certification_status — and, in the SAME statement, the RA certificate
+  // details, because the two must agree: a farmer marked `expired` whose
+  // certificate expires next year is worse than no data at all.
+  //
+  // The mix across certified farmers: ~67% currently RA-certified, ~18%
+  // expired, ~15% pending renewal; uncertified farmers are mostly
+  // "unknown" with ~20% "pending" (awaiting a first assessment). Of the
+  // valid certificates, a fifth expire inside 90 days — that slice is the
+  // renewals queue, and without it the "expiring soon" view is empty.
+  //
+  // Every bucket and offset is a deterministic hash of the farmer id, so
+  // a reseed reproduces the same certificates. Audit date is always 12
+  // months before expiry — an RA certificate runs a year from its audit,
+  // so the two cannot be drawn independently.
   await db.execute(sql`
-    UPDATE farmer.farmers f
-       SET certification_status = CASE
-             WHEN latest.certification_outcome IN ('certified','certified_with_ca')
-               THEN CASE
-                      WHEN ('x' || substr(md5(f.id::text), 1, 4))::bit(16)::int % 100 < 18 THEN 'expired'
-                      WHEN ('x' || substr(md5(f.id::text), 1, 4))::bit(16)::int % 100 < 33 THEN 'pending'
-                      ELSE 'rainforest_alliance'
+    WITH latest AS (
+      SELECT DISTINCT ON (farmer_id) farmer_id, certification_outcome
+        FROM inspection.inspections
+       ORDER BY farmer_id, date_inspection DESC
+    ), graded AS (
+      SELECT f.id,
+             ('x' || substr(md5(f.id::text), 5, 4))::bit(16)::int AS h2,
+             CASE
+               WHEN latest.certification_outcome IN ('certified','certified_with_ca')
+                 THEN CASE
+                        WHEN ('x' || substr(md5(f.id::text), 1, 4))::bit(16)::int % 100 < 18 THEN 'expired'
+                        WHEN ('x' || substr(md5(f.id::text), 1, 4))::bit(16)::int % 100 < 33 THEN 'pending'
+                        ELSE 'rainforest_alliance'
+                      END
+               ELSE CASE
+                      WHEN ('x' || substr(md5(f.id::text), 1, 4))::bit(16)::int % 100 < 20 THEN 'pending'
+                      ELSE 'unknown'
                     END
-             ELSE CASE
-                    WHEN ('x' || substr(md5(f.id::text), 1, 4))::bit(16)::int % 100 < 20 THEN 'pending'
-                    ELSE 'unknown'
-                  END
-           END
-      FROM (
-        SELECT DISTINCT ON (farmer_id) farmer_id, certification_outcome
-          FROM inspection.inspections
-         ORDER BY farmer_id, date_inspection DESC
-      ) latest
-     WHERE latest.farmer_id = f.id
+             END AS status
+        FROM farmer.farmers f
+        JOIN latest ON latest.farmer_id = f.id
+    ), dated AS (
+      SELECT id, h2, status,
+             CASE
+               WHEN status = 'rainforest_alliance' AND h2 % 100 < 20
+                 THEN CURRENT_DATE + (5 + h2 % 85)          -- renewal due
+               WHEN status = 'rainforest_alliance'
+                 THEN CURRENT_DATE + (120 + h2 % 400)       -- comfortably valid
+               WHEN status = 'expired'
+                 THEN CURRENT_DATE - (10 + h2 % 320)        -- lapsed
+               ELSE NULL                                     -- never certified
+             END AS expiry
+        FROM graded
+    )
+    UPDATE farmer.farmers f
+       SET certification_status = d.status,
+           ra_expiry_date        = d.expiry,
+           ra_audit_date         = CASE WHEN d.expiry IS NOT NULL THEN d.expiry - 365 END,
+           ra_certificate_number = CASE WHEN d.expiry IS NOT NULL
+                                        THEN 'RA-' || (100000 + d.h2 % 900000) END,
+           ra_certifying_body    = CASE WHEN d.expiry IS NOT NULL
+                                        THEN (ARRAY['Control Union','SGS','Bureau Veritas','Africert'])[1 + d.h2 % 4] END
+      FROM dated d
+     WHERE d.id = f.id
   `);
 
   console.log(

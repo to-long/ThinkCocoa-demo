@@ -43,6 +43,12 @@ export function farmerAuditSnapshot(f: typeof farmers.$inferSelect) {
     society: f.society,
     dataCollectionConsent: f.dataCollectionConsent,
     certificationStatus: f.certificationStatus,
+    // RA certificate (migration 0010) — the number/expiry a buyer asks
+    // for, and what the renewals view sorts on.
+    raCertificateNumber: f.raCertificateNumber ?? null,
+    raAuditDate: f.raAuditDate ?? null,
+    raExpiryDate: f.raExpiryDate ?? null,
+    raCertifyingBody: f.raCertifyingBody ?? null,
     registrationDate: f.registrationDate,
     householdSize: f.householdSize,
     childrenCount: f.childrenCount,
@@ -83,6 +89,12 @@ export function toFarmerResponse(
     society: f.society ?? null,
     dataCollectionConsent: f.dataCollectionConsent ?? null,
     certificationStatus: f.certificationStatus,
+    // RA certificate (migration 0010) — the number/expiry a buyer asks
+    // for, and what the renewals view sorts on.
+    raCertificateNumber: f.raCertificateNumber ?? null,
+    raAuditDate: f.raAuditDate ?? null,
+    raExpiryDate: f.raExpiryDate ?? null,
+    raCertifyingBody: f.raCertifyingBody ?? null,
     registrationDate: f.registrationDate ?? null,
     householdSize: f.householdSize ?? null,
     childrenCount: f.childrenCount ?? null,
