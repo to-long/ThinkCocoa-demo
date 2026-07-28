@@ -336,7 +336,11 @@ export function ReportsPageContent() {
       setPendingRunId(null);
       revalidateRuns();
     }
-  }, [polledRun, pendingRunId, successToast, errorToast, revalidateRuns, t]);
+    // `t` is deliberately absent: react-intl hands back a new formatter every
+    // render, so listing it would re-run this effect constantly. It is only
+    // read for a toast message, and its output for a fixed id does not change
+    // within a locale.
+  }, [polledRun, pendingRunId, successToast, errorToast, revalidateRuns]);
 
   const handleExport = async () => {
     if (!canExport || !isWired) return;

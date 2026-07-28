@@ -149,12 +149,12 @@ export function DateRangePicker({
   // Sync draft when the parent value actually changes (compare timestamps,
   // not object identity — the parent re-creates the {from,to} literal each
   // render which would otherwise stomp the in-progress draft on every keypress).
-  const _fromTs = value.from?.getTime();
-  const _toTs = value.to?.getTime();
+  const fromTs = value.from?.getTime();
+  const toTs = value.to?.getTime();
+  // biome-ignore lint/correctness/useExhaustiveDependencies: the timestamps ARE the comparison the note above describes — depending on the Date objects themselves re-runs every render and stomps the draft mid-edit
   React.useEffect(() => {
     setDraft({ from: value.from, to: value.to });
-    // biome-ignore lint/correctness/useExhaustiveDependencies: intentional — only resync when the actual date values change
-  }, [value.to, value.from]);
+  }, [fromTs, toTs]);
 
   const selected: DateRange | undefined =
     draft.from || draft.to ? { from: draft.from, to: draft.to } : undefined;

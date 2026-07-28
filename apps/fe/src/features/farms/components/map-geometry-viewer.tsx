@@ -1,3 +1,4 @@
+import type { Feature, FeatureCollection, GeoJsonObject } from 'geojson';
 import L from 'leaflet';
 import { Focus } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -6,24 +7,29 @@ import { GeoJSON, LayersControl, MapContainer, TileLayer, useMap } from 'react-l
 import 'leaflet/dist/leaflet.css';
 
 interface MapGeometryViewerProps {
-  geojson: any;
-  /** GeoJSON FeatureCollection of EUDR risk zones, drawn in red. */
-  riskZones?: any;
+  /** The parcel's polygon or point — a bare geometry or a collection. */
+  geojson: GeoJsonObject;
+  /** GeoJSON FeatureCollection of EUDR risk zones, drawn in red. The API
+   *  sends `null` when the parcel has none, so null is part of the contract
+   *  — something the previous `any` hid at every call site. */
+  riskZones?: FeatureCollection | null;
   className?: string;
 }
 
 /** Union the bounds of every supplied GeoJSON dataset (parcel + risk
  *  zones) so the red overlays sitting beside the plot stay in view. */
-function boundsOf(datasets: any[]): L.LatLngBounds | null {
+function boundsOf(datasets: Array<GeoJsonObject | null | undefined>): L.LatLngBounds | null {
   const group = L.featureGroup();
   for (const d of datasets) {
-    if (d && (d.features?.length || d.type)) group.addLayer(L.geoJSON(d));
+    if (!d) continue;
+    const isEmptyCollection = 'features' in d && !(d as FeatureCollection).features.length;
+    if (!isEmptyCollection) group.addLayer(L.geoJSON(d));
   }
   const b = group.getBounds();
   return b.isValid() ? b : null;
 }
 
-function FitBounds({ datasets }: { datasets: any[] }) {
+function FitBounds({ datasets }: { datasets: Array<GeoJsonObject | null | undefined> }) {
   const map = useMap();
 
   useEffect(() => {
@@ -41,7 +47,7 @@ function FitBounds({ datasets }: { datasets: any[] }) {
   return null;
 }
 
-function ZoomToFarmControl({ geojson }: { geojson: any }) {
+function ZoomToFarmControl({ geojson }: { geojson: GeoJsonObject }) {
   const map = useMap();
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
 
@@ -107,9 +113,9 @@ function riskZoneStyle(feature?: { properties?: { severity?: string } }) {
   };
 }
 
-function onEachRiskZone(feature: any, layer: L.Layer) {
-  const p = feature?.properties ?? {};
-  const label = (p.riskType === 'protected_area' ? 'Protected area' : 'Deforestation') as string;
+function onEachRiskZone(feature: Feature, layer: L.Layer) {
+  const p = (feature?.properties ?? {}) as { riskType?: string; severity?: string; name?: string };
+  const label = p.riskType === 'protected_area' ? 'Protected area' : 'Deforestation';
   layer.bindPopup(
     `<strong>${label}</strong><br/>Severity: ${p.severity ?? '—'}${p.name ? `<br/>${p.name}` : ''}`,
   );
@@ -118,7 +124,7 @@ function onEachRiskZone(feature: any, layer: L.Layer) {
 export function MapGeometryViewer({ geojson, riskZones, className }: MapGeometryViewerProps) {
   if (!geojson) return null;
 
-  const hasRiskZones = !!riskZones?.features?.length;
+  const hasRiskZones = !!riskZones?.features.length;
 
   return (
     <div

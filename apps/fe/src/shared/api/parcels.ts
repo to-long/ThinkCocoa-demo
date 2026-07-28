@@ -9,6 +9,7 @@
  */
 
 import type { CreateParcelInput, UpdateParcelInput } from '@thinkcocoa/shared';
+import type { FeatureCollection, GeoJsonObject } from 'geojson';
 import useSWR, { mutate as globalMutate, preload } from 'swr';
 import { apiFetch, quietFetch } from './fetcher';
 
@@ -58,9 +59,10 @@ export interface ApiParcel {
   shadeTreeCount: number;
   /** Outstanding corrective actions across this parcel's inspections. */
   correctiveActions: number;
-  geojson?: any | null;
+  /** The parcel's polygon or point geometry. */
+  geojson?: GeoJsonObject | null;
   /** GeoJSON FeatureCollection of nearby EUDR risk zones (detail only). */
-  riskZones?: any | null;
+  riskZones?: FeatureCollection | null;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;

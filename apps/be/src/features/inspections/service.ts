@@ -668,7 +668,7 @@ export async function applyInspectionChanges(
 
   for (const key of keys) {
     const field = sec.fields.find((f) => f.key === key);
-    if (!field || !field.isDiff) {
+    if (!field?.isDiff) {
       skipped.push(key);
       continue;
     }

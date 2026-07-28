@@ -18,13 +18,12 @@
  */
 
 import { stringify as stringifyCsv } from 'csv-stringify/sync';
-import { and, desc, eq, gte, lte, sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import ExcelJS from 'exceljs';
 import { db } from '../../../db/client';
 import { farmers } from '../../../db/schema/farmer';
 import { parcels } from '../../../db/schema/gis';
 import { cooperatives } from '../../../db/schema/iam';
-import { inspections } from '../../../db/schema/inspection';
 import { seasonToDateRange, seasonToSlug } from '../lib/season';
 import { countWhere, setFormula, sumOf } from '../lib/summary-cells';
 import { readReportTemplate } from '../lib/templates';
@@ -89,7 +88,13 @@ function parseNum(v: unknown): number | null {
 }
 
 async function fetchRows(params: TraceabilityReportParams): Promise<Row[]> {
-  const { from, to } = seasonToDateRange(params.season);
+  // Called for its validation only — it throws on a malformed season, which
+  // is how the API returns 400 instead of a silently wrong report. The window
+  // itself is unused: the harvest columns it used to bound came out of the
+  // Kobo payload, and the decoupling left them null (see `raw` below), so
+  // nothing in this query is season-scoped any more. The Reports page still
+  // offers a season picker for it, which currently changes nothing.
+  seasonToDateRange(params.season);
 
   // 1. Parcels + farmer + coop + geometry (single trip, geometry table
   // is left-joined so parcels without coords still surface). Geometry

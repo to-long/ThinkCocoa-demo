@@ -102,6 +102,10 @@ export function ClmrsPageContent() {
     );
   };
 
+  // `clmrsData` is the dependency, not `records`: line 89 derives `records`
+  // with `?? []`, so it is a fresh array on every render and depending on it
+  // would defeat the memo entirely. Biome cannot see through the derivation.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: see above
   const filtered = useMemo(() => {
     const trimmed = q.trim().toLowerCase();
     const scopeCode = activeCoop?.cooperativeCode?.toUpperCase() ?? null;

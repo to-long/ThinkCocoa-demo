@@ -47,12 +47,15 @@ export const selectBreadcrumbItems = (s: BreadcrumbState): BreadcrumbItem[] => s
  * equality so the effect only re-runs when the payload actually changes.
  */
 export function useBreadcrumb(items: BreadcrumbItem[]): void {
-  const _key = JSON.stringify(items);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // The serialized payload IS the dependency. It was computed but never
+  // used, leaving `[items]` — a fresh array literal every render, per the
+  // note above — so the effect set the breadcrumb and its cleanup cleared
+  // it again on every single render.
+  const serialized = JSON.stringify(items);
   useEffect(() => {
-    useBreadcrumbStore.setState({ items }, false, ACTIONS.set);
+    useBreadcrumbStore.setState({ items: JSON.parse(serialized) }, false, ACTIONS.set);
     return () => {
       useBreadcrumbStore.setState(initialState, false, ACTIONS.clear);
     };
-  }, [items]);
+  }, [serialized]);
 }
