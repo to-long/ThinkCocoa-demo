@@ -98,18 +98,6 @@ function parseNum(v: unknown): number | null {
   return null;
 }
 
-/** Member/Gps_location is a space-separated `lat lon alt accuracy`
- *  string from Kobo's geopoint widget. */
-function parseGps(v: unknown): { lat: number; lon: number } | null {
-  if (typeof v !== 'string') return null;
-  const parts = v.trim().split(/\s+/);
-  if (parts.length < 2) return null;
-  const lat = Number.parseFloat(parts[0]!);
-  const lon = Number.parseFloat(parts[1]!);
-  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
-  return { lat, lon };
-}
-
 async function fetchRows(params: GmrReportParams): Promise<PlotRow[]> {
   const { from, to } = seasonToDateRange(params.season);
 
@@ -121,8 +109,14 @@ async function fetchRows(params: GmrReportParams): Promise<PlotRow[]> {
     conds.push(eq(farmers.society, params.societyId));
   }
 
-  // Parcels + farmer + coop. Geometry table is empty in this dataset,
-  // so lat/lon come from the inspection's `Member/Gps_location` text.
+  // Parcels + farmer + coop + geometry. The comment here used to say the
+  // geometry table was empty and that lat/lon came from the inspection's
+  // `Member/Gps_location` text — that stopped being true twice over: the
+  // table IS populated (171 of 171 parcels on ADWUMA carry a point), and
+  // the raw Kobo payload this read from was emptied by the decoupling, so
+  // every coordinate on tab 3 came out blank. On a tab titled "Farm Units
+  // (GPS)". Projected the same way `traceability.ts` does it — drizzle
+  // doesn't model PostGIS types, hence the raw ST_X/ST_Y.
   const baseRows = await db
     .select({
       plotId: parcels.id,
@@ -138,10 +132,13 @@ async function fetchRows(params: GmrReportParams): Promise<PlotRow[]> {
       dob: farmers.dateOfBirth,
       society: farmers.society,
       cooperativeName: cooperatives.name,
+      longitude: sql<number | null>`ST_X(pg.point_geom)`,
+      latitude: sql<number | null>`ST_Y(pg.point_geom)`,
     })
     .from(parcels)
     .leftJoin(farmers, eq(farmers.id, parcels.farmerId))
     .leftJoin(cooperatives, eq(cooperatives.id, parcels.cooperativeId))
+    .leftJoin(sql`gis.parcel_geometries pg`, sql`pg.parcel_id = ${parcels.id}`)
     .where(and(...conds))
     .orderBy(parcels.id);
 
@@ -160,6 +157,16 @@ async function fetchRows(params: GmrReportParams): Promise<PlotRow[]> {
       parcelId: inspections.parcelId,
       dateInspection: inspections.dateInspection,
       inspectorCode: inspections.inspectorCode,
+      // Workforce + traceability figures. These are real columns and always
+      // were; the generator was reading them out of the Kobo `raw_data`
+      // payload, which the decoupling emptied — so tab 1's staff columns and
+      // tab 2's harvest/volume/estimate columns were blank, and six of the
+      // Dashboard's indicators totalled 0.
+      permanentStaff: inspections.permanentStaff,
+      temporaryStaff: inspections.temporaryStaff,
+      totalHarvestKg: inspections.totalHarvestKg,
+      totalSoldKg: inspections.totalSoldKg,
+      nextSeasonEstimateKg: inspections.nextSeasonEstimateKg,
     })
     .from(inspections)
     .where(
@@ -179,8 +186,6 @@ async function fetchRows(params: GmrReportParams): Promise<PlotRow[]> {
 
   return baseRows.map((r) => {
     const i = latestByParcel.get(r.plotId);
-    const raw: Record<string, unknown> = {};
-    const gps = parseGps(raw['Member/Gps_location']);
     const dateInspection = i?.dateInspection ? new Date(i.dateInspection) : null;
 
     return {
@@ -202,16 +207,17 @@ async function fetchRows(params: GmrReportParams): Promise<PlotRow[]> {
       inspectionYear: dateInspection ? dateInspection.getUTCFullYear() : null,
       inspectionMonth: dateInspection ? dateInspection.getUTCMonth() + 1 : null,
       inspectionDay: dateInspection ? dateInspection.getUTCDate() : null,
-      permanentStaff: parseNum(raw['Member/PermanentStaff']),
-      temporaryStaff: parseNum(raw['Member/TemporaryStaff']),
-      harvestCurrentSeason: parseNum(raw['Traceability/TotalHarvet']),
-      // Previous-year harvest / volume aren't captured separately in
-      // raw_data; use current-season as the most recent reading.
-      harvestPrevSeason: parseNum(raw['Traceability/TotalHarvet']),
-      volumeSoldGroup: parseNum(raw['Traceability/TotalSold']),
-      estimateNextSeason: parseNum(raw['Traceability/TotalSeasonEstimate']),
-      latitude: gps?.lat ?? null,
-      longitude: gps?.lon ?? null,
+      permanentStaff: i?.permanentStaff ?? null,
+      temporaryStaff: i?.temporaryStaff ?? null,
+      harvestCurrentSeason: parseNum(i?.totalHarvestKg),
+      // The inspection carries one harvest reading, not a per-year series,
+      // so previous-season repeats it — the template wants both columns and
+      // this is the most recent figure available for either.
+      harvestPrevSeason: parseNum(i?.totalHarvestKg),
+      volumeSoldGroup: parseNum(i?.totalSoldKg),
+      estimateNextSeason: parseNum(i?.nextSeasonEstimateKg),
+      latitude: r.latitude,
+      longitude: r.longitude,
     };
   });
 }
