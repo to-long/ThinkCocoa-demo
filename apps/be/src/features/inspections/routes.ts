@@ -11,8 +11,6 @@
  */
 
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi';
-import { db } from '../../db/client';
-import { auditLogs } from '../../db/schema/audit';
 import { writeAudit } from '../../lib/audit';
 import { type ActiveCoopContext, requireActiveCoop } from '../../middleware/active-coop';
 import { requireAuth } from '../../middleware/require-auth';

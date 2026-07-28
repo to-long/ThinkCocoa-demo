@@ -19,7 +19,6 @@ import {
   date,
   index,
   integer,
-  jsonb,
   numeric,
   pgSchema,
   text,
@@ -58,7 +57,6 @@ export const treeProfiling = shadeSchema.table(
     isAlive: boolean('is_alive').notNull(),
     gpsPoint: text('gps_point'),
     photoFilename: text('photo_filename'),
-
 
     submittedAt: timestamp('submitted_at', { withTimezone: true }).notNull(),
     submittedBy: text('submitted_by'),

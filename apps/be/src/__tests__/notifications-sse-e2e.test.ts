@@ -127,12 +127,7 @@ afterAll(async () => {
   // Tombstone the test farmer (route soft-deletes — fine, audit rows
   // stay tombstoned but don't pollute the active list).
   if (sankofaFarmerId) {
-    await apiWithCoop(
-      actorSession,
-      sankofaCoopId,
-      'DELETE',
-      `/api/farmers/${sankofaFarmerId}`,
-    );
+    await apiWithCoop(actorSession, sankofaCoopId, 'DELETE', `/api/farmers/${sankofaFarmerId}`);
   }
   // Restore preference rows the opt-out scenario cleared.
   await db

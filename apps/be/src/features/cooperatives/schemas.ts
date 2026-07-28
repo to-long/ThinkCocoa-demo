@@ -10,8 +10,8 @@
  * OpenAPI generator under stable component names.
  */
 
-import { createCooperativeSchema, updateCooperativeSchema } from '@thinkcocoa/shared';
 import { z } from '@hono/zod-openapi';
+import { createCooperativeSchema, updateCooperativeSchema } from '@thinkcocoa/shared';
 
 export const cooperativeCoreSchema = z
   .object({

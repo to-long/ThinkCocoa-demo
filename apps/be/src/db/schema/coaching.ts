@@ -84,7 +84,6 @@ export const coachingVisits = coachingSchema.table(
     followUpRequired: boolean('follow_up_required').notNull().default(false),
     followUpDate: date('follow_up_date'),
 
-
     submittedAt: timestamp('submitted_at', { withTimezone: true }).notNull(),
     submittedBy: text('submitted_by'),
     // Synthetic Kobo-shaped form payload for the detail page (demo only).

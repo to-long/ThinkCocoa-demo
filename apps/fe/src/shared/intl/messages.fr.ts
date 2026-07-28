@@ -1,7 +1,7 @@
 // Auto-composed message bundle for the "fr" locale. Static imports here
 // mean rspack packs all 16 feature dictionaries into ONE per-locale chunk,
 // dynamically loaded by ./messages.ts — so only the active locale ships.
-import shared from './fr.json';
+
 import admin from '../../features/admin/intl/fr.json';
 import auth from '../../features/auth/intl/fr.json';
 import clmrs from '../../features/clmrs/intl/fr.json';
@@ -17,6 +17,7 @@ import reports from '../../features/reports/intl/fr.json';
 import traceability from '../../features/traceability/intl/fr.json';
 import training from '../../features/training/intl/fr.json';
 import vsla from '../../features/vsla/intl/fr.json';
+import shared from './fr.json';
 
 const messages: Record<string, string> = {
   ...shared,

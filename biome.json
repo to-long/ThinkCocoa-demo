@@ -13,7 +13,9 @@
       "!**/dist",
       "!**/.deno",
       "!**/apps/fe/src/open-api/generated",
-      "!**/packages/shared/src/openApi/*/generated"
+      "!**/packages/shared/src/openApi/*/generated",
+      "!**/apps/be/db/drizzle/meta",
+      "!**/packages/shared/src/openApi/*/schema.json"
     ]
   },
   "formatter": {

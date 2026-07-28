@@ -21,6 +21,7 @@
  *     keys in the payload (PATCH does field-level merge).
  */
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   COOPERATIVE_FORM_NO_SELECTION,
   type CooperativeFormInput,
@@ -29,7 +30,6 @@ import {
   type UpdateCooperativeInput,
 } from '@thinkcocoa/shared';
 import { getApiUsers } from '@thinkcocoa/shared/think-cocoa-client';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useIntl } from 'react-intl';

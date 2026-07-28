@@ -21,7 +21,6 @@ import {
   date,
   index,
   integer,
-  jsonb,
   numeric,
   pgSchema,
   smallint,
@@ -72,7 +71,6 @@ export const trainingSessions = trainingSchema.table(
     participantEngagement: text('participant_engagement'),
     trainerRemarks: text('trainer_remarks'),
     trainerSignatureUrl: text('trainer_signature_url'),
-
 
     submittedAt: timestamp('submitted_at', { withTimezone: true }).notNull(),
     submittedBy: text('submitted_by'),

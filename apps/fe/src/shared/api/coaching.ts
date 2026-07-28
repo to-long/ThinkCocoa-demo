@@ -121,9 +121,9 @@ export function coachingListKey(params: CoachingListParams = {}) {
 /** Warm the default (page 1) coaching list + stats into SWR cache — route prefetch. */
 export function prefetchCoachingList(): void {
   const p: CoachingListParams = { page: 1, pageSize: 10 };
-  void preload(coachingListKey(p), () =>
-    quietFetch(`/api/coaching-visits${buildQuery(p)}`),
-  ).catch(() => {});
+  void preload(coachingListKey(p), () => quietFetch(`/api/coaching-visits${buildQuery(p)}`)).catch(
+    () => {},
+  );
   void preload(COACHING_STATS_KEY, () => quietFetch(COACHING_STATS_KEY[0])).catch(() => {});
 }
 

@@ -7,6 +7,7 @@
  * leak across the package boundary unnecessarily.
  */
 
+import { z } from '@hono/zod-openapi';
 import {
   ASSIGNMENT_SCOPES,
   assignCooperativeSchema,
@@ -16,7 +17,6 @@ import {
   USER_STATUSES,
   updateUserSchema,
 } from '@thinkcocoa/shared';
-import { z } from '@hono/zod-openapi';
 
 // ── Response schemas ─────────────────────────────────────────
 export const userCoreSchema = z

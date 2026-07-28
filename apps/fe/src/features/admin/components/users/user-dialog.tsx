@@ -1,10 +1,10 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   createUserFormSchema,
   isOrgWideRole,
   PASSWORD_POLICY_RULES,
   updateUserFormSchema,
 } from '@thinkcocoa/shared';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, Eye, EyeOff } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, type Resolver, useForm } from 'react-hook-form';

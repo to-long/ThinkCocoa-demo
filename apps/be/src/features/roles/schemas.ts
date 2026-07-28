@@ -10,8 +10,8 @@
  * tags so the generated SDK gets nice names.
  */
 
-import { createRoleSchema, setRolePermissionsSchema, updateRoleSchema } from '@thinkcocoa/shared';
 import { z } from '@hono/zod-openapi';
+import { createRoleSchema, setRolePermissionsSchema, updateRoleSchema } from '@thinkcocoa/shared';
 
 // ── Response schemas ─────────────────────────────────────────
 export const roleCoreSchema = z

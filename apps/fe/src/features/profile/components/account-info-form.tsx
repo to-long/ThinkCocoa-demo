@@ -1,5 +1,5 @@
-import { type UpdateProfileInput, updateProfileSchema } from '@thinkcocoa/shared';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { type UpdateProfileInput, updateProfileSchema } from '@thinkcocoa/shared';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useIntl } from 'react-intl';

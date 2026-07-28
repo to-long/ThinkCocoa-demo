@@ -22,7 +22,6 @@ import {
   check,
   date,
   index,
-  jsonb,
   numeric,
   pgSchema,
   text,
@@ -72,7 +71,6 @@ export const cocoaPurchases = purchaseSchema.table(
     amountReceivedGhs: numeric('amount_received_ghs', { precision: 12, scale: 2 }).notNull(),
     paymentType: text('payment_type').notNull(),
     paymentReference: text('payment_reference'),
-
 
     submittedAt: timestamp('submitted_at', { withTimezone: true }).notNull(),
     submittedBy: text('submitted_by'),

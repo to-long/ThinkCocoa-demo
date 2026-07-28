@@ -27,7 +27,5 @@ export const clmrsCases = clmrsSchema.table(
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [
-    check('clmrs_cases_status_check', sql`${t.status} IN ('open','processing','closed')`),
-  ],
+  (t) => [check('clmrs_cases_status_check', sql`${t.status} IN ('open','processing','closed')`)],
 );

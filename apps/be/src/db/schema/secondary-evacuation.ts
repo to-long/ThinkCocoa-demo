@@ -18,7 +18,6 @@ import {
   date,
   index,
   integer,
-  jsonb,
   pgSchema,
   text,
   timestamp,
@@ -69,7 +68,6 @@ export const secondaryEvacLots = secondaryEvacuationSchema.table(
     ddsStatus: text('dds_status').notNull().default('draft'),
     ddsReference: text('dds_reference'),
     ddsSubmittedAt: timestamp('dds_submitted_at', { withTimezone: true }),
-
 
     submittedAt: timestamp('submitted_at', { withTimezone: true }).notNull(),
     submittedBy: text('submitted_by'),

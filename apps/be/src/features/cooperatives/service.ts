@@ -12,8 +12,8 @@
  * stays Hono-free.
  */
 
-import type { createCooperativeSchema, updateCooperativeSchema } from '@thinkcocoa/shared';
 import type { z } from '@hono/zod-openapi';
+import type { createCooperativeSchema, updateCooperativeSchema } from '@thinkcocoa/shared';
 import { and, sql as dsql, eq, ilike, inArray, isNull, or } from 'drizzle-orm';
 import { db } from '../../db/client';
 import { farmers } from '../../db/schema/farmer';

@@ -19,7 +19,6 @@ import {
   check,
   date,
   index,
-  jsonb,
   numeric,
   pgSchema,
   smallint,

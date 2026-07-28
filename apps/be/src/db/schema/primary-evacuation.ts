@@ -19,7 +19,6 @@ import {
   date,
   index,
   integer,
-  jsonb,
   numeric,
   pgSchema,
   text,
@@ -66,7 +65,6 @@ export const primaryEvacLots = primaryEvacuationSchema.table(
     sealNumber: text('seal_number'),
 
     lotPhotoUrl: text('lot_photo_url'),
-
 
     submittedAt: timestamp('submitted_at', { withTimezone: true }).notNull(),
     submittedBy: text('submitted_by'),

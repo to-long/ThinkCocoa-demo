@@ -8,12 +8,12 @@
  * we only re-tag them here for OpenAPI registration.
  */
 
+import { z } from '@hono/zod-openapi';
 import {
   createPermissionGroupsSchema,
   createPermissionSchema,
   updatePermissionSchema,
 } from '@thinkcocoa/shared';
-import { z } from '@hono/zod-openapi';
 
 // Response schema (OpenAPI-tagged) — request bodies come from @thinkcocoa/shared.
 export const permissionSchema = z

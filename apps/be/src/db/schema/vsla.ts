@@ -21,7 +21,6 @@ import {
   date,
   index,
   integer,
-  jsonb,
   numeric,
   pgSchema,
   text,
@@ -119,7 +118,6 @@ export const vslaMonthlyReports = vslaSchema.table(
 
     comments: text(),
     gpsLocation: text('gps_location'),
-
 
     submittedAt: timestamp('submitted_at', { withTimezone: true }).notNull(),
     submittedBy: text('submitted_by'),

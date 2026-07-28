@@ -20,7 +20,7 @@ export * from './farmer';
 export * from './field-ops';
 export * from './gis';
 export * from './iam';
+export * from './integration';
 export * from './reference';
 export * from './reporting';
 export * from './traceability';
-export * from './integration';

@@ -78,9 +78,9 @@ export function preloadWhenIdle(loaders: Array<() => unknown>): () => void {
   if (ric) {
     const id = ric(run, { timeout: 2000 });
     return () =>
-      (
-        globalThis as unknown as { cancelIdleCallback?: (id: number) => void }
-      ).cancelIdleCallback?.(id);
+      (globalThis as unknown as { cancelIdleCallback?: (id: number) => void }).cancelIdleCallback?.(
+        id,
+      );
   }
   const t = setTimeout(run, 1200);
   return () => clearTimeout(t);

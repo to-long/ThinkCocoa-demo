@@ -9,11 +9,11 @@
  * exactly where the user entered it.
  */
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   type CreatePermissionGroupFormInput,
   createPermissionGroupFormSchema,
 } from '@thinkcocoa/shared';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useRef } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useIntl } from 'react-intl';

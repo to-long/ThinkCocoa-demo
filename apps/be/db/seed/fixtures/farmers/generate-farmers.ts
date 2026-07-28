@@ -38,16 +38,73 @@ const pick = <T>(arr: T[]): T => arr[Math.floor(rng() * arr.length)]!;
 const int = (min: number, max: number): number => min + Math.floor(rng() * (max - min + 1));
 
 // ── Fictional name + place pools ──────────────────────────────────
-const MALE_FIRST = ['Kwame', 'Kwaku', 'Yaw', 'Kofi', 'Kojo', 'Kwabena', 'Kwadwo', 'Fiifi', 'Ebo', 'Kwesi'];
-const FEMALE_FIRST = ['Akua', 'Ama', 'Abena', 'Adjoa', 'Afua', 'Akosua', 'Efua', 'Adwoa', 'Esi', 'Yaa'];
+const MALE_FIRST = [
+  'Kwame',
+  'Kwaku',
+  'Yaw',
+  'Kofi',
+  'Kojo',
+  'Kwabena',
+  'Kwadwo',
+  'Fiifi',
+  'Ebo',
+  'Kwesi',
+];
+const FEMALE_FIRST = [
+  'Akua',
+  'Ama',
+  'Abena',
+  'Adjoa',
+  'Afua',
+  'Akosua',
+  'Efua',
+  'Adwoa',
+  'Esi',
+  'Yaa',
+];
 const SURNAMES = [
-  'Mensah', 'Owusu', 'Boateng', 'Asante', 'Ansah', 'Opoku', 'Agyeman', 'Darko', 'Appiah', 'Bediako',
-  'Amoah', 'Danquah', 'Nyarko', 'Osei', 'Addo', 'Frimpong', 'Sarpong', 'Boahen', 'Antwi', 'Kusi',
+  'Mensah',
+  'Owusu',
+  'Boateng',
+  'Asante',
+  'Ansah',
+  'Opoku',
+  'Agyeman',
+  'Darko',
+  'Appiah',
+  'Bediako',
+  'Amoah',
+  'Danquah',
+  'Nyarko',
+  'Osei',
+  'Addo',
+  'Frimpong',
+  'Sarpong',
+  'Boahen',
+  'Antwi',
+  'Kusi',
 ];
 const SOCIETY_WORDS = [
-  'Riverside', 'Hillcrest', 'Greenvale', 'Sunbright', 'Lakeview', 'Fieldstone', 'Oakridge',
-  'Meadowbrook', 'Fairview', 'Brookside', 'Cedarwood', 'Highgate', 'Westgate', 'Eastwood',
-  'Northfield', 'Southbank', 'Clearwater', 'Goldfield', 'Silverstone', 'Palmgrove',
+  'Riverside',
+  'Hillcrest',
+  'Greenvale',
+  'Sunbright',
+  'Lakeview',
+  'Fieldstone',
+  'Oakridge',
+  'Meadowbrook',
+  'Fairview',
+  'Brookside',
+  'Cedarwood',
+  'Highgate',
+  'Westgate',
+  'Eastwood',
+  'Northfield',
+  'Southbank',
+  'Clearwater',
+  'Goldfield',
+  'Silverstone',
+  'Palmgrove',
 ];
 
 // Cooperatives — must match db/seed/cooperatives.ts (label + code prefix).
