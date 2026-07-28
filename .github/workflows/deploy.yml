@@ -206,6 +206,7 @@ jobs:
             apps/be/src \
             apps/be/db \
             apps/be/scripts \
+            apps/be/docker \
             apps/be/reports \
             apps/be/package.json \
             apps/be/drizzle.config.ts \
@@ -323,11 +324,15 @@ jobs:
           # so a missing variable never locks anyone out.
           ACCESS_TOKEN_TTL_VAR: ${{ vars.ACCESS_TOKEN_TTL }}
           REFRESH_TOKEN_TTL_VAR: ${{ vars.REFRESH_TOKEN_TTL }}
-          # Headless LibreOffice, for the Reports page's PDF format. The
-          # Debian package puts it at /usr/bin/soffice; a GH variable can
-          # override for a different install. Nothing else uses it, and
-          # XLSX/CSV exports keep working if it is missing.
-          SOFFICE_BIN_VAR: ${{ vars.SOFFICE_BIN || '/usr/bin/soffice' }}
+          # Headless LibreOffice, for the Reports page's PDF format.
+          # This is the Docker shim, not a host binary: Calc's print
+          # behaviour is not stable across versions (7.4 honours the
+          # fitToWidth flags ExcelJS writes, 26.2 ignores them and prints
+          # column strips), so the version is pinned in a container that
+          # is identical on a developer's laptop and here. Set the
+          # SOFFICE_BIN variable to a host path to opt out. Nothing else
+          # uses it, and XLSX/CSV exports keep working if it is missing.
+          SOFFICE_BIN_VAR: ${{ vars.SOFFICE_BIN || '/opt/thinkcocoa/apps/be/scripts/soffice-docker.sh' }}
         run: |
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<EOF
             set -e
@@ -464,6 +469,42 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
             'export PATH=/usr/local/bin:/root/.bun/bin:$PATH && cd /opt/thinkcocoa && bun install --frozen-lockfile --production'
+
+      # The shim builds this image on first use, which takes ~2 minutes —
+      # far past the converter's 60s timeout, so the first PDF request of a
+      # fresh droplet would fail. Build it here instead.
+      #
+      # Not fatal: a missing image costs the PDF format only, XLSX and CSV
+      # are unaffected, and failing the deploy would roll back a release
+      # over one export option. The step reports loudly instead.
+      - name: 🖨️ Pre-build the LibreOffice image (PDF export)
+        continue-on-error: true
+        run: |
+          ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<'EOF'
+            set -e
+            IMAGE=thinkcocoa/libreoffice:bookworm
+            if ! command -v docker >/dev/null 2>&1; then
+              echo "⚠️  docker not installed — PDF export will fail, XLSX/CSV unaffected"
+              exit 1
+            fi
+            if docker image inspect "$IMAGE" >/dev/null 2>&1; then
+              echo "✅ $IMAGE already present"
+              exit 0
+            fi
+            # The image measures 176 MB; the floor is well above that to
+            # leave room for the build's intermediate layers, and because
+            # filling this disk would take Postgres down with it.
+            AVAIL=$(df -Pm /var/lib/docker 2>/dev/null | awk 'NR==2 {print $4}')
+            AVAIL=${AVAIL:-0}
+            if [ "$AVAIL" -lt 1500 ]; then
+              echo "⚠️  only ${AVAIL}MB free on /var/lib/docker — need ~1500MB, skipping"
+              exit 1
+            fi
+            cd /opt/thinkcocoa/apps/be
+            echo "building $IMAGE (${AVAIL}MB free)…"
+            docker build -t "$IMAGE" -f docker/libreoffice.Dockerfile .
+            docker image inspect "$IMAGE" --format '✅ built, {{.Size}} bytes'
+          EOF
 
       - name: ♻️ Force-release OLD BE DB pool
         if: steps.detect.outputs.active != ''
