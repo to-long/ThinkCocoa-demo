@@ -50,8 +50,15 @@ jobs:
       # job runner and binds 5432. The PostGIS image matches what
       # `docker-compose.yml` uses locally so the schema (incl. geometry
       # columns + extensions) loads identically.
+      #
+      # Pinned to 17 to match docker-compose.yml and the test scripts: the
+      # squashed 0000_init dump comes from pg_dump 17 and emits
+      # `SET transaction_timeout = 0` (a PG17-only GUC), which errors with
+      # "unrecognized configuration parameter" on 16. This service had
+      # drifted to 16-3.4 while everything else moved to 17, so the
+      # migrations gate failed here even though it passed locally.
       postgres:
-        image: postgis/postgis:16-3.4
+        image: imresamu/postgis:17-3.5
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
