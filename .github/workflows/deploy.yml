@@ -569,32 +569,34 @@ jobs:
           echo "❌ migrations failed after 5 attempts"
           exit 1
 
-      - name: 👥 Seed real staff accounts
+      - name: 🌱 Seed demo data + accounts
         run: |
-          # Idempotent seed of iam.users rows for the staff roster
-          # defined in `apps/be/db/seed/real-users.ts`. Existing users
-          # are left alone (marked `=` in the log); only new entries
-          # get created (`+`) with password `<demo password — see apps/be/db/seed/test-users.ts>`.
+          # Full demo seed via `apps/be/db/seed/index.ts`. This replaced the
+          # old `real-users.ts` staff-roster seed, which was DELETED in the
+          # ThinkData demo rebrand — the step used to run it and started
+          # failing every deploy with `Module not found "db/seed/real-users.ts"`.
           #
-          # Wiring here — rather than a manual SSH-and-run step after
-          # every deploy — means adding a name to REAL_USERS is a
-          # code-only change: commit + tag ships the account, no
-          # human step needed. Kobo/Spaces creds needed by the BE
-          # bundle are already stamped by the earlier .env step, so
-          # this script's `import { auth }` starts up cleanly.
+          # The orchestrator is idempotent (its `cleanup` step only prunes
+          # role_permissions before re-seeding, and every insert uses
+          # ON CONFLICT), so it is safe to re-run on each deploy and a fresh
+          # droplet always ends up with the complete dataset.
           #
-          # Runs BEFORE the NEW instance boots — the seed uses
-          # better-auth's server-side `signUpEmail` API against the
-          # DB directly (no HTTP call to the app), so it doesn't
-          # need a running BE. Placing it here also means a seed
-          # failure blocks the traffic swap.
-          # `cd apps/be` so `import "dotenv/config"` in the seed
-          # loads apps/be/.env (dotenv resolves from cwd). Running
-          # from repo root would silently fall back to the monorepo
-          # root where no .env lives → `DATABASE_URL is required`
-          # exit code 1 → deploy blocked.
+          # Seeds (with SEED_FARMERS_FROM_CSV=true):
+          #   - test-users : login accounts, all @thinkdata.com / ThinkData2026!
+          #   - cooperatives + iam + reference baseline + coop chairs
+          #   - farmers (synthetic CSV fixture) + inspections + coaching/CLMRS
+          #   - demo-ops (purchases/evacuations) + audit-logs
+          # stress-data stays opt-in (SEED_STRESS_DATA), so it is skipped.
+          #
+          # Runs BEFORE the NEW instance boots — the seed talks to the DB
+          # directly (better-auth server-side signUpEmail), so it needs no
+          # running BE, and a seed failure blocks the traffic swap.
+          #
+          # `cd apps/be` so `import "dotenv/config"` loads apps/be/.env
+          # (dotenv resolves from cwd); from the repo root there is no .env
+          # → `DATABASE_URL is required` → exit 1 → deploy blocked.
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
-            'export PATH=/usr/local/bin:/root/.bun/bin:$PATH && cd /opt/thinkcocoa/apps/be && bun db/seed/real-users.ts'
+            'export PATH=/usr/local/bin:/root/.bun/bin:$PATH && cd /opt/thinkcocoa/apps/be && SEED_FARMERS_FROM_CSV=true bun db/seed/index.ts'
 
       - name: 🚀 Start NEW instance
         env:
