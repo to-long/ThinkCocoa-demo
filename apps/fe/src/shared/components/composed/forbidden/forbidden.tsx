@@ -15,6 +15,7 @@ import { ShieldOff } from 'lucide-react';
 import { useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { NoAccess, useHasAnyAccessiblePage } from '@/features/auth/components/landing-route';
 
 interface ForbiddenProps {
   /** Optional — surfacing the codes helps the user file a precise ticket. */
@@ -23,6 +24,12 @@ interface ForbiddenProps {
 
 export function Forbidden({ requiredCodes }: ForbiddenProps) {
   const intl = useIntl();
+  // A user who can't reach ANY page has nowhere to go "back" to — every
+  // route would bounce them here. Show the terminal no-access screen
+  // (contact-admin + sign-out) instead of a dead "Back to dashboard".
+  const hasAnyAccess = useHasAnyAccessiblePage();
+  if (!hasAnyAccess) return <NoAccess />;
+
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 p-6 text-center">
       <div className="flex size-14 items-center justify-center rounded-full bg-destructive/10 text-destructive">

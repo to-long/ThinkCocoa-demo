@@ -74,5 +74,11 @@
   "common.saving": "Saving…",
   "common.cancel": "Cancel",
   "common.loading": "Loading…",
-  "common.back": "Back"
+  "common.back": "Back",
+  "noAccess.title": "Không có quyền truy cập",
+  "noAccess.description": "Tài khoản của bạn chưa có quyền xem bất kỳ trang nào trong hệ thống. Vui lòng liên hệ quản trị viên để được cấp quyền.",
+  "noAccess.logout": "Đăng xuất",
+  "notFound.title": "Không tìm thấy trang",
+  "notFound.description": "Trang bạn tìm không tồn tại hoặc có thể đã được di chuyển.",
+  "notFound.goHome": "Về trang chủ"
 }

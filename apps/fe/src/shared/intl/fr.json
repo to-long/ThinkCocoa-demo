@@ -74,5 +74,11 @@
   "common.saving": "Saving…",
   "common.cancel": "Cancel",
   "common.loading": "Loading…",
-  "common.back": "Back"
+  "common.back": "Back",
+  "noAccess.title": "Aucun accès",
+  "noAccess.description": "Votre compte n'a pas encore la permission d'afficher une page du système. Veuillez contacter un administrateur pour obtenir un accès.",
+  "noAccess.logout": "Se déconnecter",
+  "notFound.title": "Page introuvable",
+  "notFound.description": "La page que vous recherchez n'existe pas ou a peut-être été déplacée.",
+  "notFound.goHome": "Retour à l'accueil"
 }

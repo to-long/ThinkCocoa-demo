@@ -15,6 +15,7 @@ import {
   AuthLayout,
   ForgotPasswordForm,
   GuestRoute,
+  LandingRoute,
   LoginForm,
   MagicLinkForm,
   ProtectedRoute,
@@ -23,6 +24,7 @@ import {
 } from './features/auth';
 import { ErrorBoundary } from './shared/components/composed/error-boundary';
 import { Forbidden } from './shared/components/composed/forbidden';
+import { NotFound } from './shared/components/composed/not-found';
 import { PageLoader } from './shared/components/composed/page-loader';
 import { type Locale, useLocale } from './shared/hooks/use-locale';
 import { getCachedMessages, loadMessages } from './shared/intl/messages';
@@ -258,14 +260,19 @@ function Root() {
                 available to any authenticated user. */}
                 <Route element={<ProtectedRoute />}>
                   <Route element={<App locale={locale} onLocaleChange={setLocale} />}>
-                    {/* Dashboard (system-wide overview) is gated on
-                    `dashboard:read`. A role without it lands on the 403
-                    <Forbidden /> page at `/` instead of the overview.
-                    Every canonical role is granted the perm in the seed,
-                    so it remains the default home for normal users. */}
-                    <Route element={<RequirePermission codes={['dashboard:read']} />}>
-                      <Route index element={<DashboardPage />} />
-                    </Route>
+                    {/* Index (`/`) resolves through LandingRoute: a role
+                    WITH `dashboard:read` sees the overview; without it, the
+                    user is redirected to the first sidebar page they can
+                    read, or a terminal no-access screen if they can read
+                    nothing — never a dead 403 at the app's front door. */}
+                    <Route
+                      index
+                      element={
+                        <LandingRoute>
+                          <DashboardPage />
+                        </LandingRoute>
+                      }
+                    />
                     <Route element={<RequirePermission codes={['farmer:read']} />}>
                       <Route path="farmers" element={<FarmersPage />} />
                       <Route path="farmers/:farmerId" element={<FarmerDetailPage />} />
@@ -347,6 +354,10 @@ function Root() {
                     API call returns a permission-denied 403. Rendered in
                     the shell so the sidebar stays for navigation. */}
                     <Route path="403" element={<Forbidden />} />
+                    {/* Catch-all inside the shell — any unknown URL (e.g.
+                    `/farmers1`) renders a 404 with the sidebar intact
+                    instead of a blank screen. */}
+                    <Route path="*" element={<NotFound />} />
                   </Route>
                 </Route>
               </Routes>

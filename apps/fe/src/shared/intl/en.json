@@ -1,13 +1,11 @@
 {
   "brand.slogan": "Cocoa Traceability Platform",
-
   "sidebar.main": "Main",
   "sidebar.operations": "Operations",
   "sidebar.traceability": "Traceability",
   "sidebar.compliance": "Compliance",
   "sidebar.reporting": "Reporting",
   "sidebar.admin": "Administration",
-
   "navigation.dashboard": "Dashboard",
   "navigation.farmers": "Farmers",
   "navigation.farms": "Farm/Parcel",
@@ -23,12 +21,10 @@
   "navigation.adminCooperatives": "Cooperatives",
   "navigation.adminSync": "Data Sync",
   "navigation.adminAudit": "Audit Log",
-
   "forbidden.title": "Access denied",
   "forbidden.description": "You don't have permission to view this page. If you think this is a mistake, ask an administrator to grant you the required access.",
   "forbidden.requiredLabel": "Requires one of:",
   "forbidden.goBack": "Back to dashboard",
-
   "common.pager.showing": "Showing {from}-{to} of {total} results",
   "common.history": "History",
   "common.moreActions": "More actions",
@@ -40,11 +36,9 @@
   "common.toast.saved": "Saved",
   "common.toast.deleted": "Deleted",
   "common.toast.restored": "Restored",
-
   "errors.generic": "Something went wrong. Please try again.",
   "errors.forbidden": "You don't have permission to do this.",
   "errors.unauthenticated": "Please sign in to continue.",
-
   "validator.REQUIRED": "This field is required.",
   "validator.UUID_INVALID": "Must be a valid identifier.",
   "validator.URL_INVALID": "Must be a valid URL.",
@@ -80,5 +74,11 @@
   "validator.PHONE_INVALID": "Use digits, spaces, +, -, ( and ) only.",
   "validator.NATIONAL_ID_INVALID": "Use letters, digits and dashes only.",
   "validator.PERSON_NAME_INVALID": "Use letters, digits, spaces, hyphens and apostrophes only.",
-  "validator.ADDRESS_TOO_LONG": "Address is too long."
+  "validator.ADDRESS_TOO_LONG": "Address is too long.",
+  "noAccess.title": "No access",
+  "noAccess.description": "Your account doesn't have permission to view any page in the system yet. Please contact an administrator to get access.",
+  "noAccess.logout": "Sign out",
+  "notFound.title": "Page not found",
+  "notFound.description": "The page you're looking for doesn't exist or may have been moved.",
+  "notFound.goHome": "Back to home"
 }
