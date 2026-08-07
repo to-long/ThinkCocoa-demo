@@ -33,6 +33,15 @@ export const authClient = createAuthClient({
   // wrapper doesn't infer credentials from the baseURL — hence the
   // 401 cascade after a successful sign-in.
   fetchOptions: { credentials: 'include' },
+  // better-auth (v1.6) re-fetches `/get-session` on every window refocus by
+  // default. Our route guards render a full-screen spinner while the session
+  // query is `isPending`, so that refetch made `GuestRoute`/`ProtectedRoute`
+  // briefly unmount their subtree on every tab-refocus — which wiped a
+  // half-typed login form (email + password reset to empty) and flashed the
+  // authenticated shell like a full reload. The session cookie is a 7-day
+  // credential; it does not need revalidating each time the tab regains
+  // focus, so turn the focus refetch off.
+  sessionOptions: { refetchOnWindowFocus: false },
   plugins: [magicLinkClient()],
 });
 
