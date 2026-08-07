@@ -197,7 +197,7 @@ type RefreshOutcome = 'ok' | 'rejected' | 'unavailable';
 
 let refreshInFlight: Promise<RefreshOutcome> | null = null;
 
-function isRefreshable(body: unknown): boolean {
+export function isRefreshable(body: unknown): boolean {
   const code = (body as { code?: unknown } | null)?.code;
   return typeof code === 'string' && REFRESHABLE_CODES.has(code);
 }
@@ -217,7 +217,7 @@ async function attemptRefresh(): Promise<RefreshOutcome> {
   }
 }
 
-async function refreshAccessToken(): Promise<RefreshOutcome> {
+export async function refreshAccessToken(): Promise<RefreshOutcome> {
   // One shared attempt: a dashboard fires a dozen requests that all expire
   // together, and they must await the SAME refresh rather than racing to
   // overwrite the cookie.
