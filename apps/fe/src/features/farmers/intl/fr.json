@@ -257,5 +257,15 @@
   "farmers.detail.deliveredNone": "Aucun achat enregistré",
   "farmers.detail.deliveredSummary": "{n} {n, plural, one {achat} other {achats}} · ${amount}",
   "farmers.detail.raValidUntil": "Valide jusqu'au {date}",
-  "farmers.detail.raExpiredOn": "Expiré le {date}"
+  "farmers.detail.raExpiredOn": "Expiré le {date}",
+  "farmers.detail.clmrs": "CLMRS",
+  "farmers.detail.clmrsAllClosed": "Tout résolu",
+  "farmers.detail.clmrsClosedCount": "{n} clôturés",
+  "farmers.detail.clmrsDescription": "Signalements de travaux dangereux et progression des cas pour les enfants de ce producteur",
+  "farmers.detail.clmrsEmpty": "Aucune observation de travaux dangereux enregistrée pour les enfants de ce producteur.",
+  "farmers.detail.clmrsEmptyShort": "Aucun signalement",
+  "farmers.detail.clmrsFlagCount": "Activités",
+  "farmers.detail.clmrsOpenCount": "{n} ouverts",
+  "farmers.detail.clmrsPendingCount": "{n} signalés",
+  "farmers.table.clmrs": "CLMRS"
 }

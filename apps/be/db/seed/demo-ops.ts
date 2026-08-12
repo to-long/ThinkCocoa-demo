@@ -42,7 +42,7 @@ function stableId(key: string, base: number): number {
   return base + ((h >>> 0) % 1_000_000_000);
 }
 
-const PORTS = ['Tema Port', 'Takoradi Port'];
+const PORTS = ['North Port', 'South Port'];
 const GROUP_WORDS = ['Nkosuo', 'Boafo', 'Adom', 'Nhyira', 'Odo', 'Biakoye', 'Gyidie', 'Ahoto'];
 
 export async function seedDemoOps(db: Db): Promise<void> {
@@ -333,9 +333,9 @@ export async function seedDemoOps(db: Db): Promise<void> {
           evacuationDate: dstr(d),
           bagsReceived: bags,
           kgReceived: (bags * 64).toFixed(1),
-          driverFirstName: pick(['Kwame', 'Kofi', 'Yaw', 'Kojo']),
-          driverLastName: pick(['Mensah', 'Owusu', 'Asante', 'Boateng']),
-          truckRegistration: `GT-${int(1000, 9999)}-${int(10, 24)}`,
+          driverFirstName: pick(['James', 'Lucas', 'Omar', 'David']),
+          driverLastName: pick(['Smith', 'Garcia', 'Khan', 'Silva']),
+          truckRegistration: `TRK-${int(1000, 9999)}-${int(10, 24)}`,
           sealNumber: `SEAL-${int(100000, 999999)}`,
           submittedAt: d,
           submittedBy: 'demo-seed',
@@ -432,10 +432,10 @@ export async function seedDemoOps(db: Db): Promise<void> {
           sourcingPartner: 'ThinkData Trading Ltd',
           bagsLoaded: bags,
           portDestination: pick(PORTS),
-          driverFirstName: pick(['Kwame', 'Kofi', 'Yaw', 'Kojo']),
-          driverLastName: pick(['Mensah', 'Owusu', 'Asante', 'Boateng']),
+          driverFirstName: pick(['James', 'Lucas', 'Omar', 'David']),
+          driverLastName: pick(['Smith', 'Garcia', 'Khan', 'Silva']),
           driverLicenceNumber: `DL-${int(100000, 999999)}`,
-          truckRegistration: `GT-${int(1000, 9999)}-${int(10, 24)}`,
+          truckRegistration: `TRK-${int(1000, 9999)}-${int(10, 24)}`,
           ddsStatus,
           ddsReference:
             ddsStatus === 'accepted' || ddsStatus === 'submitted'

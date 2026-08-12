@@ -100,7 +100,7 @@ const SCOPES: ScopeDef[] = [
     actions: ['create', 'update', 'import', 'export'],
     updates: [
       { field: 'weight_kg', olds: [120.5, 88.0], news: [122.0, 90.0] },
-      { field: 'destination', olds: ['Tema Port'], news: ['Takoradi Port'] },
+      { field: 'destination', olds: ['North Port'], news: ['South Port'] },
     ],
   },
   {
