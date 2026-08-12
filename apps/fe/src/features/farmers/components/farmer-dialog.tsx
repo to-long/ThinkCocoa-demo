@@ -1,35 +1,36 @@
 /**
  * Create / edit farmer dialog.
  *
- * Field order follows the Pencil design (`ZW4py` create, `nxyaM` update);
- * the pairing is ours — see the note under the list:
+ * Fields are grouped into related blocks, each a small section heading over
+ * a two-column grid:
  *
- *   1.  Farmer Code + Cooperative   ← coop moves to row 8 in edit mode
- *   2.  Start Date (create) + First Name
- *   3.  Last Name + Other Names
- *   4.  Gender + Date of Birth
- *   5.  ID Type + ID Number
- *   6.  Phone + District (read-only, derived from cooperative)
- *   7.  Society + Certificate Status
- *   8.  Data Collection Consent + Household Size
- *   9.  Children Count
+ *   • Cooperative — read-only tenant banner (which coop this farmer joins)
+ *   • Identity    — Farmer Code (own full-width row), First/Surname,
+ *                   Other Names, Gender, Date of Birth, Registration Date
+ *   • Contact & ID — Phone, ID Type, ID Number
+ *   • Location    — District (read-only), Society
+ *   • Certification — Certificate Status, Data Collection Consent
+ *   • Household   — Household Size, Children Count
  *
- * Nothing spans the full grid width — every field pairs up, which is what
- * keeps the dialog inside a laptop viewport instead of scrolling. Rows are
- * a consequence of that flow, not fixed slots.
+ * Each field is extracted into a `f*` fragment above the return so the
+ * blocks read as plain composition. Farmer Code spans both columns; the
+ * rest pair up two-per-row.
  *
  * Farmers are always active — there is no `isActive` control here and no
  * other writer for the column, so it keeps its `true` DB default.
  *
- * Cooperative sits at the very top in the create dialog so admins pick it
- * *before* the farmer code (which must be unique within a coop); in edit
- * mode Cooperative + Start Date drop to just-above-certification because
- * those fields are rarely changed post-creation.
+ * Cooperative is NOT a form field: a farmer is always created into the
+ * active tenant (the header coop switcher), read from `useActiveCoop`. The
+ * Farmer Code field is pre-filled with that coop's prefix (`ABM-`) via the
+ * shared `coopFarmerCodePrefix`, so the enumerator only types the serial.
  *
  * District is not an independent farmer field — it's derived from the
- * selected cooperative's `districtName`. We render it as a disabled read-
- * only input so the shape matches the design without introducing a phantom
- * column on the domain model.
+ * active cooperative's `districtName` and rendered as plain read-only text
+ * (label + value), not a disabled input, so it never looks editable.
+ *
+ * Society is a single-select sourced from the farmer-stats `bySociety`
+ * facet (scoped to the active coop), so enumerators pick an existing
+ * society instead of free-typing inconsistent spellings.
  *
  * Certification ID (`producerId`) is intentionally not in this dialog —
  * Pencil shows only "Certificate Status". Admins who need to edit the RA
@@ -46,11 +47,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   type CreateFarmerInput,
+  coopFarmerCodePrefix,
   createFarmerSchema,
   type UpdateFarmerInput,
   updateFarmerSchema,
 } from '@thinkcocoa/shared';
-import { useEffect, useMemo } from 'react';
+import { Award, type LucideIcon, MapPin, Phone, User, Users } from 'lucide-react';
+import { type ReactNode, useEffect, useMemo } from 'react';
 import { type Resolver, useForm } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { Button } from '@/components/ui/button';
@@ -78,8 +81,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { StatusTag } from '@/components/ui/status-tag';
+import { formatSociety, sortSocieties } from '@/lib/society';
 import type { ApiFarmer } from '@/shared/api';
-import { useCooperativesList } from '@/shared/api';
+import { useCooperativesList, useFarmerFullStats } from '@/shared/api';
+import { selectActiveCoop, useActiveCoop } from '@/shared/store/useActiveCoop';
 
 interface FarmerDialogProps {
   open: boolean;
@@ -92,6 +98,9 @@ interface FarmerDialogProps {
 // Only value actually present in the data (parser + CSV seed both write
 // `'ghana_card'`; DB column is freeform text with no other values).
 // Label comes from intl via `farmers.nationalIdType.ghana_card`.
+// Radix Select forbids an empty-string item value, so "no society" uses a
+// sentinel that the Controller maps back to `null` before the resolver.
+const SOCIETY_NONE = '__none__';
 const ID_TYPES = ['ghana_card'] as const;
 const SEX_OPTIONS = ['male', 'female', 'other', 'unknown'] as const;
 const CERT_OPTIONS = ['rainforest_alliance', 'unknown'] as const;
@@ -153,11 +162,37 @@ const fromInitial = (f: ApiFarmer): FarmerFormValues => ({
   producerId: f.producerId ?? null,
 });
 
+// Section heading — a StatusTag pill (same chip style as the role
+// permission groups) so blocks read as labelled sections. One tone keeps
+// them consistent rather than a rainbow.
+function SectionHeading({ icon: Icon, children }: { icon: LucideIcon; children: ReactNode }) {
+  return (
+    <StatusTag tone="lime">
+      <Icon className="size-3 shrink-0" />
+      {children}
+    </StatusTag>
+  );
+}
+
 export function FarmerDialog({ open, onOpenChange, onSubmit, initialData }: FarmerDialogProps) {
   const intl = useIntl();
   const isEdit = !!initialData;
 
   const { data: cooperatives } = useCooperativesList(open);
+  // Farmers are always created into the CURRENT tenant (header coop
+  // switcher), so we drive the coop from the active-coop store instead of
+  // showing a picker. `useCooperativesList` stays only to resolve the
+  // coop's district for the read-only District display.
+  const activeCoop = useActiveCoop(selectActiveCoop);
+
+  // Society options — reuse the farmer stats facet (`bySociety`), already
+  // scoped to the active coop by the `active-coop-id` cookie, so the
+  // dropdown offers exactly the societies that exist in this tenant.
+  const { data: fullStats } = useFarmerFullStats();
+  const societyOptions = useMemo(
+    () => sortSocieties((fullStats?.bySociety ?? []).map((r) => r.society).filter(Boolean)),
+    [fullStats],
+  );
 
   // Cast: the ternary picks between two zod schemas whose inferred shapes
   // differ on optionality (update makes everything optional). TS can't see
@@ -173,36 +208,57 @@ export function FarmerDialog({ open, onOpenChange, onSubmit, initialData }: Farm
 
   const t = (k: string) => intl.formatMessage({ id: k });
 
-  // Reset / seed form on open transitions. Editing: hydrate all fields;
-  // create: leave empty but default cooperative to the first one (most
-  // admins only have one anyway).
+  // Reset / seed on open. Edit: hydrate from the row. Create: blank, but
+  // bind the active coop and pre-fill its farmer-code prefix (`SNK-`) inside
+  // the SAME reset so a later effect can't clobber the value (react-hook-form
+  // reset + setValue across two effects races).
   useEffect(() => {
     if (!open) return;
     if (initialData) {
       form.reset(fromInitial(initialData));
     } else {
-      form.reset(emptyDefaults);
+      // Bind the active coop; the farmer-code prefix is filled by the effect
+      // below once it resolves (it can lag the coops list).
+      form.reset({ ...emptyDefaults, cooperativeId: activeCoop?.cooperativeId ?? '' });
     }
-  }, [open, initialData, form]);
+  }, [open, initialData, form, activeCoop]);
 
-  // Default cooperative when creating: first one in the SWR payload.
-  // Subscribed via watch so we only patch once a cooperative actually shows
-  // up in the list; otherwise an empty default would clobber a manual pick.
+  // Coop + district labels read off the bound cooperative (create: active
+  // coop; edit: the farmer's own coop, both live in `cooperativeId`).
   const cooperativeId = form.watch('cooperativeId');
-  useEffect(() => {
-    if (isEdit || !open) return;
-    if (!cooperativeId && cooperatives && cooperatives.length > 0) {
-      form.setValue('cooperativeId', cooperatives[0]!.id);
-    }
-  }, [isEdit, open, cooperativeId, cooperatives, form]);
 
-  // District is derived from the currently-selected cooperative. The field
-  // renders as disabled so users can see the value without editing it.
+  // District is derived from the active cooperative — shown read-only.
   const selectedCoop = useMemo(
     () => cooperatives?.find((c) => c.id === cooperativeId),
     [cooperatives, cooperativeId],
   );
   const districtDisplay = selectedCoop?.districtName ?? '';
+
+  // Fixed, non-editable farmer-code prefix (`SNK-`). Prefer the coop's stored
+  // `farmerCodePrefix` (set at coop creation); fall back to the derived map
+  // for legacy coops without one. The create input shows it as a locked
+  // leading addon so the user types only the serial.
+  const coopPrefix =
+    selectedCoop?.farmerCodePrefix ??
+    (activeCoop ? coopFarmerCodePrefix(activeCoop.cooperativeCode) : '');
+  const codePrefix = coopPrefix ? `${coopPrefix}-` : '';
+
+  // Prefill the farmer code with the prefix on create, once it resolves.
+  // Guard: only fill while the field is empty or still a bare prefix, so a
+  // serial the user already typed is never clobbered.
+  useEffect(() => {
+    if (isEdit || !open || !codePrefix) return;
+    const cur = form.getValues('farmerCode') ?? '';
+    if ((cur === '' || /^[A-Z]{2,5}-$/.test(cur)) && cur !== codePrefix) {
+      form.setValue('farmerCode', codePrefix);
+    }
+  }, [isEdit, open, codePrefix, form]);
+
+  // Date bounds mirror the shared `boundedDate` validator (min 1900-01-01,
+  // max today, UTC) so the native date picker DISABLES out-of-range days up
+  // front instead of accepting them and then failing validation.
+  const TODAY_STR = new Date().toISOString().slice(0, 10);
+  const MIN_DATE = '1900-01-01';
 
   const handleSubmit = form.handleSubmit(async (values) => {
     // Trim string fields that the BE expects normalised. Empty -> null/
@@ -240,29 +296,328 @@ export function FarmerDialog({ open, onOpenChange, onSubmit, initialData }: Farm
 
   const isSubmitting = form.formState.isSubmitting;
 
-  // ── Row fragments (extracted so create/edit can reorder without dup) ──
+  // ── Field fragments (grouped into related blocks in the return) ────────
 
-  const cooperativeAndStartDateRow = (
-    <>
-      <FormField
-        control={form.control}
-        name="cooperativeId"
-        render={({ field }) => (
+  // Cooperative + District are both read-only, derived from the active coop.
+  // Same label+text format, grouped together in the Location section — the
+  // farmer inherits the active coop, it's not an editable picker.
+  const coopLabel = (
+    <div className="flex flex-col gap-2">
+      <Label className="text-muted-foreground">{t('farmers.field.cooperative')}</Label>
+      <p className="flex h-9 items-center text-sm">
+        {selectedCoop?.name ?? activeCoop?.cooperativeName ?? (
+          <span className="text-muted-foreground">{t('farmers.stats.noData')}</span>
+        )}
+      </p>
+    </div>
+  );
+
+  // Farmer code sits on its own full-width row (col-span-2 in the return).
+  // In edit mode it's the immutable PK — disabled so the UI doesn't lie.
+  const fCode = (
+    <FormField
+      control={form.control}
+      name="farmerCode"
+      render={({ field }) => (
+        <FormItem>
+          <div className="flex flex-col gap-0.5">
+            <FormLabel>{t('farmers.field.farmerCode')}</FormLabel>
+            <span className="text-[12px] text-muted-foreground">
+              {t('farmers.field.farmerCodeHint')}
+            </span>
+          </div>
+          <FormControl>
+            {isEdit ? (
+              // Edit: the code is the immutable PK — disabled so the UI
+              // doesn't imply it can change (changing it would orphan FKs).
+              <Input
+                {...field}
+                value={field.value ?? ''}
+                disabled
+                readOnly
+                className="disabled:cursor-not-allowed disabled:bg-muted/50 disabled:opacity-100"
+              />
+            ) : (
+              // Create: the coop prefix (`SNK-`) is a locked leading addon;
+              // the input holds ONLY the serial, so the prefix can't be
+              // edited or deleted. Full value stays `${prefix}${serial}`.
+              <div className="flex">
+                <span className="inline-flex select-none items-center rounded-l-md border border-input border-r-0 bg-muted px-3 text-muted-foreground text-sm">
+                  {codePrefix}
+                </span>
+                <Input
+                  value={
+                    field.value?.startsWith(codePrefix)
+                      ? field.value.slice(codePrefix.length)
+                      : (field.value ?? '')
+                  }
+                  onChange={(e) => field.onChange(`${codePrefix}${e.target.value}`)}
+                  onBlur={field.onBlur}
+                  ref={field.ref}
+                  name={field.name}
+                  placeholder="0001"
+                  className="rounded-l-none"
+                />
+              </div>
+            )}
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+
+  const fStartDate = (
+    <FormField
+      control={form.control}
+      name="registrationDate"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{t('farmers.field.registrationDate')}</FormLabel>
+          <FormControl>
+            <Input
+              type="date"
+              min={MIN_DATE}
+              max={TODAY_STR}
+              value={field.value ?? ''}
+              onChange={(e) => field.onChange(e.target.value || null)}
+              onBlur={field.onBlur}
+              ref={field.ref}
+              name={field.name}
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+
+  const fFirstName = (
+    <FormField
+      control={form.control}
+      name="firstName"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{t('farmers.field.firstName')}</FormLabel>
+          <FormControl>
+            <Input {...field} value={field.value ?? ''} placeholder="Enter first name" />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+
+  const fLastName = (
+    <FormField
+      control={form.control}
+      name="lastName"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{t('farmers.field.lastName')}</FormLabel>
+          <FormControl>
+            <Input {...field} value={field.value ?? ''} placeholder="Enter last name" />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+
+  const fOtherNames = (
+    <FormField
+      control={form.control}
+      name="otherNames"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{t('farmers.field.otherNames')}</FormLabel>
+          <FormControl>
+            <Input
+              value={field.value ?? ''}
+              onChange={(e) => field.onChange(e.target.value === '' ? null : e.target.value)}
+              onBlur={field.onBlur}
+              ref={field.ref}
+              name={field.name}
+              placeholder="Enter other names"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+
+  const fSex = (
+    <FormField
+      control={form.control}
+      name="sex"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{t('farmers.field.gender')}</FormLabel>
+          <FormControl>
+            <Select
+              value={field.value || undefined}
+              onValueChange={(v) => field.onChange(v ? (v as FarmerFormValues['sex']) : undefined)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select gender" />
+              </SelectTrigger>
+              <SelectContent>
+                {SEX_OPTIONS.map((s) => (
+                  <SelectItem key={s} value={s}>
+                    {s}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+
+  const fDob = (
+    <FormField
+      control={form.control}
+      name="dateOfBirth"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{t('farmers.field.dateOfBirth')}</FormLabel>
+          <FormControl>
+            <Input
+              type="date"
+              min={MIN_DATE}
+              max={TODAY_STR}
+              value={field.value ?? ''}
+              onChange={(e) => field.onChange(e.target.value || null)}
+              onBlur={field.onBlur}
+              ref={field.ref}
+              name={field.name}
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+
+  const fIdType = (
+    <FormField
+      control={form.control}
+      name="nationalIdType"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{t('farmers.field.idType')}</FormLabel>
+          <FormControl>
+            <Select
+              value={field.value || undefined}
+              onValueChange={(v) => field.onChange(v || null)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select ID type" />
+              </SelectTrigger>
+              <SelectContent>
+                {ID_TYPES.map((idt) => (
+                  <SelectItem key={idt} value={idt}>
+                    {t(`farmers.nationalIdType.${idt}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+
+  const fIdNumber = (
+    <FormField
+      control={form.control}
+      name="nationalIdNumber"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{t('farmers.field.idNumber')}</FormLabel>
+          <FormControl>
+            <Input
+              value={field.value ?? ''}
+              onChange={(e) => field.onChange(e.target.value === '' ? null : e.target.value)}
+              onBlur={field.onBlur}
+              ref={field.ref}
+              name={field.name}
+              placeholder="Enter ID number"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+
+  const fPhone = (
+    <FormField
+      control={form.control}
+      name="phoneNumber"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{t('farmers.field.phone')}</FormLabel>
+          <FormControl>
+            <Input
+              value={field.value ?? ''}
+              onChange={(e) => field.onChange(e.target.value === '' ? null : e.target.value)}
+              onBlur={field.onBlur}
+              ref={field.ref}
+              name={field.name}
+              placeholder="e.g. 0241234567"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+
+  // District is derived from the active cooperative, not a farmer column —
+  // plain read-only text (label + value), never a disabled input.
+  const districtLabel = (
+    <div className="flex flex-col gap-2">
+      <Label className="text-muted-foreground">{t('farmers.table.district')}</Label>
+      <p className="flex h-9 items-center text-sm">
+        {districtDisplay || (
+          <span className="text-muted-foreground">{t('farmers.stats.noData')}</span>
+        )}
+      </p>
+    </div>
+  );
+
+  const fSociety = (
+    <FormField
+      control={form.control}
+      name="society"
+      render={({ field }) => {
+        // Include the current value even if it isn't in the coop facet
+        // (editing a farmer whose society has no other members) so it shows.
+        const options =
+          field.value && !societyOptions.includes(field.value)
+            ? sortSocieties([...societyOptions, field.value])
+            : societyOptions;
+        return (
           <FormItem>
-            <FormLabel>{t('farmers.field.cooperative')}</FormLabel>
+            <FormLabel>{t('farmers.field.society')}</FormLabel>
             <FormControl>
               <Select
                 value={field.value || undefined}
-                onValueChange={(v) => field.onChange(v ?? '')}
-                disabled={isEdit}
+                onValueChange={(v) => field.onChange(v === SOCIETY_NONE ? null : v || null)}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder={t('farmers.filters.allCooperatives')} />
+                  <SelectValue placeholder={t('farmers.field.societyPlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
-                  {(cooperatives ?? []).map((c) => (
-                    <SelectItem key={c.id} value={c.id}>
-                      {c.name}
+                  <SelectItem value={SOCIETY_NONE}>{t('farmers.field.societyNone')}</SelectItem>
+                  {options.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {formatSociety(s)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -270,29 +625,123 @@ export function FarmerDialog({ open, onOpenChange, onSubmit, initialData }: Farm
             </FormControl>
             <FormMessage />
           </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="registrationDate"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{t('farmers.field.registrationDate')}</FormLabel>
-            <FormControl>
-              <Input
-                type="date"
-                value={field.value ?? ''}
-                onChange={(e) => field.onChange(e.target.value || null)}
-                onBlur={field.onBlur}
-                ref={field.ref}
-                name={field.name}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </>
+        );
+      }}
+    />
+  );
+
+  const fCert = (
+    <FormField
+      control={form.control}
+      name="certificationStatus"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{t('farmers.field.certificationStatus')}</FormLabel>
+          <FormControl>
+            <Select
+              value={field.value || 'unknown'}
+              onValueChange={(v) => field.onChange(v ?? 'unknown')}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                {CERT_OPTIONS.map((c) => (
+                  <SelectItem key={c} value={c}>
+                    {t(`farmers.certification.${c}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+
+  const fConsent = (
+    <FormField
+      control={form.control}
+      name="dataCollectionConsent"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{t('farmers.field.dataCollectionConsent')}</FormLabel>
+          <FormControl>
+            <Select
+              value={consentToString(field.value)}
+              onValueChange={(v) => field.onChange(stringToConsent(v))}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select consent" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="true">{t('farmers.consent.yes')}</SelectItem>
+                <SelectItem value="false">{t('farmers.consent.no')}</SelectItem>
+                <SelectItem value="unknown">{t('farmers.consent.unknown')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+
+  const fHousehold = (
+    <FormField
+      control={form.control}
+      name="householdSize"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{t('farmers.field.householdSize')}</FormLabel>
+          <FormControl>
+            <Input
+              type="number"
+              min={0}
+              value={field.value ?? ''}
+              onChange={(e) => {
+                const raw = e.target.value;
+                field.onChange(raw === '' ? null : Number(raw));
+              }}
+              onBlur={field.onBlur}
+              ref={field.ref}
+              name={field.name}
+              placeholder="e.g. 5"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+
+  const fChildren = (
+    <FormField
+      control={form.control}
+      name="childrenCount"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{t('farmers.field.childrenCount')}</FormLabel>
+          <FormControl>
+            <Input
+              type="number"
+              min={0}
+              value={field.value ?? ''}
+              onChange={(e) => {
+                const raw = e.target.value;
+                field.onChange(raw === '' ? null : Number(raw));
+              }}
+              onBlur={field.onBlur}
+              ref={field.ref}
+              name={field.name}
+              placeholder="e.g. 3"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
   );
 
   return (
@@ -310,395 +759,60 @@ export function FarmerDialog({ open, onOpenChange, onSubmit, initialData }: Farm
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+          <form onSubmit={handleSubmit} className="flex flex-col">
             {/* `pt-4` was redundant with DialogContent's `gap-4`,
                 stacking ~32 px of dead space above the first field;
                 drop it. Inner grid tightened from `gap-4` → `gap-3`
                 so rows sit closer without losing the two-column
                 rhythm. */}
             <DialogBody>
-              {/* `items-start` (= align-items: flex-start) on the
-                  grid keeps each cell at its NATURAL height instead
-                  of stretching to the row's tallest cell. When one
-                  field shows a validation error and the adjacent
-                  field doesn't, both inputs stay pinned to their
-                  cell's top baseline — no perceived misalignment.
-                  The row itself still grows to fit the tallest cell;
-                  shorter cells just don't get extra whitespace
-                  below their input. */}
-              <div className="grid grid-cols-2 items-start gap-x-3 gap-y-2">
-                {/* Row 1 — Farmer Code + Cooperative. Hint sits *under the
-                    label* (gap-0.5), not under the input, to match Pencil. */}
-                <FormField
-                  control={form.control}
-                  name="farmerCode"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex flex-col gap-0.5">
-                        <FormLabel>{t('farmers.field.farmerCode')}</FormLabel>
-                        <span className="text-[12px] text-muted-foreground">
-                          {t('farmers.field.farmerCodeHint')}
-                        </span>
-                      </div>
-                      <FormControl>
-                        {/* In edit mode, ID is the PK and immutable —
-                            changing it would orphan every FK ref
-                            (parcels, inspections, …). The BE
-                            updateFarmer service ignores `farmerCode`
-                            in the input shape, but disable the input
-                            here too so the UI doesn't lie. */}
-                        <Input
-                          {...field}
-                          value={field.value ?? ''}
-                          placeholder="Enter farmer code"
-                          disabled={isEdit}
-                          readOnly={isEdit}
-                          className={
-                            isEdit
-                              ? 'disabled:cursor-not-allowed disabled:opacity-100 disabled:bg-muted/50'
-                              : undefined
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <div className="flex flex-col gap-4">
+                <section className="flex flex-col gap-2">
+                  <SectionHeading icon={User}>{t('farmers.section.identity')}</SectionHeading>
+                  <div className="grid grid-cols-2 items-start gap-x-3 gap-y-2">
+                    <div className="col-span-2">{fCode}</div>
+                    {fFirstName}
+                    {fLastName}
+                    {fOtherNames}
+                    {fSex}
+                    {fDob}
+                    {fStartDate}
+                  </div>
+                </section>
 
-                {/* Row 2 — Cooperative + Start Date (create only). Hidden in
-                    edit mode; same row appears again right before the
-                    certification row so the edit flow matches Pencil's
-                    `nxyaM` design. */}
-                {!isEdit && cooperativeAndStartDateRow}
+                <section className="flex flex-col gap-2">
+                  <SectionHeading icon={Phone}>{t('farmers.section.contact')}</SectionHeading>
+                  <div className="grid grid-cols-2 items-start gap-x-3 gap-y-2">
+                    {fPhone}
+                    {fIdType}
+                    {fIdNumber}
+                  </div>
+                </section>
 
-                {/* Row 3 — First + Last name */}
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('farmers.field.firstName')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          value={field.value ?? ''}
-                          placeholder="Enter first name"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('farmers.field.lastName')}</FormLabel>
-                      <FormControl>
-                        <Input {...field} value={field.value ?? ''} placeholder="Enter last name" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <section className="flex flex-col gap-2">
+                  <SectionHeading icon={MapPin}>{t('farmers.section.location')}</SectionHeading>
+                  <div className="grid grid-cols-2 items-start gap-x-3 gap-y-2">
+                    {coopLabel}
+                    {districtLabel}
+                    {fSociety}
+                  </div>
+                </section>
 
-                {/* Row 4 — Other Names (pairs with whatever precedes it) */}
-                <FormField
-                  control={form.control}
-                  name="otherNames"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('farmers.field.otherNames')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          value={field.value ?? ''}
-                          onChange={(e) =>
-                            field.onChange(e.target.value === '' ? null : e.target.value)
-                          }
-                          onBlur={field.onBlur}
-                          ref={field.ref}
-                          name={field.name}
-                          placeholder="Enter other names"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <section className="flex flex-col gap-2">
+                  <SectionHeading icon={Award}>{t('farmers.section.certification')}</SectionHeading>
+                  <div className="grid grid-cols-2 items-start gap-x-3 gap-y-2">
+                    {fCert}
+                    {fConsent}
+                  </div>
+                </section>
 
-                {/* Row 5 — Gender + DOB */}
-                <FormField
-                  control={form.control}
-                  name="sex"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('farmers.field.gender')}</FormLabel>
-                      <FormControl>
-                        <Select
-                          value={field.value || undefined}
-                          onValueChange={(v) =>
-                            field.onChange(v ? (v as FarmerFormValues['sex']) : undefined)
-                          }
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select gender" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {SEX_OPTIONS.map((s) => (
-                              <SelectItem key={s} value={s}>
-                                {s}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="dateOfBirth"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('farmers.field.dateOfBirth')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="date"
-                          value={field.value ?? ''}
-                          onChange={(e) => field.onChange(e.target.value || null)}
-                          onBlur={field.onBlur}
-                          ref={field.ref}
-                          name={field.name}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Row 6 — ID Type + ID Number */}
-                <FormField
-                  control={form.control}
-                  name="nationalIdType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('farmers.field.idType')}</FormLabel>
-                      <FormControl>
-                        <Select
-                          value={field.value || undefined}
-                          onValueChange={(v) => field.onChange(v || null)}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select ID type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {ID_TYPES.map((idt) => (
-                              <SelectItem key={idt} value={idt}>
-                                {t(`farmers.nationalIdType.${idt}`)}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="nationalIdNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('farmers.field.idNumber')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          value={field.value ?? ''}
-                          onChange={(e) =>
-                            field.onChange(e.target.value === '' ? null : e.target.value)
-                          }
-                          onBlur={field.onBlur}
-                          ref={field.ref}
-                          name={field.name}
-                          placeholder="Enter ID number"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Row 7 — Phone + Village */}
-                <FormField
-                  control={form.control}
-                  name="phoneNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('farmers.field.phone')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          value={field.value ?? ''}
-                          onChange={(e) =>
-                            field.onChange(e.target.value === '' ? null : e.target.value)
-                          }
-                          onBlur={field.onBlur}
-                          ref={field.ref}
-                          name={field.name}
-                          placeholder="e.g. 0241234567"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {/* Row 8 — District (read-only, derived) + Society. The
-                    district is a property of the cooperative — we expose it
-                    here so the form matches Pencil but mark it disabled so
-                    users know it isn't an editable farmer column. */}
-                <div className="flex flex-col gap-2">
-                  <Label>{t('farmers.table.district')}</Label>
-                  <Input
-                    value={districtDisplay}
-                    placeholder={t('farmers.stats.noData')}
-                    disabled
-                    readOnly
-                  />
-                </div>
-                <FormField
-                  control={form.control}
-                  name="society"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('farmers.field.society')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          value={field.value ?? ''}
-                          onChange={(e) =>
-                            field.onChange(e.target.value === '' ? null : e.target.value)
-                          }
-                          onBlur={field.onBlur}
-                          ref={field.ref}
-                          name={field.name}
-                          placeholder="Enter society"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Row 8.5 (edit only) — Cooperative + Start Date. Placed
-                    just above Certificate Status to mirror `nxyaM`. */}
-                {isEdit && cooperativeAndStartDateRow}
-
-                {/* Row 9 — Certificate Status + Data Collection Consent */}
-                <FormField
-                  control={form.control}
-                  name="certificationStatus"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('farmers.field.certificationStatus')}</FormLabel>
-                      <FormControl>
-                        <Select
-                          value={field.value || 'unknown'}
-                          onValueChange={(v) => field.onChange(v ?? 'unknown')}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select status" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {CERT_OPTIONS.map((c) => (
-                              <SelectItem key={c} value={c}>
-                                {t(`farmers.certification.${c}`)}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="dataCollectionConsent"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('farmers.field.dataCollectionConsent')}</FormLabel>
-                      <FormControl>
-                        <Select
-                          value={consentToString(field.value)}
-                          onValueChange={(v) => field.onChange(stringToConsent(v))}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select consent" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="true">{t('farmers.consent.yes')}</SelectItem>
-                            <SelectItem value="false">{t('farmers.consent.no')}</SelectItem>
-                            <SelectItem value="unknown">{t('farmers.consent.unknown')}</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Row 10 — Household Size + Children Number. Number inputs
-                    coerce empty → null so we don't fail the integer
-                    validator with NaN; the schema also allows null. */}
-                <FormField
-                  control={form.control}
-                  name="householdSize"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('farmers.field.householdSize')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          min={0}
-                          value={field.value ?? ''}
-                          onChange={(e) => {
-                            const raw = e.target.value;
-                            field.onChange(raw === '' ? null : Number(raw));
-                          }}
-                          onBlur={field.onBlur}
-                          ref={field.ref}
-                          name={field.name}
-                          placeholder="e.g. 5"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="childrenCount"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('farmers.field.childrenCount')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          min={0}
-                          value={field.value ?? ''}
-                          onChange={(e) => {
-                            const raw = e.target.value;
-                            field.onChange(raw === '' ? null : Number(raw));
-                          }}
-                          onBlur={field.onBlur}
-                          ref={field.ref}
-                          name={field.name}
-                          placeholder="e.g. 3"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <section className="flex flex-col gap-2">
+                  <SectionHeading icon={Users}>{t('farmers.section.household')}</SectionHeading>
+                  <div className="grid grid-cols-2 items-start gap-x-3 gap-y-2">
+                    {fHousehold}
+                    {fChildren}
+                  </div>
+                </section>
               </div>
             </DialogBody>
 

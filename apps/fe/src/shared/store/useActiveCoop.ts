@@ -67,20 +67,20 @@ export function setActiveCoop(coop: ActiveCoop): void {
   const prevId = useActiveCoop.getState().active?.cooperativeId ?? null;
   writeCookie(coop);
   useActiveCoop.setState({ active: coop }, false, ACTIONS.set);
-  // When the tenant scope changes, every cached SWR response is now
-  // potentially stale (BE filters by `active-coop-id` cookie, which we
-  // just rewrote). Wipe + revalidate the entire SWR cache so the next
-  // render of any list/detail/stats hook refetches against the new
-  // scope. No-op when the user re-selects the same coop.
+  // When the tenant scope changes, every cached SWR response is now stale
+  // (BE filters by the `active-coop-id` cookie we just rewrote). Wipe the
+  // ENTIRE SWR cache to `undefined` and revalidate — nothing from the
+  // previous coop must survive, including data that was speculatively
+  // prefetched (route warm-up) but never displayed. Setting each key to
+  // `undefined` clears it; `revalidate: true` refetches whatever is mounted.
+  // Prefetch/`preload` entries are refilled for the new coop by the warm-up
+  // re-run keyed on the active coop id (see `App.tsx`).
   //
-  // EXCEPT the cooperatives catalog (`/api/cooperatives`) — that
-  // endpoint is auth-only, NOT scoped by active-coop, so its data is
-  // invariant across switches. Skipping it spares a redundant refetch
-  // for callers that still consume it (user-list scope filter, etc).
+  // We deliberately do NOT exclude the cooperatives catalog anymore: a
+  // redundant refetch of that coop-invariant list is cheaper than reasoning
+  // about which keys are safe to keep, and guarantees a clean slate.
   if (prevId !== coop.cooperativeId) {
-    void globalMutate((key) => !(Array.isArray(key) && key[0] === '/api/cooperatives'), undefined, {
-      revalidate: true,
-    });
+    void globalMutate(() => true, undefined, { revalidate: true });
   }
 }
 

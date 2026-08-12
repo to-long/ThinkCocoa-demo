@@ -47,7 +47,7 @@ const fetchWithRefresh: typeof fetch = async (input, init) => {
   // The SDK always calls with a built Request; normalize anyway so the
   // signature matches `typeof fetch` and a clone can be replayed.
   const request = input instanceof Request ? input : new Request(input, init);
-  let res = await fetch(request.clone());
+  const res = await fetch(request.clone());
   if (res.status !== 401) return res;
 
   let body: unknown;
