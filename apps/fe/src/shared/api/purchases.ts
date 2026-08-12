@@ -2,8 +2,8 @@
  * SWR hooks for `/api/purchases`. Mirrors coaching/training shape.
  */
 
-import useSWR, { preload } from 'swr';
-import { apiFetch, quietFetch } from './fetcher';
+import useSWR from 'swr';
+import { apiFetch, quietFetch, warm } from './fetcher';
 
 export type PaymentType = 'cash' | 'mobile_money' | 'cheque' | 'card';
 
@@ -114,10 +114,8 @@ export function purchaseListKey(params: PurchaseListParams = {}) {
 /** Warm the default (page 1) purchases list + stats into SWR cache — route prefetch. */
 export function prefetchPurchaseList(): void {
   const p: PurchaseListParams = { page: 1, pageSize: 10 };
-  void preload(purchaseListKey(p), () => quietFetch(`/api/purchases${buildQuery(p)}`)).catch(
-    () => {},
-  );
-  void preload(PURCHASE_STATS_KEY, () => quietFetch(PURCHASE_STATS_KEY[0])).catch(() => {});
+  void warm(purchaseListKey(p), () => quietFetch(`/api/purchases${buildQuery(p)}`)).catch(() => {});
+  void warm(PURCHASE_STATS_KEY, () => quietFetch(PURCHASE_STATS_KEY[0])).catch(() => {});
 }
 
 function buildQuery(p: PurchaseListParams): string {

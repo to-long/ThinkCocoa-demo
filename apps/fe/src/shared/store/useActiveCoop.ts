@@ -22,6 +22,7 @@
 
 import { mutate as globalMutate } from 'swr';
 import { createStore } from '@/lib/zustand/createStore';
+import { bumpCoopEpoch } from '@/shared/api/fetcher';
 
 export interface ActiveCoop {
   cooperativeId: string;
@@ -73,13 +74,19 @@ export function setActiveCoop(coop: ActiveCoop): void {
   // previous coop must survive, including data that was speculatively
   // prefetched (route warm-up) but never displayed. Setting each key to
   // `undefined` clears it; `revalidate: true` refetches whatever is mounted.
-  // Prefetch/`preload` entries are refilled for the new coop by the warm-up
-  // re-run keyed on the active coop id (see `App.tsx`).
+  // Prefetch entries are refilled for the new coop by the warm-up re-run
+  // keyed on the active coop id (see `App.tsx`); `warm()` writes straight to
+  // the cache (not SWR `preload`, whose memoised promise would replay the
+  // old coop), and its epoch guard drops any in-flight old-coop fetch.
   //
   // We deliberately do NOT exclude the cooperatives catalog anymore: a
   // redundant refetch of that coop-invariant list is cheaper than reasoning
   // about which keys are safe to keep, and guarantees a clean slate.
   if (prevId !== coop.cooperativeId) {
+    // Bump the tenant generation FIRST so any warm/prefetch already in
+    // flight for the previous coop is discarded on resolve instead of
+    // repopulating the cache we're about to wipe.
+    bumpCoopEpoch();
     void globalMutate(() => true, undefined, { revalidate: true });
   }
 }

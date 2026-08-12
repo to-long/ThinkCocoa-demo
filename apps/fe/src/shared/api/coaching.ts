@@ -3,8 +3,8 @@
  * Mirrors the inspections SWR module shape.
  */
 
-import useSWR, { preload } from 'swr';
-import { apiFetch, quietFetch } from './fetcher';
+import useSWR from 'swr';
+import { apiFetch, quietFetch, warm } from './fetcher';
 import type { InspectionFollowUp } from './inspections';
 
 export type ClmrsRiskLevel = 'no_risk' | 'at_risk' | 'case';
@@ -121,10 +121,10 @@ export function coachingListKey(params: CoachingListParams = {}) {
 /** Warm the default (page 1) coaching list + stats into SWR cache — route prefetch. */
 export function prefetchCoachingList(): void {
   const p: CoachingListParams = { page: 1, pageSize: 10 };
-  void preload(coachingListKey(p), () => quietFetch(`/api/coaching-visits${buildQuery(p)}`)).catch(
+  void warm(coachingListKey(p), () => quietFetch(`/api/coaching-visits${buildQuery(p)}`)).catch(
     () => {},
   );
-  void preload(COACHING_STATS_KEY, () => quietFetch(COACHING_STATS_KEY[0])).catch(() => {});
+  void warm(COACHING_STATS_KEY, () => quietFetch(COACHING_STATS_KEY[0])).catch(() => {});
 }
 
 function buildQuery(p: CoachingListParams): string {

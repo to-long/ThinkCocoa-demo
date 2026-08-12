@@ -21,8 +21,8 @@ import {
   postApiFarmers,
   postApiFarmersByIdRestore,
 } from '@thinkcocoa/shared/think-cocoa-client';
-import useSWR, { mutate as globalMutate, preload } from 'swr';
-import { API_BASE, quietFetch, unwrap } from './fetcher';
+import useSWR, { mutate as globalMutate } from 'swr';
+import { API_BASE, quietFetch, unwrap, warm } from './fetcher';
 
 export interface ApiFarmer {
   id: string;
@@ -276,10 +276,10 @@ export function useFarmerFullStats() {
  *  landing (coop comes from the cookie, not the key). quietFetch keeps a
  *  rejected speculative warm silent (no 401/403 redirect). */
 export function prefetchFarmersList(): void {
-  void preload(farmersListKey({ page: 1, pageSize: 10 }), () =>
+  void warm(farmersListKey({ page: 1, pageSize: 10 }), () =>
     quietFetch<FarmersListResponse>('/api/farmers?page=1&pageSize=10'),
   ).catch(() => {});
-  void preload(FARMER_FULL_STATS_KEY, () =>
+  void warm(FARMER_FULL_STATS_KEY, () =>
     quietFetch<FarmerFullStats>('/api/farmers/full-stats'),
   ).catch(() => {});
 }

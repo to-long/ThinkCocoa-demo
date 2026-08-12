@@ -2,8 +2,8 @@
  * SWR hooks for `/api/secondary-evac`.
  */
 
-import useSWR, { preload } from 'swr';
-import { apiFetch, quietFetch } from './fetcher';
+import useSWR from 'swr';
+import { apiFetch, quietFetch, warm } from './fetcher';
 
 export type DdsStatus = 'draft' | 'ready' | 'submitted' | 'accepted' | 'rejected' | 'withdrawn';
 
@@ -161,10 +161,10 @@ export function secondaryEvacListKey(params: SecondaryEvacListParams = {}) {
 /** Warm the default (page 1) secondary-evac list + stats into SWR cache — route prefetch. */
 export function prefetchSecondaryEvacList(): void {
   const p: SecondaryEvacListParams = { page: 1, pageSize: 10 };
-  void preload(secondaryEvacListKey(p), () =>
-    quietFetch(`/api/secondary-evac${buildQuery(p)}`),
-  ).catch(() => {});
-  void preload(SECONDARY_EVAC_STATS_KEY, () => quietFetch(SECONDARY_EVAC_STATS_KEY[0])).catch(
+  void warm(secondaryEvacListKey(p), () => quietFetch(`/api/secondary-evac${buildQuery(p)}`)).catch(
+    () => {},
+  );
+  void warm(SECONDARY_EVAC_STATS_KEY, () => quietFetch(SECONDARY_EVAC_STATS_KEY[0])).catch(
     () => {},
   );
 }

@@ -10,8 +10,8 @@
  * under every active-coop scope. No per-page coop filter.
  */
 
-import useSWR, { preload } from 'swr';
-import { apiFetch, quietFetch } from './fetcher';
+import useSWR from 'swr';
+import { apiFetch, quietFetch, warm } from './fetcher';
 
 export interface ApiVslaListItem {
   id: string;
@@ -138,10 +138,10 @@ export function useVslaStats() {
 /** Warm the default VSLA list + stats (see prefetchParcelsList). */
 export function prefetchVslaList(): void {
   const p: VslaListParams = { page: 1, pageSize: 10 };
-  void preload(vslaListKey(p), () =>
-    quietFetch<VslaListResponse>(`/api/vsla${buildQuery(p)}`),
-  ).catch(() => {});
-  void preload(VSLA_STATS_KEY, () => quietFetch<VslaStats>('/api/vsla/stats')).catch(() => {});
+  void warm(vslaListKey(p), () => quietFetch<VslaListResponse>(`/api/vsla${buildQuery(p)}`)).catch(
+    () => {},
+  );
+  void warm(VSLA_STATS_KEY, () => quietFetch<VslaStats>('/api/vsla/stats')).catch(() => {});
 }
 
 export function useVslaGroup(id: string | null | undefined) {

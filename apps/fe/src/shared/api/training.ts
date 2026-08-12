@@ -3,8 +3,8 @@
  * Mirrors the coaching/inspections SWR shape.
  */
 
-import useSWR, { preload } from 'swr';
-import { apiFetch, quietFetch } from './fetcher';
+import useSWR from 'swr';
+import { apiFetch, quietFetch, warm } from './fetcher';
 
 export interface ApiTrainingSessionListItem {
   id: string;
@@ -124,10 +124,10 @@ export function trainingListKey(params: TrainingListParams = {}) {
 /** Warm the default (page 1) training list + stats into SWR cache — route prefetch. */
 export function prefetchTrainingList(): void {
   const p: TrainingListParams = { page: 1, pageSize: 10 };
-  void preload(trainingListKey(p), () =>
-    quietFetch(`/api/training-sessions${buildQuery(p)}`),
-  ).catch(() => {});
-  void preload(TRAINING_STATS_KEY, () => quietFetch(TRAINING_STATS_KEY[0])).catch(() => {});
+  void warm(trainingListKey(p), () => quietFetch(`/api/training-sessions${buildQuery(p)}`)).catch(
+    () => {},
+  );
+  void warm(TRAINING_STATS_KEY, () => quietFetch(TRAINING_STATS_KEY[0])).catch(() => {});
 }
 
 function buildQuery(p: TrainingListParams): string {

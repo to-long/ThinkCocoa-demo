@@ -9,6 +9,7 @@
  */
 
 import type { ValidationErrorBody } from '@thinkcocoa/shared';
+import { type Arguments, mutate as globalMutate } from 'swr';
 import { authClient } from '@/lib/auth-client';
 
 // `PUBLIC_API_URL` is baked at build time from apps/fe/.env. In dev
@@ -305,6 +306,43 @@ export async function quietFetch<TData = unknown>(path: string): Promise<TData> 
   if (!res.ok) throw new Error(`prefetch failed: ${res.status}`);
   if (res.status === 204) return undefined as TData;
   return (await res.json()) as TData;
+}
+
+/**
+ * Warm a key's SWR cache with `fetcher`'s result — the route-prefetch
+ * primitive. Deliberately NOT SWR's `preload`: `preload` memoises the
+ * in-flight promise per key and only releases it when a component consumes
+ * it, so a route the user never visits keeps that promise indefinitely.
+ * On a tenant (coop) switch we wipe the DATA cache but can't reach SWR's
+ * preload map, so a re-warm would just replay the previous coop's promise
+ * → stale rows on the next visit. Writing the resolved value straight into
+ * the cache via `mutate` sidesteps that: the wipe clears it and a re-warm
+ * overwrites it with the new coop's data. A rejected speculative fetch
+ * (forbidden endpoint, tab-resume blip) is swallowed and never written, so
+ * it can't poison a key with an error state.
+ */
+// Monotonic tenant generation. `setActiveCoop` bumps it on every coop
+// switch so an in-flight `warm()` that STARTED under the previous coop
+// can't write its (now stale) result into the freshly-wiped cache.
+let coopEpoch = 0;
+export function bumpCoopEpoch(): void {
+  coopEpoch += 1;
+}
+
+export function warm<TData>(key: Arguments, fetcher: () => Promise<TData>): Promise<unknown> {
+  // Returns an always-resolved promise so existing `.catch(() => {})` call
+  // sites stay valid; the error is already swallowed here.
+  const startedAt = coopEpoch;
+  return fetcher().then(
+    (data) => {
+      // Drop the result if the tenant changed while this fetch was in flight.
+      if (coopEpoch !== startedAt) return;
+      return globalMutate(key, data, { revalidate: false });
+    },
+    () => {
+      // speculative — a failed warm costs nothing and must stay silent
+    },
+  );
 }
 
 export function unwrap<TData>(result: {

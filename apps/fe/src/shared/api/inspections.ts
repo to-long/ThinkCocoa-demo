@@ -6,8 +6,8 @@
  * after a sync run.
  */
 
-import useSWR, { preload } from 'swr';
-import { apiFetch, quietFetch } from './fetcher';
+import useSWR from 'swr';
+import { apiFetch, quietFetch, warm } from './fetcher';
 
 export type EudrStatus = 'unknown' | 'compliant' | 'non_compliant' | 'needs_review';
 export type ComplianceBucket = 'high' | 'mid' | 'low';
@@ -234,13 +234,13 @@ export function useInspection(id: string | undefined | null) {
  *  (see prefetchParcelsList). */
 export function prefetchInspectionsList(): void {
   const p: InspectionsListParams = { page: 1, pageSize: 10 };
-  void preload(inspectionsListKey(p), () =>
+  void warm(inspectionsListKey(p), () =>
     quietFetch<InspectionListResponse>(`/api/inspections${buildQuery(p)}`),
   ).catch(() => {});
-  void preload(INSPECTION_STATS_KEY, () =>
+  void warm(INSPECTION_STATS_KEY, () =>
     quietFetch<InspectionStats>('/api/inspections/stats'),
   ).catch(() => {});
-  void preload(CORRECTIVE_ACTION_STATS_KEY, () =>
+  void warm(CORRECTIVE_ACTION_STATS_KEY, () =>
     quietFetch<CorrectiveActionStats>('/api/inspections/corrective-actions/stats'),
   ).catch(() => {});
 }

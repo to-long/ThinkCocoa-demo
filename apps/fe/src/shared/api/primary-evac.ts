@@ -2,8 +2,8 @@
  * SWR hooks for `/api/primary-evac`.
  */
 
-import useSWR, { preload } from 'swr';
-import { apiFetch, quietFetch } from './fetcher';
+import useSWR from 'swr';
+import { apiFetch, quietFetch, warm } from './fetcher';
 
 export interface ApiPrimaryEvacListItem {
   id: string;
@@ -131,10 +131,10 @@ export function primaryEvacListKey(params: PrimaryEvacListParams = {}) {
 /** Warm the default (page 1) primary-evac list + stats into SWR cache — route prefetch. */
 export function prefetchPrimaryEvacList(): void {
   const p: PrimaryEvacListParams = { page: 1, pageSize: 10 };
-  void preload(primaryEvacListKey(p), () => quietFetch(`/api/primary-evac${buildQuery(p)}`)).catch(
+  void warm(primaryEvacListKey(p), () => quietFetch(`/api/primary-evac${buildQuery(p)}`)).catch(
     () => {},
   );
-  void preload(PRIMARY_EVAC_STATS_KEY, () => quietFetch(PRIMARY_EVAC_STATS_KEY[0])).catch(() => {});
+  void warm(PRIMARY_EVAC_STATS_KEY, () => quietFetch(PRIMARY_EVAC_STATS_KEY[0])).catch(() => {});
 }
 
 function buildQuery(p: PrimaryEvacListParams): string {

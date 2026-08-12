@@ -19,10 +19,11 @@ export default function App({ locale, onLocaleChange }: AppProps) {
   // the data half only runs behind `ProtectedRoute` — warming protected
   // endpoints from the login screen would just be 401s.
   //
-  // Re-run on active-coop change: `setActiveCoop` wipes the SWR cache, but
-  // the warmed `preload` entries would otherwise refill lazily / keep the
-  // previous coop's promises. Re-warming repopulates every prefetch with the
-  // NEW coop's data (the cleanup cancels the previous coop's in-flight warm).
+  // Re-run on active-coop change: `setActiveCoop` wipes the SWR cache, so
+  // re-warming repopulates every prefetch with the NEW coop's data. The
+  // effect cleanup cancels the previous coop's scheduled sweep, and the
+  // tenant-epoch guard in `warm()` drops any of its already-in-flight fetches
+  // — so nothing from the old coop can survive the switch.
   // biome-ignore lint/correctness/useExhaustiveDependencies: re-warm keyed on coop
   useEffect(() => warmRoutesAfterLoad(), [activeCoopId]);
 

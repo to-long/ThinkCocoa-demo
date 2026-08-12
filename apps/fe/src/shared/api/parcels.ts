@@ -10,8 +10,8 @@
 
 import type { CreateParcelInput, UpdateParcelInput } from '@thinkcocoa/shared';
 import type { FeatureCollection, GeoJsonObject } from 'geojson';
-import useSWR, { mutate as globalMutate, preload } from 'swr';
-import { apiFetch, quietFetch } from './fetcher';
+import useSWR, { mutate as globalMutate } from 'swr';
+import { apiFetch, quietFetch, warm } from './fetcher';
 
 export interface ApiParcel {
   id: string;
@@ -198,12 +198,10 @@ export function useParcelStats() {
  *  warmed key and fetches normally. */
 export function prefetchParcelsList(): void {
   const p: ParcelsListParams = { page: 1, pageSize: 10 };
-  void preload(parcelsListKey(p), () =>
+  void warm(parcelsListKey(p), () =>
     quietFetch<ParcelsListResponse>(`/api/parcels${buildQuery(p)}`),
   ).catch(() => {});
-  void preload(PARCEL_STATS_KEY, () => quietFetch<ParcelStats>('/api/parcels/stats')).catch(
-    () => {},
-  );
+  void warm(PARCEL_STATS_KEY, () => quietFetch<ParcelStats>('/api/parcels/stats')).catch(() => {});
 }
 
 export function useParcel(id: string | undefined | null) {
