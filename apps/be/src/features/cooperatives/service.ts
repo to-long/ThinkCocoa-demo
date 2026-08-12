@@ -48,6 +48,7 @@ export type UpdateCooperativeInput = z.infer<typeof updateCooperativeSchema>;
 function coopAuditSnapshot(c: typeof cooperatives.$inferSelect) {
   return {
     code: c.code,
+    farmerCodePrefix: c.farmerCodePrefix,
     name: c.name,
     description: c.description,
     districtCode: c.districtCode,
@@ -168,6 +169,7 @@ export async function createCooperative(
     .insert(cooperatives)
     .values({
       code: body.code,
+      farmerCodePrefix: body.farmerCodePrefix ?? null,
       name: body.name,
       description: body.description ?? null,
       districtCode: body.districtCode ?? null,

@@ -28,6 +28,7 @@ const codesAt = (body: ValidationFailure, path: string) =>
 
 const VALID_CREATE = () => ({
   code: `T_${SUFFIX.toUpperCase()}_${Date.now().toString(36).toUpperCase()}`,
+  farmerCodePrefix: 'TST',
   name: 'Validation Probe Coop',
 });
 
@@ -35,6 +36,17 @@ describe('POST /api/cooperatives — validation', () => {
   test('happy path returns 201', async () => {
     const res = await api(adminSession, 'POST', '/api/cooperatives', VALID_CREATE());
     expect(res.status).toBe(201);
+  });
+
+  test('invalid farmerCodePrefix → 400 COOPERATIVE_CODE_PATTERN', async () => {
+    const res = await api(adminSession, 'POST', '/api/cooperatives', {
+      ...VALID_CREATE(),
+      farmerCodePrefix: 'toolong9',
+    });
+    expect(res.status).toBe(400);
+    expect(codesAt(res.data as ValidationFailure, 'farmerCodePrefix')).toContain(
+      'COOPERATIVE_CODE_PATTERN',
+    );
   });
 
   test('lowercase code → 400 COOPERATIVE_CODE_PATTERN', async () => {

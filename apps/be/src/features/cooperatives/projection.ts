@@ -21,6 +21,7 @@ import { cooperatives, users } from '../../db/schema/iam';
 export const SELECT_FIELDS = {
   id: cooperatives.id,
   code: cooperatives.code,
+  farmerCodePrefix: cooperatives.farmerCodePrefix,
   name: cooperatives.name,
   description: cooperatives.description,
   districtCode: cooperatives.districtCode,
@@ -106,6 +107,7 @@ export const SELECT_FIELDS = {
 export type Row = {
   id: string;
   code: string;
+  farmerCodePrefix: string | null;
   name: string;
   description: string | null;
   districtCode: string | null;
@@ -133,6 +135,7 @@ export function toCooperativeResponse(r: Row) {
   return {
     id: r.id,
     code: r.code,
+    farmerCodePrefix: r.farmerCodePrefix ?? null,
     name: r.name,
     description: r.description ?? null,
     districtCode: r.districtCode ?? null,

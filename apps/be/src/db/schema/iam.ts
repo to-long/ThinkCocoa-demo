@@ -42,6 +42,11 @@ export const iamSchema = pgSchema('iam');
 export const cooperatives = iamSchema.table('cooperatives', {
   id: uuid().primaryKey().defaultRandom(),
   code: text().notNull().unique(),
+  // Short prefix stamped onto every farmer code in this coop (`SNK` →
+  // `SNK-0001`). Set once at creation and never changed — farmer codes are
+  // immutable PKs, so their prefix must be too. Nullable for legacy rows;
+  // the FE falls back to `coopFarmerCodePrefix(code)` when absent.
+  farmerCodePrefix: text('farmer_code_prefix'),
   name: text().notNull(),
   description: text(),
   districtCode: text('district_code'),

@@ -319,6 +319,7 @@ describe('cooperative lifecycle', () => {
   test('create cooperative writes audit row', async () => {
     const { status, data } = await api<{ id: string }>(adminSession, 'POST', '/api/cooperatives', {
       code,
+      farmerCodePrefix: 'TST',
       name: `Test Coop ${SUFFIX}`,
       districtCode: 'XX-ZZ',
       districtName: 'Test District',

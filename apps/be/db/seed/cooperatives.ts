@@ -13,6 +13,7 @@
  * cooperative, place, or organisation.
  */
 
+import { coopFarmerCodePrefix } from '@thinkcocoa/shared';
 import { eq } from 'drizzle-orm';
 import type { Db } from '../../src/db/client';
 import { cooperatives, users } from '../../src/db/schema/iam';
@@ -100,13 +101,15 @@ export const DEMO_COOPERATIVES: SeedCooperative[] = [
 export async function seedCooperatives(db: Db, opts: { withChairs?: boolean } = {}): Promise<void> {
   console.log('  cooperatives: upserting demo cooperatives...');
   for (const c of DEMO_COOPERATIVES) {
+    const farmerCodePrefix = coopFarmerCodePrefix(c.code);
     await db
       .insert(cooperatives)
-      .values({ ...c, isActive: true })
+      .values({ ...c, farmerCodePrefix, isActive: true })
       .onConflictDoUpdate({
         target: cooperatives.code,
         set: {
           name: c.name,
+          farmerCodePrefix,
           description: c.description,
           districtCode: c.districtCode,
           districtName: c.districtName,

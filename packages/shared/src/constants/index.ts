@@ -24,6 +24,23 @@ export type Role = (typeof ROLES)[number];
 // Single source of truth consumed by BE seed, BE middleware, and FE gates.
 export * from './permissions';
 
+// Per-cooperative code prefix used for farmer codes (`ABM-0001`) and
+// waybills (`PWB-ABM-…`). Single source shared by the FE farmer dialog
+// (pre-fills the farmer-code prefix from the active coop) and the BE demo
+// seed. Any coop not listed falls back to the first 3 letters of its code.
+export const COOP_CODE_PREFIX: Record<string, string> = {
+  SANKOFA: 'SNK',
+  NKABOM: 'NKB',
+  ADWUMA: 'ADW',
+  ABOMA: 'ABM',
+  AYEKOO: 'AYK',
+  NHYIRA: 'NHY',
+};
+
+export function coopFarmerCodePrefix(coopCode: string): string {
+  return COOP_CODE_PREFIX[coopCode] ?? coopCode.slice(0, 3).toUpperCase();
+}
+
 export const SRID = 4326;
 export const DEFAULT_MAP_CENTER = { lat: 6.5, lng: -5.5 };
 export const DEFAULT_MAP_ZOOM = 7;

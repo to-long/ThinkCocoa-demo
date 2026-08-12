@@ -16,6 +16,10 @@ import { V } from './validator-error-code';
  */
 const CODE_RE = /^[A-Z][A-Z0-9_]*$/;
 
+// Farmer-code prefix: 2–5 uppercase letters (e.g. `SNK`). Set once at
+// creation, immutable after (farmer codes derived from it can't change).
+const PREFIX_RE = /^[A-Z]{2,5}$/;
+
 export const createCooperativeSchema = z.object({
   code: z
     .string()
@@ -23,6 +27,11 @@ export const createCooperativeSchema = z.object({
     .min(1, V.NAME_REQUIRED)
     .max(FIELD_LIMITS.code, V.TEXT_TOO_LONG)
     .regex(CODE_RE, V.COOPERATIVE_CODE_PATTERN),
+  farmerCodePrefix: z
+    .string()
+    .trim()
+    .transform((s) => s.toUpperCase())
+    .pipe(z.string().regex(PREFIX_RE, V.COOPERATIVE_CODE_PATTERN)),
   name: z.string().trim().min(1, V.NAME_REQUIRED).max(FIELD_LIMITS.shortText, V.TEXT_TOO_LONG),
   description: descriptionSchema.optional().nullable(),
   districtCode: z.string().trim().max(FIELD_LIMITS.code, V.TEXT_TOO_LONG).optional().nullable(),

@@ -94,6 +94,7 @@ const DISTRICTS: ReadonlyArray<{ code: string; name: string }> = [
 
 const EMPTY_FORM: CooperativeFormInput = {
   name: '',
+  farmerCodePrefix: '',
   description: '',
   districtCode: NO_DISTRICT,
   districtName: null,
@@ -170,6 +171,7 @@ export function CooperativeDialog({
     if (initialData) {
       form.reset({
         name: initialData.name,
+        farmerCodePrefix: initialData.farmerCodePrefix ?? '',
         description: initialData.description ?? '',
         districtCode: initialData.districtCode ?? NO_DISTRICT,
         districtName: initialData.districtName ?? null,
@@ -212,6 +214,11 @@ export function CooperativeDialog({
       // Edit mode: code is read-only on the BE — pass the existing
       // value so PATCH validation is happy. Create: derive from name.
       code: isEdit ? initialData!.code : deriveCode(data.name),
+      // Prefix is immutable: only meaningful on create. On edit we pass the
+      // existing value to satisfy the shared type; the BE update ignores it.
+      farmerCodePrefix: isEdit
+        ? (initialData!.farmerCodePrefix ?? '')
+        : data.farmerCodePrefix.trim().toUpperCase(),
       name: data.name.trim(),
       description: data.description?.trim() || null,
       districtCode: district?.code ?? null,
@@ -262,6 +269,42 @@ export function CooperativeDialog({
                       <FormControl>
                         <Input {...field} placeholder={t('cooperatives.field.namePlaceholder')} />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* 1b. Farmer-code prefix — stamped on every farmer code in
+                     this coop (`SNK` → `SNK-0001`). Editable ONLY on create;
+                     read-only on edit because farmer codes are immutable, so
+                     their prefix must be too. */}
+                <FormField
+                  control={form.control}
+                  name="farmerCodePrefix"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('cooperatives.field.prefix')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          value={field.value ?? ''}
+                          onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                          placeholder={t('cooperatives.field.prefixPlaceholder')}
+                          maxLength={5}
+                          disabled={isEdit}
+                          readOnly={isEdit}
+                          className={
+                            isEdit
+                              ? 'disabled:cursor-not-allowed disabled:bg-muted/50 disabled:opacity-100'
+                              : undefined
+                          }
+                        />
+                      </FormControl>
+                      {!isEdit && (
+                        <p className="text-[12px] text-muted-foreground">
+                          {t('cooperatives.field.prefixHint')}
+                        </p>
+                      )}
                       <FormMessage />
                     </FormItem>
                   )}

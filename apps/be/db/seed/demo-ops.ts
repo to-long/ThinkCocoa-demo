@@ -9,6 +9,7 @@
  * so it runs alongside the farmer CSV seed. Opt out with SEED_OPS=false.
  */
 
+import { coopFarmerCodePrefix } from '@thinkcocoa/shared';
 import { eq, sql } from 'drizzle-orm';
 import type { Db } from '../../src/db/client';
 import { cooperatives } from '../../src/db/schema/iam';
@@ -41,14 +42,6 @@ function stableId(key: string, base: number): number {
   return base + ((h >>> 0) % 1_000_000_000);
 }
 
-const PREFIX: Record<string, string> = {
-  SANKOFA: 'SNK',
-  NKABOM: 'NKB',
-  ADWUMA: 'ADW',
-  ABOMA: 'ABM',
-  AYEKOO: 'AYK',
-  NHYIRA: 'NHY',
-};
 const PORTS = ['Tema Port', 'Takoradi Port'];
 const GROUP_WORDS = ['Nkosuo', 'Boafo', 'Adom', 'Nhyira', 'Odo', 'Biakoye', 'Gyidie', 'Ahoto'];
 
@@ -87,7 +80,7 @@ export async function seedDemoOps(db: Db): Promise<void> {
   let groupCount = 0;
   let reportCount = 0;
   for (const c of coops) {
-    const prefix = PREFIX[c.code] ?? c.code.slice(0, 3);
+    const prefix = coopFarmerCodePrefix(c.code);
     const coopSocieties = societiesByCoop.get(c.id) ?? [];
     const nGroups = int(10, 15);
     for (let g = 1; g <= nGroups; g++) {
@@ -315,7 +308,7 @@ export async function seedDemoOps(db: Db): Promise<void> {
   let primary = 0;
   let primaryLinks = 0;
   for (const c of coops) {
-    const prefix = PREFIX[c.code] ?? c.code.slice(0, 3);
+    const prefix = coopFarmerCodePrefix(c.code);
     const coopPurchases = purchasesByCoop.get(c.id) ?? [];
     const coopSocieties = societiesByCoop.get(c.id) ?? [];
     let purCursor = 0;
@@ -406,7 +399,7 @@ export async function seedDemoOps(db: Db): Promise<void> {
   let secondary = 0;
   let secondaryLinks = 0;
   for (const c of coops) {
-    const prefix = PREFIX[c.code] ?? c.code.slice(0, 3);
+    const prefix = coopFarmerCodePrefix(c.code);
     const coopPrimaries = primaryByCoop.get(c.id) ?? [];
     let primCursor = 0;
     const n = int(4, 6);

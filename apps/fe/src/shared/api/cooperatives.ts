@@ -18,6 +18,7 @@ import useSWR, { mutate as globalMutate } from 'swr';
 import { apiFetch, unwrap } from './fetcher';
 
 export interface ApiCooperative {
+  farmerCodePrefix: string | null;
   id: string;
   code: string;
   name: string;

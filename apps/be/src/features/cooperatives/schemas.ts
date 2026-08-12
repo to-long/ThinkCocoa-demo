@@ -17,6 +17,7 @@ export const cooperativeCoreSchema = z
   .object({
     id: z.string().uuid(),
     code: z.string(),
+    farmerCodePrefix: z.string().nullable(),
     name: z.string(),
     description: z.string().nullable(),
     districtCode: z.string().nullable(),
