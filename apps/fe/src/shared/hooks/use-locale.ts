@@ -1,26 +1,29 @@
 import { useCallback, useState } from 'react';
 
-export type Locale = 'en' | 'fr' | 'vi';
+export type Locale = 'en' | 'fr' | 'es';
 
 const STORAGE_KEY = 'thinkcocoa-locale';
 
-export const locales: Locale[] = ['en', 'fr', 'vi'];
+export const locales: Locale[] = ['en', 'fr', 'es'];
 
 export const localeLabels: Record<Locale, string> = {
   en: 'English',
   fr: 'Français',
-  vi: 'Tiếng Việt',
+  es: 'Español',
 };
 
 export const localeFlags: Record<Locale, string> = {
   en: '🇬🇧',
   fr: '🇫🇷',
-  vi: '🇻🇳',
+  es: '🇪🇸',
 };
 
+// A previously-persisted 'vi' choice is no longer a valid locale — fall back
+// to English so an old localStorage value doesn't select a missing bundle.
 export function getInitialLocale(): Locale {
   if (typeof window === 'undefined') return 'en';
-  return (localStorage.getItem(STORAGE_KEY) as Locale) || 'en';
+  const stored = localStorage.getItem(STORAGE_KEY);
+  return stored && (locales as string[]).includes(stored) ? (stored as Locale) : 'en';
 }
 
 export function useLocale() {

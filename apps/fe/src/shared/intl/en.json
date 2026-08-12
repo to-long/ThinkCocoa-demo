@@ -80,5 +80,12 @@
   "noAccess.logout": "Sign out",
   "notFound.title": "Page not found",
   "notFound.description": "The page you're looking for doesn't exist or may have been moved.",
-  "notFound.goHome": "Back to home"
+  "notFound.goHome": "Back to home",
+  "common.prefs.language": "Language",
+  "common.prefs.theme": "Theme",
+  "common.prefs.theme.light": "Light",
+  "common.prefs.theme.dark": "Dark",
+  "common.prefs.theme.system": "System",
+  "common.menu.profileSettings": "Profile Settings",
+  "common.menu.signOut": "Sign out"
 }

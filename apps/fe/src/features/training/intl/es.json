@@ -1,0 +1,39 @@
+{
+  "training.title": "Capacitación a productores",
+  "training.subtitle": "Sesiones grupales de capacitación impartidas a productores, técnicos de campo y personal de la cooperativa",
+
+  "training.stats.sessions30d": "Sesiones (30d)",
+  "training.stats.sessionCount": "Número de sesiones",
+  "training.stats.participants": "Participantes",
+  "training.stats.consentRate": "Tasa media de consentimiento",
+  "training.stats.avgAttendance": "Asistencia media",
+
+  "training.filters.searchPlaceholder": "Buscar sesión, capacitador, lugar, sociedad…",
+  "training.filters.programAll": "Programa: todos",
+  "training.filters.topicAll": "Tema: todos",
+  "training.filters.societyAll": "Sociedad: todas",
+  "training.filters.dateRangeAll": "Todas las fechas",
+  "training.filters.dateRangeToday": "Hoy",
+  "training.filters.dateRangeLast7d": "Últimos 7 días",
+  "training.filters.dateRangeLast30d": "Últimos 30 días",
+  "training.filters.dateRangeThisMonth": "Este mes",
+  "training.filters.dateRangeThisYear": "Este año",
+  "training.filters.reset": "Restablecer",
+
+  "training.col.date": "Fecha",
+  "training.col.program": "Programa",
+  "training.col.topics": "Temas",
+  "training.col.location": "Lugar",
+  "training.col.trainer": "Capacitador",
+  "training.col.attendance": "Asistencia",
+  "training.col.consent": "Consentimiento",
+  "training.col.actions": "Acciones",
+
+  "training.action.open": "Abrir",
+  "training.empty": "Ninguna sesión de capacitación coincide con los filtros actuales.",
+  "training.pagination.showing": "Mostrando {from}-{to} de {total} sesiones",
+  "training.detail.notFound": "Sesión de capacitación no encontrada",
+  "training.detail.back": "Volver a capacitación",
+  "training.detail.title": "Detalle de capacitación",
+  "training.detail.subtitle": "Detalles de la sesión, asistencia y evaluación del capacitador"
+}

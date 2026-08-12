@@ -1,5 +1,6 @@
 import { LogOut, Settings } from 'lucide-react';
 import { useState } from 'react';
+import { useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
@@ -16,6 +17,8 @@ interface UserMenuProps {
 
 export function UserMenu({ locale, onLocaleChange }: UserMenuProps) {
   const signOut = useSignOut();
+  const intl = useIntl();
+  const t = (id: string) => intl.formatMessage({ id });
   const { data: session } = authClient.useSession();
   const user = session?.user;
   const [open, setOpen] = useState(false);
@@ -53,7 +56,7 @@ export function UserMenu({ locale, onLocaleChange }: UserMenuProps) {
       <PopoverContent
         align="end"
         sideOffset={0}
-        className="w-[220px] p-0"
+        className="w-[264px] p-0"
         showArrow
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
@@ -79,7 +82,7 @@ export function UserMenu({ locale, onLocaleChange }: UserMenuProps) {
             className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-foreground transition-colors hover:bg-accent"
           >
             <Settings className="size-4 text-foreground" />
-            Profile Settings
+            {t('common.menu.profileSettings')}
           </Link>
         </div>
         <Separator />
@@ -90,7 +93,7 @@ export function UserMenu({ locale, onLocaleChange }: UserMenuProps) {
             className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-destructive transition-colors hover:bg-accent"
           >
             <LogOut className="size-4 text-destructive" />
-            Sign out
+            {t('common.menu.signOut')}
           </button>
         </div>
       </PopoverContent>

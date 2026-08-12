@@ -48,67 +48,6 @@ const RESOURCE_ORDER = [
   'permission',
 ] as const;
 
-// Display labels + sub-line per resource. Falls back to a
-// title-cased prefix if a resource lands here without a config.
-const RESOURCE_LABELS: Record<string, { title: string; subtitle: string }> = {
-  dashboard: {
-    title: 'Dashboard',
-    subtitle: 'Receive notifications surfaced on the system overview',
-  },
-  farmer: {
-    title: 'Farmer',
-    subtitle: 'Receive updates when farmer information is modified',
-  },
-  parcel: {
-    title: 'Farm',
-    subtitle: 'Get notified about farm activity and field changes',
-  },
-  vsla: {
-    title: 'VSLA',
-    subtitle: 'Get notified about savings-group cycles and activity',
-  },
-  training: {
-    title: 'Training',
-    subtitle: 'Stay informed about upcoming training sessions and materials',
-  },
-  coaching: {
-    title: 'Coaching',
-    subtitle: 'Stay informed about coaching visits and compliance scores',
-  },
-  purchase: {
-    title: 'Purchase',
-    subtitle: 'Track society-level cocoa purchase records',
-  },
-  primary_evac: {
-    title: '1st Evac',
-    subtitle: 'Track primary evacuation lots from society to warehouse',
-  },
-  secondary_evac: {
-    title: '2nd Evac',
-    subtitle: 'Track secondary evacuation lots and DDS status',
-  },
-  inspection: {
-    title: 'Inspection',
-    subtitle: 'Receive alerts for scheduled and completed field inspections',
-  },
-  cooperative: {
-    title: 'Cooperative',
-    subtitle: 'Get notified about cooperative profile and member changes',
-  },
-  user: {
-    title: 'User',
-    subtitle: 'Receive alerts for user account changes',
-  },
-  role: {
-    title: 'Role',
-    subtitle: 'Get notified when role definitions or grants change',
-  },
-  permission: {
-    title: 'Permission',
-    subtitle: 'Track changes to the permission catalog',
-  },
-};
-
 export function NotificationPreferencesForm() {
   const intl = useIntl();
   const t = (id: string) => intl.formatMessage({ id });
@@ -165,10 +104,17 @@ export function NotificationPreferencesForm() {
         ) : (
           sorted.map((resource) => {
             const Icon = resourceIcon(resource);
-            const config = RESOURCE_LABELS[resource] ?? {
-              title: resource.charAt(0).toUpperCase() + resource.slice(1),
-              subtitle: `Receive notifications for ${resource} events`,
-            };
+            // Label + sub-line per resource from i18n; a resource without a
+            // dedicated key (future additions) falls back to a title-cased
+            // prefix + generic line via `defaultMessage`.
+            const title = intl.formatMessage({
+              id: `profile.notif.${resource}.title`,
+              defaultMessage: resource.charAt(0).toUpperCase() + resource.slice(1),
+            });
+            const subtitle = intl.formatMessage({
+              id: `profile.notif.${resource}.subtitle`,
+              defaultMessage: `Receive notifications for ${resource} events`,
+            });
             const isOn = enabled.has(resource);
             const isPending = pending === resource;
             return (
@@ -181,9 +127,9 @@ export function NotificationPreferencesForm() {
                 <div className="flex min-w-0 flex-1 flex-col gap-1">
                   <StatusTag tone="lime" className="min-w-0">
                     <Icon className="size-3 shrink-0" />
-                    <span className="truncate">{config.title}</span>
+                    <span className="truncate">{title}</span>
                   </StatusTag>
-                  <span className="text-[12px] text-muted-foreground">{config.subtitle}</span>
+                  <span className="text-[12px] text-muted-foreground">{subtitle}</span>
                 </div>
                 {isPending ? (
                   <Loader2 className="size-4 shrink-0 animate-spin text-muted-foreground" />
@@ -191,7 +137,7 @@ export function NotificationPreferencesForm() {
                   <Switch
                     checked={isOn}
                     onCheckedChange={(next) => onToggle(resource, next)}
-                    aria-label={config.title}
+                    aria-label={title}
                   />
                 )}
               </div>

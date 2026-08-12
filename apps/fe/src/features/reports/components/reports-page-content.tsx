@@ -40,7 +40,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { StatusTag } from '@/components/ui/status-tag';
-import { formatGhanaDate } from '@/lib/datetime';
+import { formatGhanaDate, formatGhanaDateTime } from '@/lib/datetime';
 import {
   type ReportCode,
   type ReportFormat,
@@ -183,23 +183,6 @@ function triggerDownload(runId: string): void {
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-}
-
-function formatExportedAt(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
-  // e.g. "Jun 20, 2026 · 14:32"
-  const date = d.toLocaleDateString(undefined, {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-  const time = d.toLocaleTimeString(undefined, {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  });
-  return `${date} · ${time}`;
 }
 
 export function ReportsPageContent() {
@@ -390,7 +373,7 @@ export function ReportsPageContent() {
               }`}
             >
               <Icon className="size-[15px]" />
-              <span>{r.shortLabel}</span>
+              <span>{t(`reports.type.${r.id}.short`)}</span>
             </button>
           );
         })}
@@ -404,7 +387,9 @@ export function ReportsPageContent() {
               <SelectedIcon className="size-5" />
             </StatusTag>
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <h2 className="truncate font-semibold text-foreground text-lg">{selected.title}</h2>
+              <h2 className="truncate font-semibold text-foreground text-lg">
+                {t(`reports.type.${selected.id}.title`)}
+              </h2>
               <span className="truncate text-muted-foreground text-xs">{selected.filename}</span>
             </div>
             <StatusTag tone="success">
@@ -412,7 +397,9 @@ export function ReportsPageContent() {
               {formatLabel(format || FORMAT_OPTIONS[0]!.value)}
             </StatusTag>
           </div>
-          <p className="text-muted-foreground text-[13px]">{selected.description}</p>
+          <p className="text-muted-foreground text-[13px]">
+            {t(`reports.type.${selected.id}.description`)}
+          </p>
         </div>
 
         <div className="grid grid-cols-1 gap-4 px-6 xs:grid-cols-2 xl:grid-cols-6">
@@ -633,7 +620,7 @@ function HistoryRow({
           : t('reports.filters.fieldOfficerAllItem')}
       </td>
       <td className="whitespace-nowrap px-5 py-3 text-[12px] text-muted-foreground">
-        {formatExportedAt(run.createdAt)}
+        {formatGhanaDateTime(run.createdAt)}
       </td>
       <td className="px-5 py-3">
         {isCompleted ? (

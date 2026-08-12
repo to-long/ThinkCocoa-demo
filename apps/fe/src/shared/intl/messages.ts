@@ -19,7 +19,7 @@ type Messages = Record<string, string>;
 const loaders: Record<Locale, () => Promise<{ default: Messages }>> = {
   en: () => import('./messages.en'),
   fr: () => import('./messages.fr'),
-  vi: () => import('./messages.vi'),
+  es: () => import('./messages.es'),
 };
 
 const cache = new Map<Locale, Messages>();
