@@ -29,9 +29,10 @@ import {
 import { useRoleDialogCatalog } from '@/shared/api';
 import {
   actionIcon,
+  actionLabel,
   actionSort,
-  formatResourceLabel,
   resourceIcon,
+  resourceLabel,
   resourceSort,
 } from '../../lib/permission-icons';
 
@@ -105,14 +106,19 @@ export function RoleDialog({ open, onOpenChange, onSubmit, initialData }: RoleDi
     for (const p of permissions ?? []) {
       const [resource = 'other', action = p.code] = p.code.split(':');
       const bucket = byResource.get(resource) ?? [];
-      bucket.push({ id: p.code, action, label: p.name || action, icon: actionIcon(action) });
+      bucket.push({
+        id: p.code,
+        action,
+        label: actionLabel(intl, action, p.name),
+        icon: actionIcon(action),
+      });
       byResource.set(resource, bucket);
     }
     return (
       Array.from(byResource.entries())
         .map(([key, items]) => ({
           key,
-          label: formatResourceLabel(key),
+          label: resourceLabel(intl, key),
           icon: resourceIcon(key),
           // Actions in CRUD-first order (create → read → update → delete
           // → rest), matching the Permissions list + sidebar.
@@ -121,7 +127,7 @@ export function RoleDialog({ open, onOpenChange, onSubmit, initialData }: RoleDi
         // Same icons + order as the sidebar menu / Permissions list.
         .sort((a, b) => resourceSort(a.key, b.key))
     );
-  }, [permissions]);
+  }, [permissions, intl]);
 
   // Pick the schema that matches the operation: create requires `code`
   // (the BE rejects bodies without it), update never accepts it.

@@ -37,9 +37,10 @@ import { cn } from '@/lib/utils';
 import { useCooperativesList, useUser, useUserDialogCatalog } from '@/shared/api';
 import {
   actionIcon,
+  actionLabel,
   actionSort,
-  formatResourceLabel,
   resourceIcon,
+  resourceLabel,
   resourceSort,
 } from '../../lib/permission-icons';
 import type { CreateUserPayload, RoleOption, UpdateUserPayload } from '../../types/users';
@@ -119,17 +120,21 @@ export function UserDialog({ open, onOpenChange, onSubmit, initialData }: UserDi
       catalog.permissionGroups
         .map((g) => ({
           key: g.resource,
-          label: formatResourceLabel(g.resource),
+          label: resourceLabel(intl, g.resource),
           icon: resourceIcon(g.resource),
           // CRUD-first action order, matching the Permissions list.
           items: [...g.actions]
             .sort((a, b) => actionSort(a.action, b.action))
-            .map((a) => ({ id: a.id, label: a.action, icon: actionIcon(a.action) })),
+            .map((a) => ({
+              id: a.id,
+              label: actionLabel(intl, a.action),
+              icon: actionIcon(a.action),
+            })),
         }))
         // Same icons + order as the sidebar menu / Permissions list.
         .sort((a, b) => resourceSort(a.key, b.key))
     );
-  }, [catalog]);
+  }, [catalog, intl]);
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

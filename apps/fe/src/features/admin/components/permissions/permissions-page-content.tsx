@@ -31,9 +31,10 @@ import { StackedDateTime } from '@/shared/components/composed/stacked-date-time'
 import { useBreadcrumb } from '@/shared/contexts/breadcrumb-context';
 import {
   actionIcon,
+  actionLabel,
   actionSort,
-  formatResourceLabel,
   resourceIcon,
+  resourceLabel,
   resourceSort,
 } from '../../lib/permission-icons';
 import type { PermissionAction, PermissionGroupRow } from '../../types/roles';
@@ -72,6 +73,7 @@ const ACTION_TONE: Record<string, StatusTone> = {
 };
 
 function ActionChips({ actions }: { actions: PermissionAction[] }) {
+  const intl = useIntl();
   return (
     <div className="flex flex-wrap gap-1.5">
       {actions.map((a) => {
@@ -83,7 +85,7 @@ function ActionChips({ actions }: { actions: PermissionAction[] }) {
             className="leading-none"
           >
             <Icon className="size-3 shrink-0" />
-            <span className="leading-none">{a.action}</span>
+            <span className="leading-none">{actionLabel(intl, a.action)}</span>
           </StatusTag>
         );
       })}
@@ -393,7 +395,7 @@ export function PermissionsPageContent() {
                         <div className="flex items-center gap-2">
                           <ResourceIcon resource={group.resource} />
                           <span className="truncate font-medium text-sm text-foreground">
-                            {formatResourceLabel(group.resource)}
+                            {resourceLabel(intl, group.resource)}
                           </span>
                         </div>
                       </TableCell>

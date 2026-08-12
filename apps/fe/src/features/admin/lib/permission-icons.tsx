@@ -43,6 +43,7 @@ import {
   Users,
 } from 'lucide-react';
 import { createElement, forwardRef } from 'react';
+import type { IntlShape } from 'react-intl';
 
 /** Truck flipped horizontally — matches the sidebar's Secondary Evac
  *  glyph (depot → port points left). */
@@ -113,6 +114,29 @@ export function formatResourceLabel(resource: string): string {
     .split('_')
     .map((w) => (w ? w[0]!.toUpperCase() + w.slice(1) : w))
     .join(' ');
+}
+
+/**
+ * i18n'd resource-group label. Looks up `admin.perm.resource.<code>` and
+ * falls back to the English-derived `formatResourceLabel` for any resource
+ * the catalog grows that we haven't translated yet.
+ */
+export function resourceLabel(intl: IntlShape, resource: string): string {
+  return intl.formatMessage({
+    id: `admin.perm.resource.${resource}`,
+    defaultMessage: formatResourceLabel(resource),
+  });
+}
+
+/**
+ * i18n'd action (verb) label. Looks up `admin.perm.action.<code>`; falls
+ * back to the permission's own `name` (server data) or a capitalized code.
+ */
+export function actionLabel(intl: IntlShape, action: string, fallback?: string): string {
+  return intl.formatMessage({
+    id: `admin.perm.action.${action}`,
+    defaultMessage: fallback || formatResourceLabel(action),
+  });
 }
 
 /** Sort comparator putting resources in sidebar-menu order, then any
