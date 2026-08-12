@@ -46,7 +46,7 @@
   "dashboard.breakdown.vslaMembersTitle": "Members per group",
   "dashboard.breakdown.vslaMembersSubtitle": "Latest reported active-member count.",
   "dashboard.breakdown.vslaSavingsTitle": "Cumulative savings per group",
-  "dashboard.breakdown.vslaSavingsSubtitle": "Latest reported total savings (GHS).",
+  "dashboard.breakdown.vslaSavingsSubtitle": "Latest reported total savings (USD).",
   "dashboard.breakdown.vslaLateLoansTitle": "Late loans by group",
   "dashboard.breakdown.vslaLateLoansSubtitle": "Outstanding late loans (latest report).",
   "dashboard.breakdown.vslaDiscrepancyTitle": "Discrepancy status",

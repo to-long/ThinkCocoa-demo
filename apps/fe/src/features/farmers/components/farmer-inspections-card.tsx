@@ -31,7 +31,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { PermissionGate } from '@/features/auth';
-import { formatGhanaDate } from '@/lib/datetime';
+import { formatDate } from '@/lib/datetime';
 import { useInspectionsList } from '@/shared/api';
 import { CertificationOutcomeBadge } from './certification-outcome-badge';
 
@@ -123,7 +123,7 @@ function FarmerInspectionsCardInner({
                       onClick={() => navigate(`/inspections/${i.id}`)}
                     >
                       <TableCell className="sticky left-0 z-10 bg-card text-muted-foreground transition-colors group-hover/row:bg-muted">
-                        {formatGhanaDate(i.dateInspection)}
+                        {formatDate(i.dateInspection)}
                       </TableCell>
                       <TableCell className="truncate font-mono text-muted-foreground">
                         {i.parcelId ?? '—'}

@@ -1,7 +1,7 @@
 /**
  * Generator for `corrective_actions` — one row per corrective action
  * found in the active cooperative's inspections inside the selected
- * season. Mirrors the Demo Cocoa Ghana template
+ * season. Mirrors the Demo Cocoa template
  * `apps/be/reports/ThinkCocoa_Corrective_Actions_Report.xlsx`:
  *   • Row 1: title
  *   • Row 2: summary formulas — Total CAs / Open / In Progress /

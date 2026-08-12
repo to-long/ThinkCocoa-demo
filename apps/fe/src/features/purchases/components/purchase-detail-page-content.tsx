@@ -44,8 +44,8 @@ const PAYMENT_CHIP: Record<
   card: { tone: 'neutral', Icon: CreditCard, labelKey: 'purchases.payment.card' },
 };
 
-function fmtMoney(ghs: number): string {
-  return `GHS ${ghs.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+function fmtMoney(usd: number): string {
+  return `$${usd.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
 }
 
 function fmtKg(kg: number): string {
@@ -85,7 +85,7 @@ export function PurchaseDetailPageContent() {
 
   const chip = PAYMENT_CHIP[data.paymentType];
   const ChipIcon = chip.Icon;
-  const impliedRate = data.weightKg > 0 ? data.amountReceivedGhs / data.weightKg : null;
+  const impliedRate = data.weightKg > 0 ? data.amountReceived / data.weightKg : null;
 
   return (
     <div className="flex flex-col gap-4">
@@ -138,14 +138,14 @@ export function PurchaseDetailPageContent() {
           Icon={Banknote}
           tone="success"
           label={t('purchases.detail.amount')}
-          value={fmtMoney(data.amountReceivedGhs)}
+          value={fmtMoney(data.amountReceived)}
           sub={t('purchases.detail.amountSub')}
         />
         <StatTile
           Icon={Percent}
           tone="caution"
           label={t('purchases.detail.impliedRate')}
-          value={impliedRate ? `GHS ${impliedRate.toFixed(2)}` : '—'}
+          value={impliedRate ? `$${impliedRate.toFixed(2)}` : '—'}
           sub={t('purchases.detail.impliedRateSub')}
         />
         <div className="flex flex-row-reverse items-start gap-3 rounded-lg border bg-card p-4 shadow-sm">
@@ -187,9 +187,9 @@ export function PurchaseDetailPageContent() {
               href={data.farmerCode ? `/farmers/${encodeURIComponent(data.farmerCode)}` : undefined}
             />
             <KV
-              label={t('purchases.detail.cocobodCard')}
-              value={data.cocobodCardNumber ?? t('purchases.detail.notProvided')}
-              mono={!!data.cocobodCardNumber}
+              label={t('purchases.detail.purchasingClerkCard')}
+              value={data.purchasingClerkCardNumber ?? t('purchases.detail.notProvided')}
+              mono={!!data.purchasingClerkCardNumber}
               sideNote={t('purchases.detail.optional')}
             />
             <KV

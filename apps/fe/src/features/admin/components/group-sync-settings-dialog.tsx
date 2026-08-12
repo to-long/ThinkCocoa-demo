@@ -82,7 +82,7 @@ export function GroupSyncSettingsDialog({ open, onOpenChange, group, onSaved }: 
     setIntervalHours(bestChoice);
   }, [group]);
 
-  // Fixed 03:00 Ghana anchor — same as the single-row dialog + the
+  // Fixed 03:00 UTC anchor — same as the single-row dialog + the
   // NextRun column so preview stays consistent across surfaces.
   const previewSlots = computeRunSlots(START_HOUR_GHANA, intervalHours);
 

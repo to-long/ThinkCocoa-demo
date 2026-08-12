@@ -29,8 +29,8 @@ const HEADERS = [
   'FIELD Size',
   'DOBProducer',
   'FarmerGender',
-  'GhCard',
-  'CocoBodCard',
+  'NationalId',
+  'PurchasingClerkCard',
   'PhoneNumber',
   'Hhsize',
   'NumberChildren',
@@ -91,13 +91,14 @@ export async function exportFarmersCsv(
   for (const { farmer, coopName } of rows) {
     const producer = `${farmer.firstName} ${farmer.lastName}`.trim();
     const dobYear = farmer.dateOfBirth ? String(farmer.dateOfBirth).slice(0, 4) : '';
-    const ghCard = farmer.nationalIdType === 'ghana_card' ? (farmer.nationalIdNumber ?? '') : '';
+    const nationalId =
+      farmer.nationalIdType === 'national_id' ? (farmer.nationalIdNumber ?? '') : '';
     const base = [coopName, farmer.society, producer, farmer.id];
     const tail = [
       dobYear,
       genderLabel(farmer.sex),
-      ghCard,
-      '', // CocoBodCard — not modelled; kept as an empty column for parity
+      nationalId,
+      '', // PurchasingClerkCard — not modelled; kept as an empty column for parity
       farmer.phoneNumber,
       farmer.householdSize,
       farmer.childrenCount,

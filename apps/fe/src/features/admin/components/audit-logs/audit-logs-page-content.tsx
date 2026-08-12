@@ -45,7 +45,7 @@ import { AuditLogsSlimStats } from './audit-logs-slim-stats';
 
 const PAGE_SIZE = 10;
 
-/** Ghana-local `yyyy-MM-dd` for URL params + the date-range picker. */
+/** UTC `yyyy-MM-dd` for URL params + the date-range picker. */
 function fmtIsoDate(d: Date): string {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');

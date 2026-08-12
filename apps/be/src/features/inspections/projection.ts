@@ -157,8 +157,8 @@ export interface InspectionDetail extends InspectionListItem {
   // Structured detail (formerly raw_data).
   farmerDob: string | null;
   farmerGender: string | null;
-  ghanaCard: string | null;
-  cocobodCard: string | null;
+  nationalIdCard: string | null;
+  purchasingClerkCard: string | null;
   householdSize: number | null;
   childrenCount: number | null;
   clmrsAssessed: boolean | null;
@@ -215,8 +215,8 @@ export function toInspectionDetail(
     eudrAssessedAt: row.eudrAssessedAt?.toISOString() ?? null,
     farmerDob: row.farmerDob,
     farmerGender: row.farmerGender,
-    ghanaCard: row.ghanaCard,
-    cocobodCard: row.cocobodCard,
+    nationalIdCard: row.nationalIdCard,
+    purchasingClerkCard: row.purchasingClerkCard,
     householdSize: row.householdSize,
     childrenCount: row.childrenCount,
     clmrsAssessed: row.clmrsAssessed,

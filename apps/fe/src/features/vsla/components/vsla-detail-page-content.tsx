@@ -42,8 +42,8 @@ import { VslaTrends } from './vsla-trends';
 
 const HISTORY_PAGE_SIZE = 10;
 
-function ghs(amount: number): string {
-  return `₵${amount.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+function usd(amount: number): string {
+  return `$${amount.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 }
 
 function formatMonthLong(iso: string): string {
@@ -145,7 +145,7 @@ export function VslaDetailPageContent() {
               Icon={Wallet}
               tone="success"
               label={t('vsla.detail.savingsCumulative')}
-              value={latest.savingsCumulative != null ? ghs(latest.savingsCumulative) : '—'}
+              value={latest.savingsCumulative != null ? usd(latest.savingsCumulative) : '—'}
               sub={t('vsla.detail.savingsCumulativeSub')}
             />
             <Tile
@@ -157,7 +157,7 @@ export function VslaDetailPageContent() {
                 (latest.lateLoansCount ?? 0) > 0
                   ? intl.formatMessage(
                       { id: 'vsla.detail.lateLoansUnpaid' },
-                      { amount: ghs(latest.lateLoansUnpaidBalance ?? 0) },
+                      { amount: usd(latest.lateLoansUnpaidBalance ?? 0) },
                     )
                   : t('vsla.detail.lateLoansNone')
               }
@@ -232,14 +232,14 @@ export function VslaDetailPageContent() {
                         )}
                       </TableCell>
                       <TableCell className="text-right font-semibold">
-                        {r.savingsCumulative != null ? ghs(r.savingsCumulative) : '—'}
+                        {r.savingsCumulative != null ? usd(r.savingsCumulative) : '—'}
                       </TableCell>
                       <TableCell className="text-right">
                         {(r.lateLoansCount ?? 0) > 0 ? (
                           <div className="flex flex-col items-end leading-tight">
                             <span className="font-medium text-foreground">{r.lateLoansCount}</span>
                             <span className="text-muted-foreground text-[11px]">
-                              {ghs(r.lateLoansUnpaidBalance ?? 0)}
+                              {usd(r.lateLoansUnpaidBalance ?? 0)}
                             </span>
                           </div>
                         ) : (

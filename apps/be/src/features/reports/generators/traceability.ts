@@ -4,7 +4,7 @@
  * parcel's polygon/point geometry, and the most recent inspection
  * inside the selected season for the per-parcel harvest figures.
  *
- * Mirrors the Demo Cocoa Ghana template
+ * Mirrors the Demo Cocoa template
  * `apps/be/reports/ThinkCocoa_Traceability_Report_Template.xlsx`:
  *   • Row 1: title (preserved as-is)
  *   • Row 2: summary formulas — COUNTA / SUM / COUNTIF over the data range
@@ -246,7 +246,7 @@ async function buildXlsx(rows: Row[]): Promise<Buffer> {
  *     CONSTANT (800) repeated on every row — so it returned 800 × rows.
  *     Capacity is column M.
  *   - "Plots with GPS" counted `M>0` (capacity again). GPS lives in N/O, and
- *     `>0` would have been wrong there regardless: Ghana's longitudes are
+ *     `>0` would have been wrong there regardless: the region's longitudes are
  *     negative. `COUNT` over the longitude column counts numeric cells,
  *     which is precisely "has a coordinate".
  */

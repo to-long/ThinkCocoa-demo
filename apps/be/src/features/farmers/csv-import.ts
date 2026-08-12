@@ -17,7 +17,7 @@
  * batch. That keeps a single dirty row from blocking a 3k-row upload.
  *
  * Kept in ONE file because the shape is CSV-specific — the coop
- * label map, Ghana-card regex, and column names are all tied to the
+ * label map, national-ID regex, and column names are all tied to the
  * `Farmer Dataset 2025-2026` export format. If a new upstream ships
  * a different schema, fork this rather than trying to generalise.
  */
@@ -43,7 +43,7 @@ const COOP_LABEL_TO_CODE: Record<string, string> = {
   Nhyira: 'NHYIRA',
 };
 
-const GHANA_CARD_RE = /^GHA[\s-]?\d{6,}[\s-]\d$/i;
+const NATIONAL_ID_RE = /^NID[\s-]?\d{6,}[\s-]\d$/i;
 
 // ── CSV parsing ──────────────────────────────────────────────────
 
@@ -155,11 +155,11 @@ function toBool(v: string | undefined): boolean | null {
   return null;
 }
 
-function pickGhanaCard(row: Record<string, string>): string | null {
-  for (const raw of [row.GhCard, row.CocoBodCard]) {
+function pickNationalId(row: Record<string, string>): string | null {
+  for (const raw of [row.NationalId, row.PurchasingClerkCard]) {
     const t = nullish(raw);
     if (!t) continue;
-    if (!GHANA_CARD_RE.test(t)) continue;
+    if (!NATIONAL_ID_RE.test(t)) continue;
     return t.replace(/\s+/g, '-').toUpperCase();
   }
   return null;
@@ -185,7 +185,7 @@ function toFarmerInsert(row: Record<string, string>, cooperativeId: string): Far
   const name = splitName(nullish(row.Producer));
   if (!name) return null;
 
-  const ghanaCard = pickGhanaCard(row);
+  const nationalIdCard = pickNationalId(row);
 
   return {
     id: code,
@@ -197,8 +197,8 @@ function toFarmerInsert(row: Record<string, string>, cooperativeId: string): Far
     sex: toSex(row.FarmerGender),
     dateOfBirth: toDob(row.DOBProducer),
     phoneNumber: toPhone(row.PhoneNumber),
-    nationalIdNumber: ghanaCard,
-    nationalIdType: ghanaCard ? 'ghana_card' : null,
+    nationalIdNumber: nationalIdCard,
+    nationalIdType: nationalIdCard ? 'national_id' : null,
     hhAssessed: toBool(row.HHAssessed),
     society: nullish(row.Society),
     householdSize: toCount(row.Hhsize),

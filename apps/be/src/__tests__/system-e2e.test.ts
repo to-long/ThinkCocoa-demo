@@ -388,7 +388,7 @@ describe('farmer lifecycle', () => {
       farmerCode,
       firstName: 'Test',
       lastName: `Farmer-${SUFFIX}`,
-      phoneNumber: '+233200000000',
+      phoneNumber: '+1200000000',
       certificationStatus: 'unknown',
     });
     expect(status).toBe(201);
@@ -406,7 +406,7 @@ describe('farmer lifecycle', () => {
 
   test('update farmer writes audit + entity_changes', async () => {
     const { status } = await api(imsSession, 'PATCH', `/api/farmers/${farmerId}`, {
-      phoneNumber: '+233211111111',
+      phoneNumber: '+1211111111',
       certificationStatus: 'rainforest_alliance',
     });
     expect(status).toBe(200);

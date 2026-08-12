@@ -87,7 +87,7 @@ export function SyncSettingsDialog({ open, onOpenChange, row, onSaved }: Props) 
     setMappingError(null);
   }, [row]);
 
-  // Schedule anchored to a fixed hour (03:00 Accra) — see
+  // Schedule anchored to a fixed hour (03:00 UTC) — see
   // START_HOUR_GHANA. Editing intervalHours updates the preview.
   const previewSlots = computeRunSlots(START_HOUR_GHANA, intervalHours);
 

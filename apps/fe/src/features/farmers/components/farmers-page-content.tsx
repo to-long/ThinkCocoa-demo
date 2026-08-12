@@ -63,7 +63,7 @@ import {
 import { PermissionGate } from '@/features/auth';
 import { ClmrsStatusPill } from '@/features/clmrs/components/clmrs-status-pill';
 import type { ClmrsFarmerStatus } from '@/features/clmrs/lib/mock';
-import { formatGhanaDate } from '@/lib/datetime';
+import { formatDate } from '@/lib/datetime';
 import { LIST_SUB_LINK } from '@/lib/link-styles';
 import { formatSociety, sortSocieties } from '@/lib/society';
 import {
@@ -124,7 +124,7 @@ function CertificateExpiry({ farmer }: { farmer: ApiFarmer }) {
         : { key: 'farmers.certExpiry.stillValid', tone: 'text-emerald-600 dark:text-emerald-400' };
   return (
     <span title={farmer.raCertificateNumber ?? undefined}>
-      {formatGhanaDate(farmer.raExpiryDate)}
+      {formatDate(farmer.raExpiryDate)}
       <span className="text-muted-foreground"> · </span>
       <span className={verdict.tone}>
         {intl.formatMessage({ id: verdict.key }, { n: Math.max(days, 0) })}
@@ -733,7 +733,7 @@ export function FarmersPageContent() {
                           )}
                         </TableCell>
                         <TableCell className="w-[140px] text-[13px] text-muted-foreground">
-                          {f.registrationDate ? formatGhanaDate(f.registrationDate) : '—'}
+                          {f.registrationDate ? formatDate(f.registrationDate) : '—'}
                         </TableCell>
                         <TableCell className="w-[150px]">
                           <RefCell

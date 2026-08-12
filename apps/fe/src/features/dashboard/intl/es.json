@@ -46,7 +46,7 @@
   "dashboard.breakdown.vslaMembersTitle": "Miembros por grupo",
   "dashboard.breakdown.vslaMembersSubtitle": "Último recuento de miembros activos reportado.",
   "dashboard.breakdown.vslaSavingsTitle": "Ahorro acumulado por grupo",
-  "dashboard.breakdown.vslaSavingsSubtitle": "Último ahorro total reportado (GHS).",
+  "dashboard.breakdown.vslaSavingsSubtitle": "Último ahorro total reportado (USD).",
   "dashboard.breakdown.vslaLateLoansTitle": "Préstamos atrasados por grupo",
   "dashboard.breakdown.vslaLateLoansSubtitle": "Préstamos atrasados pendientes (último informe).",
   "dashboard.breakdown.vslaDiscrepancyTitle": "Estado de discrepancias",

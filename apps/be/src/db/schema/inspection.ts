@@ -79,8 +79,8 @@ export const inspections = inspectionSchema.table(
     // Farmer snapshot at inspection time.
     farmerDob: text('farmer_dob'),
     farmerGender: text('farmer_gender'),
-    ghanaCard: text('ghana_card'),
-    cocobodCard: text('cocobod_card'),
+    nationalIdCard: text('national_id_card'),
+    purchasingClerkCard: text('purchasing_clerk_card'),
     householdSize: smallint('household_size'),
     childrenCount: smallint('children_count'),
     clmrsAssessed: boolean('clmrs_assessed'),

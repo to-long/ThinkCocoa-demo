@@ -596,9 +596,9 @@ export async function getInspectionComparison(
       { key: 'dob', label: 'Date of birth', inspection: i.farmerDob, master: row.farmerDob },
       { key: 'gender', label: 'Gender', inspection: i.farmerGender, master: row.farmerSex },
       {
-        key: 'ghanaCard',
-        label: 'Ghana Card',
-        inspection: i.ghanaCard,
+        key: 'nationalIdCard',
+        label: 'National ID',
+        inspection: i.nationalIdCard,
         master: row.farmerNationalId,
       },
       {
@@ -684,8 +684,8 @@ export async function applyInspectionChanges(
       case 'gender':
         farmerPatch.sex = i.farmerGender;
         break;
-      case 'ghanaCard':
-        farmerPatch.nationalIdNumber = i.ghanaCard;
+      case 'nationalIdCard':
+        farmerPatch.nationalIdNumber = i.nationalIdCard;
         break;
       case 'householdSize':
         farmerPatch.householdSize = i.householdSize;

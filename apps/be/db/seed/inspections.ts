@@ -115,7 +115,7 @@ export async function seedInspections(db: Db): Promise<void> {
     const dateStr = date.toISOString().slice(0, 10);
 
     const int = (lo: number, hi: number) => lo + Math.floor(rng() * (hi - lo + 1));
-    const ghDigits = Array.from({ length: 9 }, () => int(0, 9)).join('');
+    const idDigits = Array.from({ length: 9 }, () => int(0, 9)).join('');
     const harvest = int(200, 2000);
     const sold = Math.round(harvest * (0.6 + rng() * 0.35));
     // RA-critical flag: mostly compliant ('2'), a slice partial/fail.
@@ -137,14 +137,14 @@ export async function seedInspections(db: Db): Promise<void> {
     // Non-drift rows mirror the master EXACTLY, nulls included — inventing
     // a value where the master has none would read as a diff and push the
     // real diff rate well past the intended 30% (e.g. only ~60% of farmers
-    // carry a Ghana Card).
+    // carry a national-ID card).
     const snapshot = drift
       ? {
           // Full ISO date, not a bare year — the master column is DATE, so
           // a year-only snapshot could never be applied to it.
           farmerDob: `${int(1960, 2000)}-${String(int(1, 12)).padStart(2, '0')}-${String(int(1, 28)).padStart(2, '0')}`,
           farmerGender: p.farmerSex === 'male' ? 'female' : 'male',
-          ghanaCard: `GHA-${ghDigits}-${int(0, 9)}`,
+          nationalIdCard: `NID-${idDigits}-${int(0, 9)}`,
           householdSize: int(1, 10),
           childrenCount: int(0, 6),
           // Field size drifts by a plausible re-measurement margin.
@@ -157,7 +157,7 @@ export async function seedInspections(db: Db): Promise<void> {
       : {
           farmerDob: p.farmerDob,
           farmerGender: p.farmerSex,
-          ghanaCard: p.farmerNationalId,
+          nationalIdCard: p.farmerNationalId,
           householdSize: p.farmerHousehold,
           childrenCount: p.farmerChildren,
           fieldSizeHa: masterArea != null ? masterArea.toFixed(4) : null,
@@ -191,8 +191,8 @@ export async function seedInspections(db: Db): Promise<void> {
       // inspection was picked to diverge (see `drift` above).
       farmerDob: snapshot.farmerDob,
       farmerGender: snapshot.farmerGender,
-      ghanaCard: snapshot.ghanaCard,
-      cocobodCard: `CB-${int(100000, 999999)}`,
+      nationalIdCard: snapshot.nationalIdCard,
+      purchasingClerkCard: `CB-${int(100000, 999999)}`,
       householdSize: snapshot.householdSize,
       childrenCount: snapshot.childrenCount,
       clmrsAssessed: rng() < 0.7,
@@ -283,7 +283,7 @@ export async function seedInspections(db: Db): Promise<void> {
           // old random values and the compare diffs never change.
           farmerDob: sql`excluded.farmer_dob`,
           farmerGender: sql`excluded.farmer_gender`,
-          ghanaCard: sql`excluded.ghana_card`,
+          nationalIdCard: sql`excluded.national_id_card`,
           householdSize: sql`excluded.household_size`,
           childrenCount: sql`excluded.children_count`,
           fieldSizeHa: sql`excluded.field_size_ha`,

@@ -41,7 +41,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { StatusTag } from '@/components/ui/status-tag';
 import { PermissionGate } from '@/features/auth';
 import { listRecordsForFarmer as listClmrsRecordsForFarmer } from '@/features/clmrs/lib/mock';
-import { formatGhanaDate } from '@/lib/datetime';
+import { formatDate } from '@/lib/datetime';
 import { formatSociety } from '@/lib/society';
 import {
   deleteFarmer,
@@ -166,7 +166,7 @@ function CertificateValidity({ expiry }: { expiry: string | null }) {
           };
   return (
     <span>
-      {formatGhanaDate(expiry)}{' '}
+      {formatDate(expiry)}{' '}
       <span className={verdict.tone}>
         ({intl.formatMessage({ id: verdict.key }, { n: verdict.n })})
       </span>
@@ -192,7 +192,7 @@ export function FarmerDetailPageContent({ farmerId }: Props) {
   const { data: purchasesResp } = usePurchasesList({ farmerId, pageSize: 200 });
   const purchases = purchasesResp?.items ?? [];
   const deliveredKg = purchases.reduce((n, p) => n + (Number(p.weightKg) || 0), 0);
-  const deliveredGhs = purchases.reduce((n, p) => n + (Number(p.amountReceivedGhs) || 0), 0);
+  const delivered = purchases.reduce((n, p) => n + (Number(p.amountReceived) || 0), 0);
   const eudrParcels = parcelsResp?.items ?? [];
   const eudrTotal = eudrParcels.length;
   const eudrCompliant = eudrParcels.filter((p) => p.eudrStatus === 'compliant').length;
@@ -308,15 +308,15 @@ export function FarmerDetailPageContent({ farmerId }: Props) {
   const combinedName = joinParts([farmer.firstName, farmer.otherNames, farmer.lastName], ' ');
   const combinedGenderDob = joinPair([
     farmer.sex,
-    farmer.dateOfBirth ? formatGhanaDate(farmer.dateOfBirth) : null,
+    farmer.dateOfBirth ? formatDate(farmer.dateOfBirth) : null,
   ]);
   const combinedDistrictSociety = joinPair([
     farmer.districtName,
     farmer.society ? formatSociety(farmer.society) : null,
   ]);
-  // National-ID type is a free-text field on the BE (only 'ghana_card'
-  // in current data). Route it through intl so `ghana_card` → "Ghana
-  // Card" for display; unknown values fall through to a de-snaked,
+  // National-ID type is a free-text field on the BE (only 'national_id'
+  // in current data). Route it through intl so `national_id` → "National
+  // ID" for display; unknown values fall through to a de-snaked,
   // title-cased fallback so a future 'voter_id' still renders sanely
   // even before its intl key ships.
   const nationalIdTypeLabel = farmer.nationalIdType
@@ -474,7 +474,7 @@ export function FarmerDetailPageContent({ farmerId }: Props) {
                     <span className={`text-xs ${certValidity.dateTone}`}>
                       {intl.formatMessage(
                         { id: certValidity.dateKey },
-                        { date: formatGhanaDate(farmer.raExpiryDate) },
+                        { date: formatDate(farmer.raExpiryDate) },
                       )}
                     </span>
                   ) : null}
@@ -569,7 +569,7 @@ export function FarmerDetailPageContent({ farmerId }: Props) {
                           { id: 'farmers.detail.deliveredSummary' },
                           {
                             n: purchases.length,
-                            amount: intl.formatNumber(deliveredGhs, {
+                            amount: intl.formatNumber(delivered, {
                               maximumFractionDigits: 0,
                             }),
                           },
@@ -658,7 +658,7 @@ export function FarmerDetailPageContent({ farmerId }: Props) {
               />
               <InfoField
                 label={t('farmers.field.startDate')}
-                value={farmer.registrationDate ? formatGhanaDate(farmer.registrationDate) : '—'}
+                value={farmer.registrationDate ? formatDate(farmer.registrationDate) : '—'}
               />
               <InfoField
                 label={t('farmers.field.dataCollectionConsent')}
@@ -741,7 +741,7 @@ export function FarmerDetailPageContent({ farmerId }: Props) {
               />
               <InfoField
                 label={t('farmers.detail.raAuditDate')}
-                value={farmer.raAuditDate ? formatGhanaDate(farmer.raAuditDate) : '—'}
+                value={farmer.raAuditDate ? formatDate(farmer.raAuditDate) : '—'}
               />
               <InfoField
                 label={t('farmers.detail.raExpiryDate')}

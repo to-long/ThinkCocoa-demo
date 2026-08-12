@@ -39,8 +39,8 @@ const LOAN_TONE: Record<ApiVslaMember['loanStatus'], StatusTone> = {
   repaid: 'success',
 };
 
-function ghs(amount: number): string {
-  return `₵${Math.round(amount).toLocaleString('en-US')}`;
+function usd(amount: number): string {
+  return `$${Math.round(amount).toLocaleString('en-US')}`;
 }
 
 function monthShort(iso: string | null): string {
@@ -88,7 +88,7 @@ export function VslaMembersCard({ groupId, shareValue }: Props) {
             </StatusTag>
             <StatusTag tone="info2">
               <PiggyBank className="size-3" />
-              {ghs(totalSavings)}
+              {usd(totalSavings)}
             </StatusTag>
             {withLoans > 0 && (
               <StatusTag tone="info">
@@ -160,7 +160,7 @@ export function VslaMembersCard({ groupId, shareValue }: Props) {
                       {m.sharesOwned || '—'}
                     </TableCell>
                     <TableCell className="text-right font-semibold tabular-nums">
-                      {ghs(m.savingsBalance)}
+                      {usd(m.savingsBalance)}
                     </TableCell>
                     <TableCell>
                       {m.loanStatus === 'none' ? (
@@ -171,7 +171,7 @@ export function VslaMembersCard({ groupId, shareValue }: Props) {
                             {t(`vsla.members.loan.${m.loanStatus}`)}
                           </StatusTag>
                           <span className="text-[11px] text-muted-foreground tabular-nums">
-                            {ghs(m.loanOutstanding)} {t('vsla.members.outstanding')}
+                            {usd(m.loanOutstanding)} {t('vsla.members.outstanding')}
                           </span>
                         </div>
                       )}
@@ -237,7 +237,7 @@ function MemberLedgerDialog({
                 <Kpi
                   icon={PiggyBank}
                   label={t('vsla.members.ledger.balance')}
-                  value={ghs(ledger.savingsBalance)}
+                  value={usd(ledger.savingsBalance)}
                 />
                 <Kpi
                   icon={Coins}
@@ -246,7 +246,7 @@ function MemberLedgerDialog({
                     shareValue
                       ? t('vsla.members.ledger.sharesValue', {
                           n: ledger.sharesOwned,
-                          value: ghs(shareValue),
+                          value: usd(shareValue),
                         })
                       : String(ledger.sharesOwned || '—')
                   }
@@ -254,7 +254,7 @@ function MemberLedgerDialog({
                 <Kpi
                   icon={HandCoins}
                   label={t('vsla.members.ledger.outstanding')}
-                  value={ghs(ledger.totals.loansOutstanding)}
+                  value={usd(ledger.totals.loansOutstanding)}
                   tone={ledger.loanStatus === 'late' ? 'danger' : undefined}
                 />
               </div>
@@ -293,10 +293,10 @@ function MemberLedgerDialog({
                               {monthShort(l.dueOn)}
                             </TableCell>
                             <TableCell className="text-right tabular-nums">
-                              {ghs(l.principal)}
+                              {usd(l.principal)}
                             </TableCell>
                             <TableCell className="text-right tabular-nums">
-                              {ghs(l.repaid)}
+                              {usd(l.repaid)}
                             </TableCell>
                             <TableCell>
                               <StatusTag tone={LOAN_TONE[l.status]}>
@@ -336,10 +336,10 @@ function MemberLedgerDialog({
                           <TableCell>{monthShort(e.month)}</TableCell>
                           <TableCell className="text-right tabular-nums text-muted-foreground">
                             {e.contribution >= 0 ? '+' : ''}
-                            {ghs(e.contribution)}
+                            {usd(e.contribution)}
                           </TableCell>
                           <TableCell className="text-right font-medium tabular-nums">
-                            {ghs(e.balance)}
+                            {usd(e.balance)}
                           </TableCell>
                         </TableRow>
                       ))}

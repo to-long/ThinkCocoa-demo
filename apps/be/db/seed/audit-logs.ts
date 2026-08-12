@@ -45,8 +45,8 @@ const SCOPES: ScopeDef[] = [
       { field: 'first_name', olds: ['Kojo', 'Efua'], news: ['Kojo Ansah', 'Efua Amoah'] },
       {
         field: 'phone_number',
-        olds: ['+233200000001', '+233200000002'],
-        news: ['+233200000011', '+233200000012'],
+        olds: ['+1200000001', '+1200000002'],
+        news: ['+1200000011', '+1200000012'],
       },
       { field: 'society', olds: ['Society A', 'Society B'], news: ['Society C', 'Society D'] },
       { field: 'is_active', olds: [true], news: [false] },
@@ -59,7 +59,7 @@ const SCOPES: ScopeDef[] = [
     entityIds: ['SANKOFA', 'NKABOM', 'ADWUMA', 'ABOMA'],
     actions: ['create', 'update'],
     updates: [
-      { field: 'contact_phone', olds: ['+233 32 100 0003'], news: ['+233 32 100 0033'] },
+      { field: 'contact_phone', olds: ['+1 32 100 0003'], news: ['+1 32 100 0033'] },
       { field: 'name', olds: ['Adwuma Cooperative'], news: ['Adwuma Cocoa Union'] },
       { field: 'is_active', olds: [true], news: [false] },
     ],

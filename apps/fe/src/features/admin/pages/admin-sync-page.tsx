@@ -895,12 +895,12 @@ function LastRunBadge({
 
 /**
  * Fixed schedule anchor — every sync job's cycle starts at 03:00
- * Accra time (Ghana is on GMT / UTC+0 year-round). Anchoring the
+ * UTC. Anchoring the
  * schedule this way makes the "runs at" preview deterministic
  * regardless of when a job last completed.
  */
 export const START_HOUR_GHANA = 3;
-export const START_HOUR_TZ_LABEL = 'Ghana time';
+export const START_HOUR_TZ_LABEL = 'UTC';
 
 /**
  * Compute the times-of-day at which the job will run over a 24h cycle,
@@ -950,8 +950,8 @@ function NextRunBadge({
   if (slots.length === 0) {
     return <StatusTag tone="caution">{pendingLabel}</StatusTag>;
   }
-  // Ghana is GMT/UTC+0 year-round, so `getUTCHours()` = local hour
-  // in Accra. Pick the earliest slot that hasn't fired today; if all
+  // Timestamps are UTC, so `getUTCHours()` = the anchor hour
+  // in UTC. Pick the earliest slot that hasn't fired today; if all
   // slots are behind us, tomorrow's first slot is the answer.
   const nowHour = new Date().getUTCHours();
   const nextSlot = slots.find((h) => h > nowHour) ?? slots[0]!;
@@ -964,7 +964,7 @@ function NextRunBadge({
   );
 }
 
-/** Format a timestamp as `HH:MM` in 24h Ghana time (UTC+0). If the
+/** Format a timestamp as `HH:MM` in 24h UTC. If the
  *  run happened before today, prefix the date so admins can still
  *  distinguish yesterday's 22:00 from today's 22:00. Hover shows the
  *  full locale timestamp. */

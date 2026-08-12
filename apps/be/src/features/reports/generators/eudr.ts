@@ -6,7 +6,7 @@
  * and the downstream traceability chain (last-season purchase
  * volume + linked secondary waybill + sourcing partner).
  *
- * Mirrors the Demo Cocoa Ghana template
+ * Mirrors the Demo Cocoa template
  * `apps/be/reports/ThinkCocoa_EUDR_Compliance_Report.xlsx` (columns
  * A-S). Two columns stay blank in v1 because they need an external
  * GIS / Global Forest Watch raster analysis we don't yet import:
@@ -72,7 +72,7 @@ interface EudrRow {
   district: string | null;
   cooperativeName: string | null;
   farmerName: string | null;
-  ghanaCard: string | null;
+  nationalIdCard: string | null;
   society: string | null;
   areaHa: number | null;
   latitude: number | null;
@@ -138,7 +138,7 @@ async function fetchRows(params: EudrReportParams): Promise<EudrRow[]> {
       firstName: farmers.firstName,
       lastName: farmers.lastName,
       otherNames: farmers.otherNames,
-      ghCard: farmers.nationalIdNumber,
+      nationalId: farmers.nationalIdNumber,
       society: farmers.society,
       cooperativeName: cooperatives.name,
       // EUDR assessment (from the imported EUDR CSV → gis.eudr_status).
@@ -292,7 +292,7 @@ async function fetchRows(params: EudrReportParams): Promise<EudrRow[]> {
       district: r.cooperativeName,
       cooperativeName: r.cooperativeName,
       farmerName: fullName || null,
-      ghanaCard: r.ghCard,
+      nationalIdCard: r.nationalId,
       society: r.society,
       areaHa: r.areaHa == null ? null : Number(r.areaHa),
       latitude: gps?.lat ?? null,
@@ -322,7 +322,7 @@ const CELL_MAP: ReadonlyArray<{ col: string; value: (row: EudrRow) => unknown }>
   { col: 'C', value: (r) => r.district },
   { col: 'D', value: (r) => r.cooperativeName },
   { col: 'E', value: (r) => r.farmerName },
-  { col: 'F', value: (r) => r.ghanaCard },
+  { col: 'F', value: (r) => r.nationalIdCard },
   { col: 'G', value: (r) => r.society },
   { col: 'H', value: (r) => r.areaHa },
   { col: 'I', value: (r) => r.latitude },
@@ -428,7 +428,7 @@ const CSV_COLUMNS: ReadonlyArray<{ header: string; pick: (r: EudrRow) => string 
     { header: 'District', pick: (r) => r.district },
     { header: 'Cooperative', pick: (r) => r.cooperativeName },
     { header: 'Farmer Name', pick: (r) => r.farmerName },
-    { header: 'Ghana Card No.', pick: (r) => r.ghanaCard },
+    { header: 'National ID No.', pick: (r) => r.nationalIdCard },
     { header: 'Society', pick: (r) => r.society },
     { header: 'Plot Area (ha)', pick: (r) => r.areaHa },
     { header: 'Latitude (WGS84 DD)', pick: (r) => r.latitude },

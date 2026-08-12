@@ -839,6 +839,10 @@
           "code": {
             "type": "string"
           },
+          "farmerCodePrefix": {
+            "type": "string",
+            "nullable": true
+          },
           "name": {
             "type": "string"
           },
@@ -918,6 +922,7 @@
         "required": [
           "id",
           "code",
+          "farmerCodePrefix",
           "name",
           "description",
           "districtCode",
@@ -949,6 +954,9 @@
             "minLength": 1,
             "maxLength": 64,
             "pattern": "^[A-Z][A-Z0-9_]*$"
+          },
+          "farmerCodePrefix": {
+            "type": "string"
           },
           "name": {
             "type": "string",
@@ -999,6 +1007,7 @@
         },
         "required": [
           "code",
+          "farmerCodePrefix",
           "name"
         ]
       },
@@ -1010,6 +1019,9 @@
             "minLength": 1,
             "maxLength": 64,
             "pattern": "^[A-Z][A-Z0-9_]*$"
+          },
+          "farmerCodePrefix": {
+            "type": "string"
           },
           "name": {
             "type": "string",
@@ -9201,7 +9213,7 @@
                     "totalWeightKg": {
                       "type": "number"
                     },
-                    "totalAmountGhs": {
+                    "totalAmount": {
                       "type": "number"
                     },
                     "blendedRateGhsPerKg": {
@@ -9286,7 +9298,7 @@
                   "required": [
                     "totalPurchases",
                     "totalWeightKg",
-                    "totalAmountGhs",
+                    "totalAmount",
                     "blendedRateGhsPerKg",
                     "activePcs",
                     "activeSocieties",
@@ -9366,7 +9378,7 @@
                       "type": "string",
                       "nullable": true
                     },
-                    "cocobodCardNumber": {
+                    "purchasingClerkCardNumber": {
                       "type": "string",
                       "nullable": true
                     },
@@ -9377,7 +9389,7 @@
                     "weightKg": {
                       "type": "number"
                     },
-                    "amountReceivedGhs": {
+                    "amountReceived": {
                       "type": "number"
                     },
                     "paymentType": {
@@ -9439,10 +9451,10 @@
                     "stationMarkNumber",
                     "farmerCode",
                     "farmerName",
-                    "cocobodCardNumber",
+                    "purchasingClerkCardNumber",
                     "fieldId",
                     "weightKg",
-                    "amountReceivedGhs",
+                    "amountReceived",
                     "paymentType",
                     "paymentReference",
                     "isOrphan",
@@ -9556,6 +9568,14 @@
               "type": "string"
             },
             "required": false,
+            "name": "farmerId",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
             "name": "sort",
             "in": "query"
           }
@@ -9612,7 +9632,7 @@
                             "type": "string",
                             "nullable": true
                           },
-                          "cocobodCardNumber": {
+                          "purchasingClerkCardNumber": {
                             "type": "string",
                             "nullable": true
                           },
@@ -9623,7 +9643,7 @@
                           "weightKg": {
                             "type": "number"
                           },
-                          "amountReceivedGhs": {
+                          "amountReceived": {
                             "type": "number"
                           },
                           "paymentType": {
@@ -9658,10 +9678,10 @@
                           "stationMarkNumber",
                           "farmerCode",
                           "farmerName",
-                          "cocobodCardNumber",
+                          "purchasingClerkCardNumber",
                           "fieldId",
                           "weightKg",
-                          "amountReceivedGhs",
+                          "amountReceived",
                           "paymentType",
                           "paymentReference",
                           "isOrphan",
@@ -9969,7 +9989,7 @@
                             "type": "number",
                             "nullable": true
                           },
-                          "amountReceivedGhs": {
+                          "amountReceived": {
                             "type": "number",
                             "nullable": true
                           }
@@ -9985,7 +10005,7 @@
                           "farmerName",
                           "fieldId",
                           "weightKg",
-                          "amountReceivedGhs"
+                          "amountReceived"
                         ]
                       }
                     },

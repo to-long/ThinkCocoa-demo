@@ -79,7 +79,7 @@ export interface ApiLotPurchaseEntry {
   farmerName: string | null;
   fieldId: string | null;
   weightKg: number | null;
-  amountReceivedGhs: number | null;
+  amountReceived: number | null;
 }
 
 export interface ApiPrimaryEvacDetail extends ApiPrimaryEvacListItem {

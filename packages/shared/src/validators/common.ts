@@ -21,20 +21,20 @@ export const FIELD_LIMITS = {
 
 // ── Character patterns for identifier-ish / contact fields ────────
 // Person name allows letters, common diacritics (via \p{L}), spaces,
-// hyphens, apostrophes — covers Ghanaian + French + most Latin-script
+// hyphens, apostrophes — covers French + most Latin-script
 // names without inviting scripts/SQL/HTML chars.
 // Person name allows letters, common diacritics (\p{L} + \p{M}),
 // digits, spaces, hyphens, apostrophes, periods. Digits are
-// permitted because real Ghanaian / French / Latin-script farmer
+// permitted because real French / Latin-script farmer
 // records routinely contain them — household disambiguators
 // ("Kofi 2", "John III"), generational suffixes, registration
 // numbers carried into the legal name. The character set still
 // excludes scripts / SQL / HTML metachars.
 const PERSON_NAME_RE = /^[\p{L}\p{M}\p{N}'\-. ]+$/u;
 // Phone: digits + space + plus + dash + parens. Lets users type
-// "+233 30 277 4001" naturally. Strict enough to reject script/text.
+// "+1 555 000 0000" naturally. Strict enough to reject script/text.
 const PHONE_RE = /^[+\d\s().-]+$/;
-// National ID: alphanumeric + dash. Ghana's NIA card is alphanumeric.
+// National ID: alphanumeric + dash. National IDs are commonly alphanumeric.
 const NATIONAL_ID_RE = /^[A-Za-z0-9-]+$/;
 // Farmer code: business identifier — alphanumeric + dash + underscore.
 // Looser than role code (which mandates lowercase) since farmer codes
@@ -100,7 +100,7 @@ export const boundedDate = (opts: { min?: string; max?: string } = {}) => {
 
 /** Person name (first/last/chair). Restricts to letters + diacritics +
  *  spaces + hyphens + apostrophes — keeps script/HTML chars out of
- *  display surfaces without rejecting real Ghanaian / French names.
+ *  display surfaces without rejecting real French / Latin-script names.
  *  The PERSON_NAME_RE positive set already excludes \\p{C}, but the
  *  explicit `noControlChars` refine surfaces a clearer error code
  *  ("invisible chars" vs "invalid char") when someone pastes an RTL

@@ -62,13 +62,13 @@ export const cocoaPurchases = purchaseSchema.table(
     // Farmer level
     farmerCode: text('farmer_code').notNull(),
     farmerName: text('farmer_name'),
-    cocobodCardNumber: text('cocobod_card_number'),
+    purchasingClerkCardNumber: text('purchasing_clerk_card_number'),
     fieldId: text('field_id'),
 
     // Transaction
     purchaseDate: date('purchase_date').notNull(),
     weightKg: numeric('weight_kg', { precision: 10, scale: 3 }).notNull(),
-    amountReceivedGhs: numeric('amount_received_ghs', { precision: 12, scale: 2 }).notNull(),
+    amountReceived: numeric('amount_received', { precision: 12, scale: 2 }).notNull(),
     paymentType: text('payment_type').notNull(),
     paymentReference: text('payment_reference'),
 
@@ -86,7 +86,7 @@ export const cocoaPurchases = purchaseSchema.table(
       sql`${t.paymentType} IN ('cash', 'mobile_money', 'cheque', 'card')`,
     ),
     check('cocoa_purchases_weight_check', sql`${t.weightKg} > 0`),
-    check('cocoa_purchases_amount_check', sql`${t.amountReceivedGhs} >= 0`),
+    check('cocoa_purchases_amount_check', sql`${t.amountReceived} >= 0`),
     index('cocoa_purchases_purchase_date_idx').on(t.purchaseDate.desc()),
     index('cocoa_purchases_cooperative_date_idx').on(t.cooperativeId, t.purchaseDate.desc()),
     index('cocoa_purchases_station_date_idx').on(t.stationMarkNumber, t.purchaseDate.desc()),

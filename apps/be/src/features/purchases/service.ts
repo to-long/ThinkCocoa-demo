@@ -25,12 +25,12 @@ export interface PurchaseListItem {
   stationMarkNumber: string | null;
   farmerCode: string;
   farmerName: string | null;
-  cocobodCardNumber: string | null;
+  purchasingClerkCardNumber: string | null;
   fieldId: string | null;
   parcelId: string | null;
   parcelName: string | null;
   weightKg: number;
-  amountReceivedGhs: number;
+  amountReceived: number;
   paymentType: 'cash' | 'mobile_money' | 'cheque' | 'card';
   paymentReference: string | null;
   isOrphan: boolean;
@@ -100,7 +100,7 @@ export async function listPurchases(filters: ListFilters): Promise<ListResult> {
       society: cocoaPurchases.society,
       pc: cocoaPurchases.pcName,
       weight: cocoaPurchases.weightKg,
-      amount: cocoaPurchases.amountReceivedGhs,
+      amount: cocoaPurchases.amountReceived,
       payment: cocoaPurchases.paymentType,
     },
     [desc(cocoaPurchases.purchaseDate)],
@@ -125,12 +125,12 @@ export async function listPurchases(filters: ListFilters): Promise<ListResult> {
       stationMarkNumber: cocoaPurchases.stationMarkNumber,
       farmerCode: cocoaPurchases.farmerCode,
       farmerNameDenorm: cocoaPurchases.farmerName,
-      cocobodCardNumber: cocoaPurchases.cocobodCardNumber,
+      purchasingClerkCardNumber: cocoaPurchases.purchasingClerkCardNumber,
       fieldId: cocoaPurchases.fieldId,
       parcelId: cocoaPurchases.parcelId,
       parcelName: parcels.parcelName,
       weightKg: cocoaPurchases.weightKg,
-      amountReceivedGhs: cocoaPurchases.amountReceivedGhs,
+      amountReceived: cocoaPurchases.amountReceived,
       paymentType: cocoaPurchases.paymentType,
       paymentReference: cocoaPurchases.paymentReference,
       submittedAt: cocoaPurchases.submittedAt,
@@ -161,12 +161,12 @@ export async function listPurchases(filters: ListFilters): Promise<ListResult> {
       r.farmerFirstName || r.farmerLastName
         ? [r.farmerFirstName, r.farmerLastName].filter(Boolean).join(' ')
         : (r.farmerNameDenorm ?? null),
-    cocobodCardNumber: r.cocobodCardNumber,
+    purchasingClerkCardNumber: r.purchasingClerkCardNumber,
     fieldId: r.fieldId,
     parcelId: r.parcelId,
     parcelName: r.parcelName,
     weightKg: Number(r.weightKg),
-    amountReceivedGhs: Number(r.amountReceivedGhs),
+    amountReceived: Number(r.amountReceived),
     paymentType: r.paymentType as PurchaseListItem['paymentType'],
     paymentReference: r.paymentReference,
     isOrphan: !r.farmerId,
@@ -213,12 +213,12 @@ export async function getPurchase(
       stationMarkNumber: cocoaPurchases.stationMarkNumber,
       farmerCode: cocoaPurchases.farmerCode,
       farmerNameDenorm: cocoaPurchases.farmerName,
-      cocobodCardNumber: cocoaPurchases.cocobodCardNumber,
+      purchasingClerkCardNumber: cocoaPurchases.purchasingClerkCardNumber,
       fieldId: cocoaPurchases.fieldId,
       parcelId: cocoaPurchases.parcelId,
       parcelName: parcels.parcelName,
       weightKg: cocoaPurchases.weightKg,
-      amountReceivedGhs: cocoaPurchases.amountReceivedGhs,
+      amountReceived: cocoaPurchases.amountReceived,
       paymentType: cocoaPurchases.paymentType,
       paymentReference: cocoaPurchases.paymentReference,
       submittedAt: cocoaPurchases.submittedAt,
@@ -258,12 +258,12 @@ export async function getPurchase(
       row.farmerFirstName || row.farmerLastName
         ? [row.farmerFirstName, row.farmerLastName].filter(Boolean).join(' ')
         : (row.farmerNameDenorm ?? null),
-    cocobodCardNumber: row.cocobodCardNumber,
+    purchasingClerkCardNumber: row.purchasingClerkCardNumber,
     fieldId: row.fieldId,
     parcelId: row.parcelId,
     parcelName: row.parcelName,
     weightKg: Number(row.weightKg),
-    amountReceivedGhs: Number(row.amountReceivedGhs),
+    amountReceived: Number(row.amountReceived),
     paymentType: row.paymentType as PurchaseListItem['paymentType'],
     paymentReference: row.paymentReference,
     isOrphan: !row.farmerId,
@@ -300,7 +300,7 @@ export interface MonthlyPurchasePoint {
 export interface PurchaseStats {
   totalPurchases: number;
   totalWeightKg: number;
-  totalAmountGhs: number;
+  totalAmount: number;
   blendedRateGhsPerKg: number | null;
   activePcs: number;
   activeSocieties: number;
@@ -318,7 +318,7 @@ export async function getPurchaseStats(activeCoopId: string): Promise<PurchaseSt
     .select({
       total: count(),
       totalWeight: sql<string>`COALESCE(SUM(${cocoaPurchases.weightKg})::numeric, 0)::text`,
-      totalAmount: sql<string>`COALESCE(SUM(${cocoaPurchases.amountReceivedGhs})::numeric, 0)::text`,
+      totalAmount: sql<string>`COALESCE(SUM(${cocoaPurchases.amountReceived})::numeric, 0)::text`,
       activePcs: sql<number>`COUNT(DISTINCT ${cocoaPurchases.pcName})`,
       activeSocieties: sql<number>`COUNT(DISTINCT ${cocoaPurchases.society})`,
       activeFarmers: sql<number>`COUNT(DISTINCT ${cocoaPurchases.farmerCode})`,
@@ -377,7 +377,7 @@ export async function getPurchaseStats(activeCoopId: string): Promise<PurchaseSt
   return {
     totalPurchases: Number(agg?.total ?? 0),
     totalWeightKg: totalWeight,
-    totalAmountGhs: totalAmount,
+    totalAmount: totalAmount,
     blendedRateGhsPerKg: blended,
     activePcs: Number(agg?.activePcs ?? 0),
     activeSocieties: Number(agg?.activeSocieties ?? 0),

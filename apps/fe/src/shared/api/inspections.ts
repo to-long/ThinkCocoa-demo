@@ -77,8 +77,8 @@ export interface ApiInspectionDetail extends ApiInspectionListItem {
   // Structured detail (formerly raw_data).
   farmerDob: string | null;
   farmerGender: string | null;
-  ghanaCard: string | null;
-  cocobodCard: string | null;
+  nationalIdCard: string | null;
+  purchasingClerkCard: string | null;
   householdSize: number | null;
   childrenCount: number | null;
   clmrsAssessed: boolean | null;

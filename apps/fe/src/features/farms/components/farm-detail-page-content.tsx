@@ -31,7 +31,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader } from '@/components/
 import { Skeleton } from '@/components/ui/skeleton';
 import { StatusTag, type StatusTone } from '@/components/ui/status-tag';
 import { PermissionGate } from '@/features/auth';
-import { formatGhanaDate } from '@/lib/datetime';
+import { formatDate } from '@/lib/datetime';
 import {
   deleteParcel,
   restoreParcel,
@@ -331,7 +331,7 @@ export function FarmDetailPageContent({ parcelId }: Props) {
               value={
                 <span className="inline-flex items-center gap-1.5 flex-wrap">
                   <span>{parcel.cropType ?? '—'}</span>
-                  {parcel.plantingDate && <span>· {formatGhanaDate(parcel.plantingDate)}</span>}
+                  {parcel.plantingDate && <span>· {formatDate(parcel.plantingDate)}</span>}
                 </span>
               }
             />
@@ -422,7 +422,7 @@ export function FarmDetailPageContent({ parcelId }: Props) {
             />
             <Field
               label="Assessed on"
-              value={parcel.eudr?.assessedAt ? formatGhanaDate(parcel.eudr.assessedAt) : '—'}
+              value={parcel.eudr?.assessedAt ? formatDate(parcel.eudr.assessedAt) : '—'}
             />
             <Field label="Assessed by" value={parcel.eudr?.assessedBy || '—'} />
             <Field

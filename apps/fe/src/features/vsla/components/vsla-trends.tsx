@@ -2,8 +2,8 @@
  * VSLA — 12-month trend charts on the group detail page.
  *
  * Two side-by-side charts:
- *   1. Group health — Savings (bars, ₵ left axis) + Late-loan balance
- *      (bars, ₵ left axis) + Active members (line, count right axis).
+ *   1. Group health — Savings (bars, $ left axis) + Late-loan balance
+ *      (bars, $ left axis) + Active members (line, count right axis).
  *      Answers "is the group growing / repaying / attending?"
  *   2. Members composition — Stacked bars of male + female counts.
  *      Answers "is the gender balance shifting month-on-month?"
@@ -147,7 +147,7 @@ export function VslaTrends({ reports }: Props) {
         callbacks: {
           label: (ctx) => {
             const v = ctx.parsed.y;
-            return v == null ? '—' : `₵${v.toLocaleString()}`;
+            return v == null ? '—' : `$${v.toLocaleString()}`;
           },
         },
       },
@@ -160,7 +160,7 @@ export function VslaTrends({ reports }: Props) {
       },
       y: {
         beginAtZero: true,
-        title: { display: true, text: '₵ GHS', font: { size: 10 }, color: tickColor },
+        title: { display: true, text: '$ USD', font: { size: 10 }, color: tickColor },
         grid: { color: gridColor },
         border: { display: false },
         ticks: {
@@ -168,8 +168,8 @@ export function VslaTrends({ reports }: Props) {
           color: tickColor,
           callback: (v) => {
             const n = Number(v);
-            if (n >= 1000) return `₵${(n / 1000).toFixed(0)}K`;
-            return `₵${n}`;
+            if (n >= 1000) return `$${(n / 1000).toFixed(0)}K`;
+            return `$${n}`;
           },
         },
       },

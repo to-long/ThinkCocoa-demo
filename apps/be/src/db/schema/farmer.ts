@@ -50,9 +50,9 @@ export const farmers = farmerSchema.table(
     sex: text(),
     dateOfBirth: date('date_of_birth'),
     phoneNumber: text('phone_number'),
-    // FE label is "Ghana Card Number"; column stays country-agnostic.
+    // FE label is "National ID"; column stays country-agnostic.
     nationalIdNumber: text('national_id_number'),
-    // Type of government ID document (e.g. "Ghana Card", "National ID",
+    // Type of government ID document (e.g. "National ID",
     // "Voter ID"). Demo Cocoa CSVs surface type but not number; admin fills
     // in the actual number later.
     nationalIdType: text('national_id_type'),

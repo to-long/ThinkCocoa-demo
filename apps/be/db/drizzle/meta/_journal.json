@@ -85,6 +85,13 @@
       "when": 1784913904000,
       "tag": "0011_coop_farmer_code_prefix",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1784913905000,
+      "tag": "0012_globalize_naming",
+      "breakpoints": true
     }
   ]
 }

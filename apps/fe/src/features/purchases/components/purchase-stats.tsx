@@ -22,10 +22,10 @@ function tonnes(kg: number): string {
   return `${kg.toFixed(0)} kg`;
 }
 
-function ghs(amount: number): string {
-  if (amount >= 1_000_000) return `₵${(amount / 1_000_000).toFixed(1)}M`;
-  if (amount >= 1000) return `₵${(amount / 1000).toFixed(1)}K`;
-  return `₵${amount.toLocaleString()}`;
+function usd(amount: number): string {
+  if (amount >= 1_000_000) return `$${(amount / 1_000_000).toFixed(1)}M`;
+  if (amount >= 1000) return `$${(amount / 1000).toFixed(1)}K`;
+  return `$${amount.toLocaleString()}`;
 }
 
 export function PurchaseStats({
@@ -56,7 +56,7 @@ export function PurchaseStats({
     },
     {
       label: t('purchases.stats.totalAmount'),
-      value: stats?.totalAmountGhs != null ? ghs(stats.totalAmountGhs) : '—',
+      value: stats?.totalAmount != null ? usd(stats.totalAmount) : '—',
       Icon: Coins,
       tone: 'caution',
     },

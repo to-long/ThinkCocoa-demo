@@ -2,7 +2,7 @@
  * Generator for `certification_status` — one row per farmer in the
  * active cooperative, surfacing their latest inspection's score,
  * derived certification tier, and (placeholder) corrective-action
- * counters. Mirrors the Demo Cocoa Ghana template
+ * counters. Mirrors the Demo Cocoa template
  * `apps/be/reports/ThinkCocoa_Certification_Status_Report.xlsx`:
  *   • Row 1: title
  *   • Row 2: summary formulas — COUNTIF/Approved + Approved with

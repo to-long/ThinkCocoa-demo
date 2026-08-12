@@ -1,7 +1,7 @@
 /**
  * Two-line timestamp cell used in list tables: wall-clock (HH:mm:ss) on
  * top, date (dd-MM-yyyy) underneath in a smaller, muted font. Both lines
- * are pinned to Ghana's timezone. Renders a muted placeholder when the
+ * are pinned to UTC. Renders a muted placeholder when the
  * value is null/invalid.
  *
  * Built on `RefCell` so a timestamp column stacks exactly like every other
@@ -10,7 +10,7 @@
  * table.
  */
 
-import { formatGhanaClock, formatGhanaDateDMY } from '@/lib/datetime';
+import { formatClock, formatDateDMY } from '@/lib/datetime';
 import { RefCell } from './entity-ref-cell';
 
 export function StackedDateTime({
@@ -25,8 +25,8 @@ export function StackedDateTime({
   }
   return (
     <RefCell
-      name={<span className="tabular-nums">{formatGhanaClock(value)}</span>}
-      code={<span className="tabular-nums">{formatGhanaDateDMY(value)}</span>}
+      name={<span className="tabular-nums">{formatClock(value)}</span>}
+      code={<span className="tabular-nums">{formatDateDMY(value)}</span>}
     />
   );
 }

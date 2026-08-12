@@ -17,10 +17,10 @@ interface StatCard {
   tone: StatusTone;
 }
 
-function ghs(amount: number): string {
-  if (amount >= 1_000_000) return `₵${(amount / 1_000_000).toFixed(1)}M`;
-  if (amount >= 1000) return `₵${(amount / 1000).toFixed(1)}K`;
-  return `₵${amount.toLocaleString()}`;
+function usd(amount: number): string {
+  if (amount >= 1_000_000) return `$${(amount / 1_000_000).toFixed(1)}M`;
+  if (amount >= 1000) return `$${(amount / 1000).toFixed(1)}K`;
+  return `$${amount.toLocaleString()}`;
 }
 
 export function VslaStats({ filteredCount }: { filteredCount?: number } = {}) {
@@ -51,7 +51,7 @@ export function VslaStats({ filteredCount }: { filteredCount?: number } = {}) {
     },
     {
       label: t('vsla.stats.savingsCumulative'),
-      value: ghs(savings),
+      value: usd(savings),
       Icon: Wallet,
       tone: 'info2',
     },

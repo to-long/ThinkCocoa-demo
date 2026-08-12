@@ -230,8 +230,8 @@ export function InspectionDetailPageContent({ inspectionId }: Props) {
             <Field label={t('inspections.table.farmer')} value={inspection.farmerName ?? '—'} />
             <Field label="Date of birth" value={inspection.farmerDob ?? '—'} />
             <Field label="Gender" value={inspection.farmerGender ?? '—'} />
-            <Field label="Ghana Card" value={inspection.ghanaCard ?? '—'} />
-            <Field label="Cocobod Card" value={inspection.cocobodCard ?? '—'} />
+            <Field label="National ID" value={inspection.nationalIdCard ?? '—'} />
+            <Field label="Purchasing Clerk Card" value={inspection.purchasingClerkCard ?? '—'} />
             <Field label="Household size" value={inspection.householdSize ?? '—'} />
             <Field label="Children under 17" value={inspection.childrenCount ?? '—'} />
             <Field

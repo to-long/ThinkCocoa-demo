@@ -3,7 +3,7 @@
  * `sraqp` (Update). Single-column form with five fields:
  *
  *   1. Cooperative Name    (text input)
- *   2. District             (select — known Ghana cocoa districts)
+ *   2. District             (select — cocoa districts)
  *   3. Coop Chair           (select — users with the cooperative_chair role)
  *   4. Description          (text input, optional)
  *   5. Address              (text input, optional)
@@ -77,7 +77,7 @@ const NO_CHAIR = COOPERATIVE_FORM_NO_SELECTION;
 const NO_DISTRICT = COOPERATIVE_FORM_NO_SELECTION;
 
 /**
- * Curated set of Ghana cocoa districts the dialog offers in the
+ * Curated set of cocoa districts the dialog offers in the
  * District dropdown. Keyed by `code` so we can store both the
  * (code, name) pair the BE expects from a single selection.
  *

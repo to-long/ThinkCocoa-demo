@@ -46,8 +46,8 @@ function formatMonth(iso: string): string {
   return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short' });
 }
 
-function ghs(amount: number): string {
-  return `₵${amount.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+function usd(amount: number): string {
+  return `$${amount.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 }
 
 export function VslaPageContent() {
@@ -256,7 +256,7 @@ export function VslaPageContent() {
                       )}
                     </TableCell>
                     <TableCell className="text-right font-semibold">
-                      {s.latestSavingsCumulative != null ? ghs(s.latestSavingsCumulative) : '—'}
+                      {s.latestSavingsCumulative != null ? usd(s.latestSavingsCumulative) : '—'}
                     </TableCell>
                     <TableCell className="text-right text-foreground">{s.reportCount}</TableCell>
                     <TableCell>

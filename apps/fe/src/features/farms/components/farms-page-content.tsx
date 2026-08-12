@@ -55,7 +55,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { PermissionGate } from '@/features/auth';
 import { ShadeSurvivalBadge } from '@/features/farmers/components/shade-survival-badge';
-import { formatGhanaDate } from '@/lib/datetime';
+import { formatDate } from '@/lib/datetime';
 import {
   type ApiParcel,
   createParcel,
@@ -94,17 +94,17 @@ const EUDR_TONE: Record<string, StatusTone> = {
 };
 
 // "Added" column — two lines: bold HH:MM:SS over a small grey
-// YYYY-MM-DD. Both formatted in Ghana time (Africa/Accra) so they stay
+// YYYY-MM-DD. Both formatted in UTC so they stay
 // consistent with the rest of the app's date display.
 const CREATED_TIME_FMT = new Intl.DateTimeFormat('en-GB', {
-  timeZone: 'Africa/Accra',
+  timeZone: 'UTC',
   hour: '2-digit',
   minute: '2-digit',
   second: '2-digit',
   hour12: false,
 });
 const CREATED_DATE_FMT = new Intl.DateTimeFormat('en-CA', {
-  timeZone: 'Africa/Accra',
+  timeZone: 'UTC',
   year: 'numeric',
   month: '2-digit',
   day: '2-digit',
@@ -651,9 +651,7 @@ export function FarmsPageContent() {
                       <TableCell className="text-right">
                         {p.calculatedAreaHa != null ? p.calculatedAreaHa.toFixed(2) : '—'}
                       </TableCell>
-                      <TableCell>
-                        {p.plantingDate ? formatGhanaDate(p.plantingDate) : '—'}
-                      </TableCell>
+                      <TableCell>{p.plantingDate ? formatDate(p.plantingDate) : '—'}</TableCell>
                       <TableCell>
                         {p.createdAt ? (
                           <div className="flex flex-col leading-tight">

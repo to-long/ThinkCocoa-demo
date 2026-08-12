@@ -22,10 +22,10 @@
  *   ProducerID             → id + producer_id
  *   DOBProducer            → date_of_birth (year only → YYYY-01-01)
  *   FarmerGender           → sex (lowercased)
- *   GhCard OR CocoBodCard  → national_id_number + national_id_type='ghana_card'
- *                            (both columns hold Ghana cards; CSV is
+ *   NationalId OR PurchasingClerkCard  → national_id_number + national_id_type='national_id'
+ *                            (both columns hold national-ID cards; CSV is
  *                            inconsistent which one is populated per
- *                            row — see `pickGhanaCard` below)
+ *                            row — see `pickNationalId` below)
  *   PhoneNumber            → phone_number (raw — no normalisation)
  *   Hhsize                 → household_size
  *   NumberChildren         → children_count
@@ -184,19 +184,19 @@ function toBool(v: string | undefined): boolean | null {
   return null;
 }
 
-/** Pick a Ghana Card ID from either CSV source column. The dataset
- *  is inconsistent — some rows put the ID in `GhCard`, others
- *  puts it in `CocoBodCard` (mis-labelled but same shape). A handful
- *  of rows leak gender into `GhCard` ("MALE"); we filter those out
- *  by requiring the GHA-/GHA<space> prefix. Returns the value
- *  normalised to `GHA-<digits>-<check>` (spaces → hyphens). */
-const GHANA_CARD_RE = /^GHA[\s-]?\d{6,}[\s-]\d$/i;
-function pickGhanaCard(row: Record<string, string>): string | null {
-  for (const raw of [row.GhCard, row.CocoBodCard]) {
+/** Pick a National ID from either CSV source column. The dataset
+ *  is inconsistent — some rows put the ID in `NationalId`, others
+ *  puts it in `PurchasingClerkCard` (mis-labelled but same shape). A handful
+ *  of rows leak gender into `NationalId` ("MALE"); we filter those out
+ *  by requiring the NID-/NID<space> prefix. Returns the value
+ *  normalised to `NID-<digits>-<check>` (spaces → hyphens). */
+const NATIONAL_ID_RE = /^NID[\s-]?\d{6,}[\s-]\d$/i;
+function pickNationalId(row: Record<string, string>): string | null {
+  for (const raw of [row.NationalId, row.PurchasingClerkCard]) {
     const t = nullish(raw);
     if (!t) continue;
-    if (!GHANA_CARD_RE.test(t)) continue;
-    // Normalise the legacy `GHA 718972750-0` variant to `GHA-718972750-0`.
+    if (!NATIONAL_ID_RE.test(t)) continue;
+    // Normalise the legacy `NID 718972750-0` variant to `NID-718972750-0`.
     return t.replace(/\s+/g, '-').toUpperCase();
   }
   return null;
@@ -297,7 +297,7 @@ function toFarmerInsert(row: Record<string, string>, cooperativeId: string): Far
   const name = splitName(nullish(row.Producer));
   if (!name) return null;
 
-  const ghanaCard = pickGhanaCard(row);
+  const nationalIdCard = pickNationalId(row);
 
   return {
     // `id` IS the ProducerID. No auto-gen UUID anymore (see migration
@@ -311,8 +311,8 @@ function toFarmerInsert(row: Record<string, string>, cooperativeId: string): Far
     sex: toSex(row.FarmerGender),
     dateOfBirth: toDob(row.DOBProducer),
     phoneNumber: toPhone(row.PhoneNumber),
-    nationalIdNumber: ghanaCard,
-    nationalIdType: ghanaCard ? 'ghana_card' : null,
+    nationalIdNumber: nationalIdCard,
+    nationalIdType: nationalIdCard ? 'national_id' : null,
     hhAssessed: toBool(row.HHAssessed),
     society: nullish(row.Society),
     householdSize: toCount(row.Hhsize),

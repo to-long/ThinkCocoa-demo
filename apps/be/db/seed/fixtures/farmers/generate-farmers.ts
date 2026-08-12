@@ -4,8 +4,8 @@
  * Produces `farmer-dataset-2025-2026.csv` with entirely fictional,
  * programmatically-generated data — NO real farmer records are used
  * as source or template. Names are random combinations of common
- * Ghanaian name components, IDs/phones/Ghana-cards are synthetic, and
- * cooperatives/societies are the fictional demo set.
+ * international name components, IDs/phones/national-ID cards are
+ * synthetic, and cooperatives/societies are the fictional demo set.
  *
  * Deterministic: a fixed PRNG seed means re-running yields the exact
  * same CSV, so the committed fixture is reproducible from this script.
@@ -14,7 +14,7 @@
  *
  * Output columns match what `farmers-from-csv.ts` parses:
  *   Coop,Society,Producer,ProducerID,Field ID,Field,FIELD Size,
- *   DOBProducer,FarmerGender,GhCard,CocoBodCard,PhoneNumber,
+ *   DOBProducer,FarmerGender,NationalId,PurchasingClerkCard,PhoneNumber,
  *   Hhsize,NumberChildren,HHAssessed
  */
 
@@ -39,50 +39,50 @@ const int = (min: number, max: number): number => min + Math.floor(rng() * (max 
 
 // ── Fictional name + place pools ──────────────────────────────────
 const MALE_FIRST = [
-  'Kwame',
-  'Kwaku',
-  'Yaw',
-  'Kofi',
-  'Kojo',
-  'Kwabena',
-  'Kwadwo',
-  'Fiifi',
-  'Ebo',
-  'Kwesi',
+  'James',
+  'Liam',
+  'Noah',
+  'Lucas',
+  'Mateo',
+  'Omar',
+  'Chen',
+  'Arjun',
+  'David',
+  'Daniel',
 ];
 const FEMALE_FIRST = [
-  'Akua',
-  'Ama',
-  'Abena',
-  'Adjoa',
-  'Afua',
-  'Akosua',
-  'Efua',
-  'Adwoa',
-  'Esi',
-  'Yaa',
+  'Maria',
+  'Sofia',
+  'Aisha',
+  'Mei',
+  'Priya',
+  'Elena',
+  'Sarah',
+  'Fatima',
+  'Anna',
+  'Lucia',
 ];
 const SURNAMES = [
-  'Mensah',
-  'Owusu',
-  'Boateng',
-  'Asante',
-  'Ansah',
-  'Opoku',
-  'Agyeman',
-  'Darko',
-  'Appiah',
-  'Bediako',
-  'Amoah',
-  'Danquah',
-  'Nyarko',
-  'Osei',
-  'Addo',
-  'Frimpong',
-  'Sarpong',
-  'Boahen',
-  'Antwi',
-  'Kusi',
+  'Smith',
+  'Garcia',
+  'Nguyen',
+  'Khan',
+  'Silva',
+  'Muller',
+  'Rossi',
+  'Kim',
+  'Ivanov',
+  'Andersson',
+  'Costa',
+  'Haddad',
+  'Wang',
+  'Patel',
+  'Dubois',
+  'Santos',
+  'Fischer',
+  'Reyes',
+  'Novak',
+  'Larsen',
 ];
 const SOCIETY_WORDS = [
   'Riverside',
@@ -123,20 +123,20 @@ const FARMERS_PER_COOP_MIN = 100;
 const FARMERS_PER_COOP_MAX = 120;
 const SOCIETIES_PER_COOP = 5;
 
-function ghanaCard(): string {
-  // GHA-XXXXXXXXX-X (9 digits + check digit) — synthetic.
+function nationalIdCard(): string {
+  // NID-XXXXXXXXX-X (9 digits + check digit) — synthetic.
   let digits = '';
   for (let i = 0; i < 9; i++) digits += int(0, 9);
-  return `GHA-${digits}-${int(0, 9)}`;
+  return `NID-${digits}-${int(0, 9)}`;
 }
 function phone(): string {
   let n = '';
   for (let i = 0; i < 9; i++) n += int(0, 9);
-  return `+2332${n}`;
+  return `+1${n}`;
 }
 
 const HEADER =
-  'Coop,Society,Producer,ProducerID,Field ID,Field,FIELD Size,DOBProducer,FarmerGender,GhCard,CocoBodCard,PhoneNumber,Hhsize,NumberChildren,HHAssessed';
+  'Coop,Society,Producer,ProducerID,Field ID,Field,FIELD Size,DOBProducer,FarmerGender,NationalId,PurchasingClerkCard,PhoneNumber,Hhsize,NumberChildren,HHAssessed';
 
 const rows: string[] = [HEADER];
 
@@ -160,7 +160,7 @@ for (const coop of COOPS) {
     const society = pick(societies);
     const dob = int(1960, 2000);
     const gender = isMale ? 'Male' : 'Female';
-    const gh = rng() < 0.6 ? ghanaCard() : '';
+    const gh = rng() < 0.6 ? nationalIdCard() : '';
     const ph = rng() < 0.7 ? phone() : '';
     const hhSize = int(1, 10);
     const children = int(0, 6);
@@ -182,7 +182,7 @@ for (const coop of COOPS) {
           size,
           String(dob),
           gender,
-          f === 1 ? gh : '', // Ghana card only on the first row (per-farmer)
+          f === 1 ? gh : '', // national-ID card only on the first row (per-farmer)
           '',
           f === 1 ? ph : '',
           f === 1 ? String(hhSize) : '',

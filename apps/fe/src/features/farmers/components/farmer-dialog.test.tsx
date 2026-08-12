@@ -75,7 +75,7 @@ describe('FarmerDialog — create mode', () => {
     fireEvent.change(screen.getByPlaceholderText('Enter farmer code'), {
       target: { value: 'F-001' },
     });
-    // Digits are now allowed (real Ghanaian disambiguators like
+    // Digits are now allowed (real-world disambiguators like
     // "Kofi 2"); use a clearly disallowed character to keep the
     // PERSON_NAME_INVALID assertion meaningful.
     fireEvent.change(screen.getByPlaceholderText('Enter first name'), {

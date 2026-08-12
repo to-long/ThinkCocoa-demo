@@ -63,8 +63,8 @@ const PAYMENT_CHIP: Record<PaymentType, { tone: StatusTone; Icon: typeof Banknot
   card: { tone: 'neutral', Icon: CreditCard },
 };
 
-function fmtMoney(ghs: number): string {
-  return `GHS ${ghs.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+function fmtMoney(usd: number): string {
+  return `$${usd.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 }
 
 function fmtKg(kg: number): string {
@@ -329,7 +329,7 @@ export function PurchasePageContent() {
                         {fmtKg(row.weightKg)}
                       </TableCell>
                       <TableCell className="text-right font-semibold">
-                        {fmtMoney(row.amountReceivedGhs)}
+                        {fmtMoney(row.amountReceived)}
                       </TableCell>
                       <TableCell>
                         <StatusTag tone={chip.tone}>

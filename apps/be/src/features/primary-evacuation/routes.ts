@@ -93,7 +93,7 @@ const childPurchaseEntry = z.object({
   farmerName: z.string().nullable(),
   fieldId: z.string().nullable(),
   weightKg: z.number().nullable(),
-  amountReceivedGhs: z.number().nullable(),
+  amountReceived: z.number().nullable(),
 });
 
 const detailResponse = listItem.extend({

@@ -178,7 +178,7 @@ export interface LotPurchaseEntry {
   farmerName: string | null;
   fieldId: string | null;
   weightKg: number | null;
-  amountReceivedGhs: number | null;
+  amountReceived: number | null;
 }
 
 export interface PrimaryEvacDetail extends PrimaryEvacListItem {
@@ -254,7 +254,7 @@ export async function getPrimaryEvacLot(
       farmerName: cocoaPurchases.farmerName,
       fieldId: cocoaPurchases.fieldId,
       weightKg: cocoaPurchases.weightKg,
-      amountReceivedGhs: cocoaPurchases.amountReceivedGhs,
+      amountReceived: cocoaPurchases.amountReceived,
     })
     .from(primaryEvacLotPurchases)
     .leftJoin(cocoaPurchases, eq(cocoaPurchases.id, primaryEvacLotPurchases.purchaseId))
@@ -272,7 +272,7 @@ export async function getPrimaryEvacLot(
     farmerName: c.farmerName,
     fieldId: c.fieldId,
     weightKg: c.weightKg != null ? Number(c.weightKg) : null,
-    amountReceivedGhs: c.amountReceivedGhs != null ? Number(c.amountReceivedGhs) : null,
+    amountReceived: c.amountReceived != null ? Number(c.amountReceived) : null,
   }));
 
   const totalChildren = childPurchases.length;

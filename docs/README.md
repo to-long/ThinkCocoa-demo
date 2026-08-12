@@ -64,7 +64,7 @@ seed rebuilds (deleted users, edited role grants).
 
 The passphrase lives in `apps/be/.env` as `DATABASE_ENCODE_PASSWORD`
 (documented in `.env.example`). The dataset is entirely synthetic —
-generated names, phone numbers, Ghana Card numbers and polygons — so the
+generated names, phone numbers, national-ID card numbers and polygons — so the
 encryption is there to keep a database dump from sitting in git as
 plaintext, not as a security boundary.
 

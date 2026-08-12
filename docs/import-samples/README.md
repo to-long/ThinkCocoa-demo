@@ -1,7 +1,7 @@
 # Demo import samples
 
 Ready-to-upload files for demoing the three import surfaces. Everything in
-here is synthetic — generated names, phone numbers, Ghana Card numbers and
+here is synthetic — generated names, phone numbers, national-ID card numbers and
 polygons. No real farmer data.
 
 The three files are **one connected set**: the farmers CSV creates the
@@ -49,7 +49,7 @@ fields; the importer dedupes farmers by `ProducerID` (first row wins).
 | `FarmerGender` | | `male` \| `female` \| `other`; anything else lands NULL |
 | `DOBProducer` | | **Year only** (`1985`) → stored as `1985-01-01`. A full date is rejected |
 | `PhoneNumber` | | Free text |
-| `GhCard` / `CocoBodCard` | | First value matching `GHA-######-#` wins; sets ID type to `ghana_card` |
+| `NationalId` / `PurchasingClerkCard` | | First value matching `NID-######-#` wins; sets ID type to `national_id` |
 | `HHAssessed` | | `Yes`/`No`/`true`/`false`/`1`/`0`; blank → NULL ("not asked") |
 | `Society` | | RA society name. Keep the ` Society` suffix to match seeded values |
 | `Hhsize`, `NumberChildren` | | Non-negative integers |

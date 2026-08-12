@@ -35,7 +35,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { PermissionGate } from '@/features/auth';
-import { formatGhanaDate } from '@/lib/datetime';
+import { formatDate } from '@/lib/datetime';
 import { useParcelsList, useShadeTreesList } from '@/shared/api';
 import { ShadeSurvivalBadge } from './shade-survival-badge';
 
@@ -151,7 +151,7 @@ function FarmerParcelsCardInner({
                         {p.calculatedAreaHa != null ? p.calculatedAreaHa.toFixed(2) : '—'}
                       </TableCell>
                       <TableCell className="text-muted-foreground">
-                        {p.plantingDate ? formatGhanaDate(p.plantingDate) : '—'}
+                        {p.plantingDate ? formatDate(p.plantingDate) : '—'}
                       </TableCell>
                       <TableCell>
                         <ShadeSurvivalBadge pct={p.shadeSurvivalPct} />

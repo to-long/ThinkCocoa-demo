@@ -19,12 +19,12 @@ export interface ApiPurchaseListItem {
   stationMarkNumber: string | null;
   farmerCode: string;
   farmerName: string | null;
-  cocobodCardNumber: string | null;
+  purchasingClerkCardNumber: string | null;
   fieldId: string | null;
   parcelId: string | null;
   parcelName: string | null;
   weightKg: number;
-  amountReceivedGhs: number;
+  amountReceived: number;
   paymentType: PaymentType;
   paymentReference: string | null;
   isOrphan: boolean;
@@ -41,7 +41,7 @@ export interface PurchaseListResponse {
 export interface PurchaseStats {
   totalPurchases: number;
   totalWeightKg: number;
-  totalAmountGhs: number;
+  totalAmount: number;
   blendedRateGhsPerKg: number | null;
   activePcs: number;
   activeSocieties: number;

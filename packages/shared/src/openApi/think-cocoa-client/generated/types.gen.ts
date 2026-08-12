@@ -210,6 +210,7 @@ export type CooperativeListResponse = {
 export type Cooperative = {
     id: string;
     code: string;
+    farmerCodePrefix: string | null;
     name: string;
     description: string | null;
     districtCode: string | null;
@@ -235,6 +236,7 @@ export type Cooperative = {
 
 export type CreateCooperativeBody = {
     code: string;
+    farmerCodePrefix: string;
     name: string;
     description?: string | null;
     districtCode?: string | null;
@@ -248,6 +250,7 @@ export type CreateCooperativeBody = {
 
 export type UpdateCooperativeBody = {
     code?: string;
+    farmerCodePrefix?: string;
     name?: string;
     description?: string | null;
     districtCode?: string | null;
@@ -3277,7 +3280,7 @@ export type GetApiPurchasesStatsResponses = {
     200: {
         totalPurchases: number;
         totalWeightKg: number;
-        totalAmountGhs: number;
+        totalAmount: number;
         blendedRateGhsPerKg: number | null;
         activePcs: number;
         activeSocieties: number;
@@ -3338,10 +3341,10 @@ export type GetApiPurchasesByIdResponses = {
         stationMarkNumber: string | null;
         farmerCode: string;
         farmerName: string | null;
-        cocobodCardNumber: string | null;
+        purchasingClerkCardNumber: string | null;
         fieldId: string | null;
         weightKg: number;
-        amountReceivedGhs: number;
+        amountReceived: number;
         paymentType: 'cash' | 'mobile_money' | 'cheque' | 'card';
         paymentReference: string | null;
         isOrphan: boolean;
@@ -3371,6 +3374,7 @@ export type GetApiPurchasesData = {
         district?: string;
         society?: string;
         payment?: string;
+        farmerId?: string;
         sort?: string;
     };
     url: '/api/purchases';
@@ -3393,10 +3397,10 @@ export type GetApiPurchasesResponses = {
             stationMarkNumber: string | null;
             farmerCode: string;
             farmerName: string | null;
-            cocobodCardNumber: string | null;
+            purchasingClerkCardNumber: string | null;
             fieldId: string | null;
             weightKg: number;
-            amountReceivedGhs: number;
+            amountReceived: number;
             paymentType: 'cash' | 'mobile_money' | 'cheque' | 'card';
             paymentReference: string | null;
             isOrphan: boolean;
@@ -3509,7 +3513,7 @@ export type GetApiPrimaryEvacByIdResponses = {
             farmerName: string | null;
             fieldId: string | null;
             weightKg: number | null;
-            amountReceivedGhs: number | null;
+            amountReceived: number | null;
         }>;
         formVersion: string;
         koboId: number;

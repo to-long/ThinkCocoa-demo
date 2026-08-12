@@ -2,7 +2,7 @@
  * Generator for `gmr_template` — Group Member Registry export per the
  * Rainforest Alliance Annex S13 v1.3 spec, adapted for ThinkCocoa.
  *
- * Mirrors the Demo Cocoa Ghana template
+ * Mirrors the Demo Cocoa template
  * `apps/be/reports/ThinkCocoa_GMR_Template.xlsx`. Three data sheets
  * all keyed by `plot_id`:
  *   • Tab 1 "1. Farm Information"   — 28 cols, one row per parcel
@@ -68,7 +68,7 @@ interface PlotRow {
   otherNames: string | null;
   farmerSex: string | null;
   farmerPhone: string | null;
-  farmerGhCard: string | null;
+  farmerNationalId: string | null;
   farmerDobYear: number | null;
   society: string | null;
   cooperativeName: string | null;
@@ -128,7 +128,7 @@ async function fetchRows(params: GmrReportParams): Promise<PlotRow[]> {
       otherNames: farmers.otherNames,
       sex: farmers.sex,
       phone: farmers.phoneNumber,
-      ghCard: farmers.nationalIdNumber,
+      nationalId: farmers.nationalIdNumber,
       dob: farmers.dateOfBirth,
       society: farmers.society,
       cooperativeName: cooperatives.name,
@@ -196,7 +196,7 @@ async function fetchRows(params: GmrReportParams): Promise<PlotRow[]> {
       otherNames: r.otherNames,
       farmerSex: r.sex,
       farmerPhone: r.phone,
-      farmerGhCard: r.ghCard,
+      farmerNationalId: r.nationalId,
       farmerDobYear: r.dob ? Number.parseInt(r.dob.slice(0, 4), 10) : null,
       society: r.society,
       cooperativeName: r.cooperativeName,
@@ -236,7 +236,7 @@ function fullName(r: PlotRow): string {
  *  are read from row 5 of the template and re-emitted per data row. */
 const TAB_FARM_CELLS: ReadonlyArray<{ col: string; value: (r: PlotRow) => unknown }> = [
   { col: 'A', value: (r) => r.plotId },
-  { col: 'B', value: () => null }, // National Farm ID (N/A in Ghana)
+  { col: 'B', value: () => null }, // National Farm ID (N/A)
   { col: 'C', value: (r) => r.society }, // Village/City (closest proxy)
   { col: 'D', value: (r) => r.cooperativeName }, // District (coop as proxy)
   { col: 'E', value: (r) => r.cooperativeName }, // Inspection Region
@@ -247,13 +247,13 @@ const TAB_FARM_CELLS: ReadonlyArray<{ col: string; value: (r: PlotRow) => unknow
   { col: 'J', value: (r) => r.farmerFirstName }, // Operator = farmer (no separate operator master)
   { col: 'K', value: (r) => r.farmerLastName },
   { col: 'L', value: (r) => r.farmerPhone },
-  { col: 'M', value: (r) => r.farmerGhCard },
+  { col: 'M', value: (r) => r.farmerNationalId },
   { col: 'N', value: (r) => r.farmerSex },
   { col: 'O', value: (r) => r.farmerDobYear },
   { col: 'P', value: (r) => r.farmerFirstName }, // Owner = same farmer
   { col: 'Q', value: (r) => r.farmerLastName },
   { col: 'R', value: (r) => r.farmerPhone },
-  { col: 'S', value: (r) => r.farmerGhCard },
+  { col: 'S', value: (r) => r.farmerNationalId },
   { col: 'T', value: (r) => r.farmerSex },
   { col: 'U', value: (r) => r.permanentStaff },
   { col: 'V', value: (r) => r.temporaryStaff },
@@ -574,7 +574,7 @@ const CSV_COLUMNS: ReadonlyArray<{ header: string; pick: (r: PlotRow) => string 
     { header: 'Farmer Gender', pick: (r) => r.farmerSex },
     { header: 'Farmer Year of Birth', pick: (r) => r.farmerDobYear },
     { header: 'Farmer Phone', pick: (r) => r.farmerPhone },
-    { header: 'Farmer Ghana Card', pick: (r) => r.farmerGhCard },
+    { header: 'Farmer National ID', pick: (r) => r.farmerNationalId },
     { header: 'Permanent Workers', pick: (r) => r.permanentStaff },
     { header: 'Temporary Workers', pick: (r) => r.temporaryStaff },
     { header: 'Inspector', pick: (r) => r.inspectorCode },

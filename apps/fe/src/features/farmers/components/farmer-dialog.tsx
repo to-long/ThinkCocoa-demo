@@ -96,12 +96,12 @@ interface FarmerDialogProps {
 }
 
 // Only value actually present in the data (parser + CSV seed both write
-// `'ghana_card'`; DB column is freeform text with no other values).
-// Label comes from intl via `farmers.nationalIdType.ghana_card`.
+// `'national_id'`; DB column is freeform text with no other values).
+// Label comes from intl via `farmers.nationalIdType.national_id`.
 // Radix Select forbids an empty-string item value, so "no society" uses a
 // sentinel that the Controller maps back to `null` before the resolver.
 const SOCIETY_NONE = '__none__';
-const ID_TYPES = ['ghana_card'] as const;
+const ID_TYPES = ['national_id'] as const;
 const SEX_OPTIONS = ['male', 'female', 'other', 'unknown'] as const;
 const CERT_OPTIONS = ['rainforest_alliance', 'unknown'] as const;
 

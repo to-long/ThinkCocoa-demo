@@ -1,7 +1,7 @@
 /**
  * Generator for `training_attendance` — the Training Attendance Register
  * (FR-TRAIN-01). One row per participant per session, mirroring the
- * Demo Cocoa Ghana template `apps/be/reports/ThinkCocoa_Training_Attendance_Report.xlsx`:
+ * Demo Cocoa template `apps/be/reports/ThinkCocoa_Training_Attendance_Report.xlsx`:
  *   • Row 1: title
  *   • Row 2: summary — Total records / Unique sessions / Total male /
  *     Total female / Farmers attending / Consent captured

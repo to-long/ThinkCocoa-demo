@@ -17,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { formatGhanaDate } from '@/lib/datetime';
+import { formatDate } from '@/lib/datetime';
 import {
   deleteUser,
   restoreUser,
@@ -53,10 +53,6 @@ const STATUS_TAG: Record<'active' | 'inactive' | 'blocked', { tone: StatusTone; 
   inactive: { tone: 'danger', label: 'Inactive' },
   blocked: { tone: 'warning', label: 'Locked' },
 };
-
-function formatDate(timestamp: number) {
-  return formatGhanaDate(timestamp);
-}
 
 function timeAgo(timestamp: number | null): string {
   if (!timestamp) return 'Never';

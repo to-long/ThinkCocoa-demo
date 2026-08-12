@@ -46,7 +46,7 @@
   "dashboard.breakdown.vslaMembersTitle": "Membres par groupe",
   "dashboard.breakdown.vslaMembersSubtitle": "Dernier effectif de membres actifs rapporté.",
   "dashboard.breakdown.vslaSavingsTitle": "Épargne cumulée par groupe",
-  "dashboard.breakdown.vslaSavingsSubtitle": "Dernier total d'épargne rapporté (GHS).",
+  "dashboard.breakdown.vslaSavingsSubtitle": "Dernier total d'épargne rapporté (USD).",
   "dashboard.breakdown.vslaLateLoansTitle": "Prêts en retard par groupe",
   "dashboard.breakdown.vslaLateLoansSubtitle": "Prêts en retard en cours (dernier rapport).",
   "dashboard.breakdown.vslaDiscrepancyTitle": "Statut des écarts",

@@ -32,7 +32,7 @@ import {
 import { PermissionGate } from '@/features/auth';
 import { ClmrsStatusPill } from '@/features/clmrs/components/clmrs-status-pill';
 import { listRecordsForFarmer } from '@/features/clmrs/lib/mock';
-import { formatGhanaDate } from '@/lib/datetime';
+import { formatDate } from '@/lib/datetime';
 
 interface Props {
   farmerId: string;
@@ -140,7 +140,7 @@ function FarmerClmrsCardInner({ farmerId, cardClass, cardHeaderClass, cardConten
                           <span className="font-medium text-foreground">{f.childNameDisplay}</span>
                           {f.childDob && (
                             <span className="font-mono text-[11px] text-muted-foreground">
-                              DOB {formatGhanaDate(f.childDob)}
+                              DOB {formatDate(f.childDob)}
                             </span>
                           )}
                         </div>
@@ -171,7 +171,7 @@ function FarmerClmrsCardInner({ farmerId, cardClass, cardHeaderClass, cardConten
                         )}
                       </TableCell>
                       <TableCell className="text-muted-foreground">
-                        {c?.lastVisitDate ? formatGhanaDate(c.lastVisitDate) : '—'}
+                        {c?.lastVisitDate ? formatDate(c.lastVisitDate) : '—'}
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground">
                         <ChevronRight className="size-4 inline-block" />

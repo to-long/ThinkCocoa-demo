@@ -190,7 +190,7 @@ export async function seedDemoOps(db: Db): Promise<void> {
       farmerId: parcels.farmerId,
       cooperativeId: parcels.cooperativeId,
       society: farmers.society,
-      cocobod: farmers.nationalIdNumber,
+      clerkCard: farmers.nationalIdNumber,
       firstName: farmers.firstName,
       lastName: farmers.lastName,
     })
@@ -207,14 +207,14 @@ export async function seedDemoOps(db: Db): Promise<void> {
     const n = int(1, 2);
     for (let k = 0; k < n; k++) {
       // Concentrate buying into the most recent complete main-crop
-      // export season (Ghana cocoa main crop ≈ Oct–Mar). 110–300 days
+      // export season (cocoa main crop ≈ Oct–Mar). 110–300 days
       // back from "now" lands the whole batch in that window so the
       // seasonal reporting charts show a realistic main-crop peak
       // instead of volume dribbled flat across the year.
       const d = dateBack(int(110, 300));
       const yymmdd = dstr(d).replaceAll('-', '').slice(2);
       const weight = 50 + rng() * 900; // kg
-      const price = 12; // GHS/kg (demo)
+      const price = 12; // USD/kg (demo)
       purchaseVals.push({
         koboUuid: `demo-pur-${p.id}-${k}`,
         koboId: stableId(`${p.id}-${k}`, 600_000_000),
@@ -228,11 +228,11 @@ export async function seedDemoOps(db: Db): Promise<void> {
         society: p.society,
         farmerCode: p.farmerId,
         farmerName: `${p.firstName ?? ''} ${p.lastName ?? ''}`.trim() || null,
-        cocobodCardNumber: p.cocobod,
+        purchasingClerkCardNumber: p.clerkCard,
         fieldId: p.id,
         purchaseDate: dstr(d),
         weightKg: weight.toFixed(3),
-        amountReceivedGhs: (weight * price).toFixed(2),
+        amountReceived: (weight * price).toFixed(2),
         paymentType: pick(['cash', 'mobile_money', 'cheque']),
         submittedAt: d,
         submittedBy: 'demo-seed',
@@ -553,7 +553,7 @@ export async function seedDemoOps(db: Db): Promise<void> {
           society: coopFarmers.length ? pick(coopFarmers).society : null,
           venue: `${c.name.split(' ')[0]} Community Centre`,
           trainerName: `Trainer ${int(1, 15)}`,
-          trainerPhone: `+2332${int(10000000, 99999999)}`,
+          trainerPhone: `+1${int(10000000, 99999999)}`,
           numMale: male,
           numFemale: female,
           totalParticipants: total,

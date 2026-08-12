@@ -40,7 +40,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { StatusTag } from '@/components/ui/status-tag';
-import { formatGhanaDate, formatGhanaDateTime } from '@/lib/datetime';
+import { formatDate, formatDateTime } from '@/lib/datetime';
 import {
   type ReportCode,
   type ReportFormat,
@@ -603,9 +603,9 @@ function HistoryRow({
       <td className="px-5 py-3">
         {durationFrom && durationTo ? (
           <StatusTag tone="lime" className="text-[12px] tabular-nums">
-            {formatGhanaDate(durationFrom)}
+            {formatDate(durationFrom)}
             <span className="opacity-60">→</span>
-            {formatGhanaDate(durationTo)}
+            {formatDate(durationTo)}
           </StatusTag>
         ) : (
           <span className="text-[12px] text-muted-foreground">—</span>
@@ -620,7 +620,7 @@ function HistoryRow({
           : t('reports.filters.fieldOfficerAllItem')}
       </td>
       <td className="whitespace-nowrap px-5 py-3 text-[12px] text-muted-foreground">
-        {formatGhanaDateTime(run.createdAt)}
+        {formatDateTime(run.createdAt)}
       </td>
       <td className="px-5 py-3">
         {isCompleted ? (

@@ -7,7 +7,7 @@
   "farmers.csvImport.title": "Importar productores desde CSV",
   "farmers.csvImport.description": "Sube una exportación CSV con la estructura del conjunto de datos 2025-2026. Los productores + parcelas se actualizan por ProducerID / Field ID, así que volver a subir un archivo editado refresca las filas modificadas.",
   "farmers.csvImport.pickFile": "Haz clic para elegir un archivo CSV",
-  "farmers.csvImport.formatHint": "Columnas esperadas: Coop, Society, Producer, ProducerID, Field ID, Field, FIELD Size, DOBProducer, FarmerGender, GhCard, CocoBodCard, PhoneNumber, Hhsize, NumberChildren, HHAssessed.",
+  "farmers.csvImport.formatHint": "Columnas esperadas: Coop, Society, Producer, ProducerID, Field ID, Field, FIELD Size, DOBProducer, FarmerGender, NationalId, PurchasingClerkCard, PhoneNumber, Hhsize, NumberChildren, HHAssessed.",
   "farmers.csvImport.import": "Importar",
   "farmers.csvImport.importing": "Importando…",
   "farmers.csvImport.cancel": "Cancelar",
@@ -207,7 +207,7 @@
   "farmers.field.districtSociety": "Distrito / Sociedad",
   "farmers.field.cooperativeStartDate": "Cooperativa / Fecha de inicio",
   "farmers.field.startDate": "Fecha de inicio",
-  "farmers.nationalIdType.ghana_card": "Tarjeta de Ghana",
+  "farmers.nationalIdType.national_id": "Documento nacional de identidad",
   "farmers.field.certificationIdStatus": "ID de certificación / Estado",
   "farmers.field.idTypeNumber": "Tipo de ID / Número de ID",
   "farmers.field.householdSizeChildren": "Tamaño del hogar / Número de hijos",
@@ -265,7 +265,7 @@
   "farmers.detail.raValidUntilShort": "hasta {date}",
   "farmers.detail.delivered": "Entregado",
   "farmers.detail.deliveredNone": "No hay compras registradas",
-  "farmers.detail.deliveredSummary": "{n} {n, plural, one {compra} other {compras}} · ₵{amount}",
+  "farmers.detail.deliveredSummary": "{n} {n, plural, one {compra} other {compras}} · ${amount}",
   "farmers.detail.raValidUntil": "Válido hasta {date}",
   "farmers.detail.raExpiredOn": "Venció el {date}"
 }
