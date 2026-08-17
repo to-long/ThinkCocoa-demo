@@ -92,6 +92,13 @@
       "when": 1784913905000,
       "tag": "0012_globalize_naming",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1784913906000,
+      "tag": "0013_real_kobo_sync_urls",
+      "breakpoints": true
     }
   ]
 }
