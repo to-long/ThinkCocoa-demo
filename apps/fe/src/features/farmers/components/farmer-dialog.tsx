@@ -765,8 +765,8 @@ export function FarmerDialog({ open, onOpenChange, onSubmit, initialData }: Farm
                 drop it. Inner grid tightened from `gap-4` → `gap-3`
                 so rows sit closer without losing the two-column
                 rhythm. */}
-            <DialogBody>
-              <div className="flex flex-col gap-4">
+            <DialogBody className="max-h-[60svh] flex-none pb-2">
+              <div className="flex flex-col gap-6">
                 <section className="flex flex-col gap-2">
                   <SectionHeading icon={User}>{t('farmers.section.identity')}</SectionHeading>
                   <div className="grid grid-cols-2 items-start gap-x-3 gap-y-2">
@@ -816,7 +816,7 @@ export function FarmerDialog({ open, onOpenChange, onSubmit, initialData }: Farm
               </div>
             </DialogBody>
 
-            <DialogFooter>
+            <DialogFooter className="mt-1 flex-row justify-end border-t border-border pt-4">
               <Button
                 type="button"
                 variant="outline"

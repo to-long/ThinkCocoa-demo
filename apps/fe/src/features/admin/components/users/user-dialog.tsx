@@ -322,8 +322,8 @@ export function UserDialog({ open, onOpenChange, onSubmit, initialData }: UserDi
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleValid)} className="flex min-h-0 flex-1 flex-col">
-            <DialogBody>
+          <form onSubmit={form.handleSubmit(handleValid)} className="flex flex-col">
+            <DialogBody className="max-h-[60svh] flex-none">
               <div className="flex flex-col gap-3">
                 {/* Email — editable in create mode, read-only in edit
                     mode (better-auth owns the email, swapping it
@@ -333,7 +333,10 @@ export function UserDialog({ open, onOpenChange, onSubmit, initialData }: UserDi
                   name="email"
                   render={({ field, fieldState }) => (
                     <FormItem>
-                      <FormLabel>{intl.formatMessage({ id: 'users.userDialog.email' })}</FormLabel>
+                      <FormLabel>
+                        {intl.formatMessage({ id: 'users.userDialog.email' })}
+                        <span className="text-destructive">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -365,6 +368,7 @@ export function UserDialog({ open, onOpenChange, onSubmit, initialData }: UserDi
                         {intl.formatMessage({
                           id: 'users.userDialog.name',
                         })}
+                        <span className="text-destructive">*</span>
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -392,6 +396,7 @@ export function UserDialog({ open, onOpenChange, onSubmit, initialData }: UserDi
                           {intl.formatMessage({
                             id: 'users.userDialog.password',
                           })}
+                          <span className="text-destructive">*</span>
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
@@ -450,6 +455,62 @@ export function UserDialog({ open, onOpenChange, onSubmit, initialData }: UserDi
                   />
                 )}
 
+                {/* Scope — which cooperatives this user can access. UI swaps
+                    on the `isAllCooperative` flag; the two values stay
+                    independent so a manual coop pick survives a role flip. */}
+                <FormField
+                  control={form.control}
+                  name="cooperativeIds"
+                  render={({ field }) => {
+                    const isAll = form.watch('isAllCooperative');
+                    const ids = field.value ?? [];
+                    const current = ids[0] ?? '';
+                    return (
+                      <FormItem>
+                        <FormLabel>
+                          {intl.formatMessage({
+                            id: 'users.userDialog.scope.title',
+                          })}
+                          <span className="text-destructive">*</span>
+                        </FormLabel>
+                        {isAll ? (
+                          <div
+                            data-slot="scope-all"
+                            className="flex h-9 w-full items-center rounded-md bg-muted px-3 text-sm text-muted-foreground"
+                          >
+                            {intl.formatMessage({
+                              id: 'users.userDialog.scope.allOption',
+                            })}
+                          </div>
+                        ) : (
+                          <FormControl>
+                            <Select
+                              value={current}
+                              onValueChange={(next) => field.onChange(next ? [next] : [])}
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue
+                                  placeholder={intl.formatMessage({
+                                    id: 'users.userDialog.scope.placeholder',
+                                  })}
+                                />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {(allCoops ?? []).map((c) => (
+                                  <SelectItem key={c.id} value={c.id}>
+                                    {c.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                        )}
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+
                 <Controller
                   control={form.control}
                   name="roleIds"
@@ -491,63 +552,6 @@ export function UserDialog({ open, onOpenChange, onSubmit, initialData }: UserDi
                       }}
                     />
                   )}
-                />
-
-                {/* Scope — UI swaps on the dedicated `isAllCooperative`
-                    flag (synced by the role-watcher effect above).
-                    The two values stay independent in form state:
-                    flipping the flag never mutates `cooperativeIds`,
-                    so a manual coop pick survives a role flip-flop. */}
-                <FormField
-                  control={form.control}
-                  name="cooperativeIds"
-                  render={({ field }) => {
-                    const isAll = form.watch('isAllCooperative');
-                    const ids = field.value ?? [];
-                    const current = ids[0] ?? '';
-                    return (
-                      <FormItem>
-                        <FormLabel>
-                          {intl.formatMessage({
-                            id: 'users.userDialog.scope.title',
-                          })}
-                        </FormLabel>
-                        {isAll ? (
-                          <div
-                            data-slot="scope-all"
-                            className="flex h-9 w-full items-center rounded-md bg-muted px-3 text-sm text-muted-foreground"
-                          >
-                            {intl.formatMessage({
-                              id: 'users.userDialog.scope.allOption',
-                            })}
-                          </div>
-                        ) : (
-                          <FormControl>
-                            <Select
-                              value={current}
-                              onValueChange={(next) => field.onChange(next ? [next] : [])}
-                            >
-                              <SelectTrigger className="w-full">
-                                <SelectValue
-                                  placeholder={intl.formatMessage({
-                                    id: 'users.userDialog.scope.placeholder',
-                                  })}
-                                />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {(allCoops ?? []).map((c) => (
-                                  <SelectItem key={c.id} value={c.id}>
-                                    {c.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                        )}
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
                 />
               </div>
             </DialogBody>
