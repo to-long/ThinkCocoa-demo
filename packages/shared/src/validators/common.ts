@@ -198,5 +198,5 @@ export function isOrgWideRole(roleCode: string): boolean {
   return (ORG_WIDE_ROLE_CODES as readonly string[]).includes(roleCode);
 }
 
-export const SEX_VALUES = ['male', 'female', 'other', 'unknown'] as const;
+export const SEX_VALUES = ['male', 'female'] as const;
 export type Sex = (typeof SEX_VALUES)[number];

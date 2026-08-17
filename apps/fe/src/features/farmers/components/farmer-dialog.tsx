@@ -102,7 +102,7 @@ interface FarmerDialogProps {
 // sentinel that the Controller maps back to `null` before the resolver.
 const SOCIETY_NONE = '__none__';
 const ID_TYPES = ['national_id'] as const;
-const SEX_OPTIONS = ['male', 'female', 'other', 'unknown'] as const;
+const SEX_OPTIONS = ['male', 'female'] as const;
 const CERT_OPTIONS = ['rainforest_alliance', 'unknown'] as const;
 
 // `react-hook-form` needs a single concrete type for `useForm` even though
