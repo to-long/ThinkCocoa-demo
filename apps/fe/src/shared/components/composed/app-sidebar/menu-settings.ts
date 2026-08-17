@@ -116,15 +116,6 @@ export const menuSections: MenuSection[] = [
         iconColor: GROUP_TINT.main,
         permission: 'parcel:read',
       },
-      {
-        labelKey: 'navigation.vsla',
-        href: '/vsla',
-        icon: PiggyBank,
-        iconColor: GROUP_TINT.main,
-        // VSLA reuses `farmer:read` for now — same audience as farmers/
-        // parcels. When a dedicated `vsla:read` lands we'll swap this.
-        permission: 'farmer:read',
-      },
     ],
   },
   {
@@ -143,6 +134,15 @@ export const menuSections: MenuSection[] = [
         icon: Handshake,
         iconColor: GROUP_TINT.operations,
         permission: 'coaching:read',
+      },
+      {
+        labelKey: 'navigation.vsla',
+        href: '/vsla',
+        icon: PiggyBank,
+        iconColor: GROUP_TINT.operations,
+        // VSLA reuses `farmer:read` for now — same audience as farmers/
+        // parcels. When a dedicated `vsla:read` lands we'll swap this.
+        permission: 'farmer:read',
       },
     ],
   },
