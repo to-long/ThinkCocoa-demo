@@ -49,7 +49,7 @@ const STRESS_USER_EMAIL = `stress.${'a'.repeat(120)}.long.user.${'b'.repeat(60)}
 const STRESS_ROLE_CODE = 'stress_long_role_code_at_the_field_limit_for_role_codes_aaaaaaa';
 const STRESS_PERMISSION_CODE = `stress_resource_at_cap_aaaaaaaaaaaaaaaaa:read_action_at_cap_aaaa`;
 const STRESS_FARMER_CODE = 'STRESS-FARMER-CODE-AT-CAP-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
-const TEST_PASSWORD = 'ThinkData2026!';
+const TEST_PASSWORD = 'KuanaData2026!';
 
 interface StressIds {
   coopId?: string;

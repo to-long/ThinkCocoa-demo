@@ -1,24 +1,24 @@
 /**
  * Dev-only seed: per-role test accounts.
  *
- * All test users share the same password: `ThinkData2026!`
+ * All test users share the same password: `KuanaData2026!`
  *
  * Org-wide accounts (1 each, all home to the first Demo Cocoa coop —
  * scope is `all_districts` so the home assignment is just bookkeeping):
- *   - project.leader@thinkdata.com
- *   - system.admin@thinkdata.com
- *   - buyer@thinkdata.com
+ *   - project.leader@kuanadata.com
+ *   - system.admin@kuanadata.com
+ *   - buyer@kuanadata.com
  *
  * Coop-bound accounts (one per Demo Cocoa coop — `district` scope, view
  * naturally limited to their cooperative):
- *   - chair.{coop}@thinkdata.com         (cooperative_chair)
- *   - ims.manager.{coop}@thinkdata.com   (ims_manager)
- *   - field.officer.{coop}@thinkdata.com (field_officer)
+ *   - chair.{coop}@kuanadata.com         (cooperative_chair)
+ *   - ims.manager.{coop}@kuanadata.com   (ims_manager)
+ *   - field.officer.{coop}@kuanadata.com (field_officer)
  *
  * Per-coop project leaders (one per Demo Cocoa coop — `all_districts`
  * scope so the role's org-wide semantics stay intact, but anchored
  * to a specific coop so they appear in that coop's member list):
- *   - project.leader.{coop}@thinkdata.com (project_leader)
+ *   - project.leader.{coop}@kuanadata.com (project_leader)
  *
  * 4 coops × 4 coop-bound roles + 3 org-wide = 19 test accounts total.
  *
@@ -47,7 +47,7 @@ import { DEMO_COOPERATIVES } from './cooperatives';
 // care which specific coop — just that one exists.
 const DEFAULT_COOP_CODE = DEMO_COOPERATIVES[0].code;
 
-const TEST_PASSWORD = 'ThinkData2026!';
+const TEST_PASSWORD = 'KuanaData2026!';
 
 /** Deterministic "last seen" within the past 10 days — derived from the
  *  email so a re-seed doesn't reshuffle the column. */
@@ -92,28 +92,28 @@ function coopSlug(code: string): string {
 // org-wide users are invisible to `/api/cooperatives/{id}/users`.
 const PER_COOP_USERS: TestUser[] = DEMO_COOPERATIVES.flatMap((c) => [
   {
-    email: `chair.${coopSlug(c.code)}@thinkdata.com`,
+    email: `chair.${coopSlug(c.code)}@kuanadata.com`,
     name: `${c.name} Cooperative Chair`,
     roleCode: 'cooperative_chair',
     scope: 'district',
     coopCode: c.code,
   },
   {
-    email: `ims.manager.${coopSlug(c.code)}@thinkdata.com`,
+    email: `ims.manager.${coopSlug(c.code)}@kuanadata.com`,
     name: `${c.name} IMS Manager`,
     roleCode: 'ims_manager',
     scope: 'district',
     coopCode: c.code,
   },
   {
-    email: `field.officer.${coopSlug(c.code)}@thinkdata.com`,
+    email: `field.officer.${coopSlug(c.code)}@kuanadata.com`,
     name: `${c.name} Field Officer`,
     roleCode: 'field_officer',
     scope: 'district',
     coopCode: c.code,
   },
   {
-    email: `project.leader.${coopSlug(c.code)}@thinkdata.com`,
+    email: `project.leader.${coopSlug(c.code)}@kuanadata.com`,
     name: `${c.name} Project Leader`,
     roleCode: 'project_leader',
     scope: 'all_districts',
@@ -124,19 +124,19 @@ const PER_COOP_USERS: TestUser[] = DEMO_COOPERATIVES.flatMap((c) => [
 export const TEST_USERS: TestUser[] = [
   // Org-wide accounts — `all_districts` scope, see every coop.
   {
-    email: 'project.leader@thinkdata.com',
+    email: 'project.leader@kuanadata.com',
     name: 'Project Leader Test',
     roleCode: 'project_leader',
     scope: 'all_districts',
   },
   {
-    email: 'system.admin@thinkdata.com',
+    email: 'system.admin@kuanadata.com',
     name: 'System Admin Test',
     roleCode: 'system_admin',
     scope: 'all_districts',
   },
   {
-    email: 'buyer@thinkdata.com',
+    email: 'buyer@kuanadata.com',
     name: 'Buyer Test',
     roleCode: 'buyer',
     scope: 'all_districts',
@@ -148,7 +148,7 @@ export const TEST_USERS: TestUser[] = [
 // dev who's been running the old seed gets a clean per-coop matrix
 // without having to nuke the DB. Cascades wipe their role + coop
 // assignment rows automatically.
-const LEGACY_TEST_EMAILS = ['field.officer@thinkdata.com', 'ims.manager@thinkdata.com'];
+const LEGACY_TEST_EMAILS = ['field.officer@kuanadata.com', 'ims.manager@kuanadata.com'];
 
 async function ensureUser(tu: TestUser, coopId: string): Promise<{ id: string; created: boolean }> {
   // 1. Already exists?
@@ -296,7 +296,7 @@ export async function seedTestUsers(): Promise<void> {
     );
   }
 
-  console.log('Test users ready. Password for all: ThinkData2026!');
+  console.log('Test users ready. Password for all: KuanaData2026!');
 }
 
 // CLI entry point

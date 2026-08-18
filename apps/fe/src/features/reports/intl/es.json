@@ -1,6 +1,6 @@
 {
   "reports.title": "Informes",
-  "reports.subtitle": "Genera y exporta informes de ThinkCocoa · selecciona un tipo de informe, elige filtros y luego exporta",
+  "reports.subtitle": "Genera y exporta informes de KuanaData · selecciona un tipo de informe, elige filtros y luego exporta",
   "reports.typeList.heading": "Tipo de informe",
   "reports.filters.season": "Temporada",
   "reports.filters.seasonPlaceholder": "Selecciona temporada",

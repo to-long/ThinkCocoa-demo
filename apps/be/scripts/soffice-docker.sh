@@ -8,7 +8,7 @@
 # TMPDIR must be set to something under the user's home or the repo (see
 # apps/be/.env) — otherwise the mount silently resolves to an empty dir.
 set -e
-IMAGE=${LO_IMAGE:-thinkcocoa/libreoffice:bookworm}
+IMAGE=${LO_IMAGE:-kuanadata/libreoffice:bookworm}
 
 if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
   echo "soffice-docker: building $IMAGE (first run, ~2 min)…" >&2

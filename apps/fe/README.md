@@ -1,7 +1,7 @@
 # Frontend Application Documentation 
 
 ## Overview
-This is a modern React 19 frontend application built with TypeScript, Tailwind CSS, and Rsbuild. It serves as a landing page for the ThinkCocoa project.
+This is a modern React 19 frontend application built with TypeScript, Tailwind CSS, and Rsbuild. It serves as a landing page for the KuanaData project.
 
 ## Setup instructions
 Make sure [pnpm](https://pnpm.io/) is installed:
@@ -82,7 +82,7 @@ API types are automatically generated from the backend's OpenAPI (Swagger) schem
 <!-- web compponent tag -->
 <wishlist-dock theme="dark"></wishlist-dock>
 <!-- my injection script to boostrap web component -->
-<script defer src="https://thinkcocoa.creativext.com/inject-web-component.js"></script>
+<script defer src="https://kuanadata.creativext.com/inject-web-component.js"></script>
 ```
   
 2. **Example (for local testing):**

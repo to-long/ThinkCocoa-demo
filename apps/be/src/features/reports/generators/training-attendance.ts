@@ -1,7 +1,7 @@
 /**
  * Generator for `training_attendance` — the Training Attendance Register
  * (FR-TRAIN-01). One row per participant per session, mirroring the
- * Demo Cocoa template `apps/be/reports/ThinkCocoa_Training_Attendance_Report.xlsx`:
+ * Demo Cocoa template `apps/be/reports/KuanaData_Training_Attendance_Report.xlsx`:
  *   • Row 1: title
  *   • Row 2: summary — Total records / Unique sessions / Total male /
  *     Total female / Farmers attending / Consent captured
@@ -214,7 +214,7 @@ const CELL_MAP: ReadonlyArray<{ col: string; value: (r: AttendeeRow) => unknown 
 ];
 
 async function buildXlsx(rows: AttendeeRow[], totals: Totals): Promise<Buffer> {
-  const tplBuf = await readReportTemplate('ThinkCocoa_Training_Attendance_Report.xlsx');
+  const tplBuf = await readReportTemplate('KuanaData_Training_Attendance_Report.xlsx');
   const wb = new ExcelJS.Workbook();
   // biome-ignore lint/suspicious/noExplicitAny: typedef bridge — see farmer-coaching-v3.ts
   await wb.xlsx.load(tplBuf as any);
@@ -332,13 +332,13 @@ export async function generateTrainingAttendanceReport(
   if (params.outputFormat === 'csv') {
     return {
       buffer: buildCsv(rows),
-      fileName: `ThinkCocoa_Training_Attendance_${slug}_${stamp}.csv`,
+      fileName: `KuanaData_Training_Attendance_${slug}_${stamp}.csv`,
       mimeType: CSV_MIME,
     };
   }
   return {
     buffer: await buildXlsx(rows, computeTotals(rows)),
-    fileName: `ThinkCocoa_Training_Attendance_${slug}_${stamp}.xlsx`,
+    fileName: `KuanaData_Training_Attendance_${slug}_${stamp}.xlsx`,
     mimeType: XLSX_MIME,
   };
 }

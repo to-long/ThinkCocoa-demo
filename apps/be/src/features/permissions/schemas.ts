@@ -4,7 +4,7 @@
  * Pulled out of `routes.ts` so the SDK consumer side (FE) can import
  * the same Zod shape if it ever wants client-side validation, and so
  * the route handlers stay focused on HTTP wiring. Request bodies for
- * create / update / batch-create live in `@thinkcocoa/shared` —
+ * create / update / batch-create live in `@kuanadata/shared` —
  * we only re-tag them here for OpenAPI registration.
  */
 
@@ -13,9 +13,9 @@ import {
   createPermissionGroupsSchema,
   createPermissionSchema,
   updatePermissionSchema,
-} from '@thinkcocoa/shared';
+} from '@kuanadata/shared';
 
-// Response schema (OpenAPI-tagged) — request bodies come from @thinkcocoa/shared.
+// Response schema (OpenAPI-tagged) — request bodies come from @kuanadata/shared.
 export const permissionSchema = z
   .object({
     id: z.string().uuid(),

@@ -116,11 +116,11 @@ SQLite database stored in `data.db`. Tables:
 - **stacks**: id, name, cover_type, cover_value, created_at
 - **cards**: id, stack_id, name, cover, description, created_at
 
-## ThinkCocoa PostgreSQL/PostGIS skeleton
+## KuanaData PostgreSQL/PostGIS skeleton
 
 The current runnable backend still uses the existing `sql.js` sample app.
 
-For the ThinkCocoa architecture work, a new PostgreSQL/PostGIS migration skeleton has been added under `apps/be/db/postgres/`.
+For the KuanaData architecture work, a new PostgreSQL/PostGIS migration skeleton has been added under `apps/be/db/postgres/`.
 
 It includes:
 
@@ -131,14 +131,14 @@ It includes:
 Run it with:
 
 ```bash
-DATABASE_URL=postgresql://postgres:postgres@localhost:5539/thinkcocoa bun run --filter be db:pg:migrate
+DATABASE_URL=postgresql://postgres:postgres@localhost:5539/kuanadata bun run --filter be db:pg:migrate
 ```
 
 See:
 
 - `apps/be/db/postgres/README.md`
-- `docs/thinkcocoa-erd.en.md`
-- `docs/thinkcocoa-erd.vi.md`
+- `docs/kuanadata-erd.en.md`
+- `docs/kuanadata-erd.vi.md`
 
 ## Environment Variables
 

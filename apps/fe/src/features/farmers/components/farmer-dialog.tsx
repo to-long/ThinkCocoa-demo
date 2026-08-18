@@ -51,7 +51,7 @@ import {
   createFarmerSchema,
   type UpdateFarmerInput,
   updateFarmerSchema,
-} from '@thinkcocoa/shared';
+} from '@kuanadata/shared';
 import { Award, type LucideIcon, MapPin, Phone, User, Users } from 'lucide-react';
 import { type ReactNode, useEffect, useMemo } from 'react';
 import { type Resolver, useForm } from 'react-hook-form';

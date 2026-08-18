@@ -10,7 +10,7 @@
  *     "Deleted" badge + Restore action without an extra fetch.
  */
 
-import type { CreateFarmerInput, UpdateFarmerInput } from '@thinkcocoa/shared';
+import type { CreateFarmerInput, UpdateFarmerInput } from '@kuanadata/shared';
 import {
   deleteApiFarmersById,
   getApiFarmers,
@@ -20,7 +20,7 @@ import {
   patchApiFarmersById,
   postApiFarmers,
   postApiFarmersByIdRestore,
-} from '@thinkcocoa/shared/think-cocoa-client';
+} from '@kuanadata/shared/kuana-data-client';
 import useSWR, { mutate as globalMutate } from 'swr';
 import { API_BASE, quietFetch, unwrap, warm } from './fetcher';
 
@@ -264,7 +264,7 @@ export function useFarmerFullStats() {
     // Cast via `unknown` — the FE `FarmerFullStats` has fields that
     // haven't been picked up by the generated OpenAPI types yet.
     // Actual runtime shape matches (BE zod schema is canonical); regen
-    // via `bun run think-cocoa-client:refresh` when the drift is due.
+    // via `bun run kuana-data-client:refresh` when the drift is due.
     async () => unwrap(await getApiFarmersFullStats()) as unknown as FarmerFullStats,
     { revalidateOnFocus: false },
   );

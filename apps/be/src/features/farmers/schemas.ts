@@ -7,7 +7,7 @@
  */
 
 import { z } from '@hono/zod-openapi';
-import { createFarmerSchema, listFarmersQuerySchema, updateFarmerSchema } from '@thinkcocoa/shared';
+import { createFarmerSchema, listFarmersQuerySchema, updateFarmerSchema } from '@kuanadata/shared';
 
 // ── Response schemas ─────────────────────────────────────────
 export const farmerCoreSchema = z

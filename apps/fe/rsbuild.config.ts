@@ -91,8 +91,8 @@ export default defineConfig({
       : undefined,
   },
   html: {
-    title: 'Think!Cocoa',
-    favicon: 'public/ThinkCocoaLogo.webp',
+    title: 'Kuana Data',
+    favicon: 'public/kuana-logo.svg',
     // Meta-tag versions of the same headers — applies in any host
     // setup, including bare static servers without nginx in front.
     // X-Content-Type-Options + Strict-Transport-Security CANNOT be

@@ -10,7 +10,7 @@
  * "access denied" banner.
  */
 
-import type { PermissionCode } from '@thinkcocoa/shared';
+import type { PermissionCode } from '@kuanadata/shared';
 import { ShieldOff } from 'lucide-react';
 import { useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';

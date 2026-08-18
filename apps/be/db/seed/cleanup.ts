@@ -2,10 +2,9 @@
  * Idempotent cleanup of legacy / obsolete rows.
  *
  * Runs FIRST in the seed pipeline so subsequent steps don't have to
- * worry about stale data shape. Three buckets:
- *   1. Legacy cooperatives — placeholder rows from earlier bootstrap.
- *   2. Obsolete role codes — old role taxonomy.
- *   3. Obsolete permission codes — pre-CRUD `:manage` super-actions
+ * worry about stale data shape. Two buckets:
+ *   1. Obsolete role codes — old role taxonomy.
+ *   2. Obsolete permission codes — pre-CRUD `:manage` super-actions
  *      and resources without a UI route.
  *
  * Anything in this file is a one-way migration: codes here have been
@@ -16,14 +15,9 @@
  * pre-delete role_permissions) — never errors on a clean DB.
  */
 
-import { eq, inArray } from 'drizzle-orm';
+import { inArray } from 'drizzle-orm';
 import type { Db } from '../../src/db/client';
-import { cooperatives } from '../../src/db/schema/iam';
 import { permissions, rolePermissions, roles } from '../../src/db/schema/index';
-
-/** Legacy `cooperatives.code` values to purge. `user_cooperative_assignments`
- *  cascade-deletes; `users.default_cooperative_id` falls back to NULL. */
-const LEGACY_COOPERATIVE_CODES = ['THINKCOCOA-HQ'] as const;
 
 /** Earlier role naming iteration — drop so the canonical set is the
  *  only source of truth in `iam.roles`. */
@@ -210,16 +204,6 @@ const OBSOLETE_PERMISSION_CODES = [
 
 export async function cleanupLegacy(db: Db): Promise<void> {
   console.log('  cleanup: pruning legacy + obsolete rows...');
-
-  for (const code of LEGACY_COOPERATIVE_CODES) {
-    const res = await db
-      .delete(cooperatives)
-      .where(eq(cooperatives.code, code))
-      .returning({ code: cooperatives.code });
-    if (res.length > 0) {
-      console.log(`    removed legacy cooperative '${code}'`);
-    }
-  }
 
   // Obsolete roles: nuke role_permissions first (no FK cascade), then
   // the role rows themselves. Same shape as the permissions block below.

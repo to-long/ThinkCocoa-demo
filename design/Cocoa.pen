@@ -1656,7 +1656,7 @@
                       "id": "I1XTc",
                       "name": "brandText1",
                       "fill": "#7b3f01ff",
-                      "content": "Think Cocoa",
+                      "content": "Kuana Cocoa",
                       "fontFamily": "Inter",
                       "fontSize": 16,
                       "fontWeight": "600"
@@ -2020,7 +2020,7 @@
                           "textGrowth": "fixed-width-height",
                           "width": 130,
                           "height": 21,
-                          "content": "Think Cocoa",
+                          "content": "Kuana Cocoa",
                           "lineHeight": 1.4285714285714286,
                           "fontFamily": "Inter",
                           "fontSize": 16,
@@ -6470,7 +6470,7 @@
       "id": "Defgz",
       "x": -2445,
       "y": 891,
-      "name": "thinkcocoa_logo.svg",
+      "name": "kuanadata_logo.svg",
       "width": 680,
       "height": 300,
       "layout": "none",
@@ -6631,7 +6631,7 @@
           "x": 220,
           "y": 94.3125,
           "fill": "#3a2410",
-          "content": "Think",
+          "content": "Kuana",
           "fontFamily": "Inter",
           "fontSize": 42,
           "fontWeight": "700"
@@ -6642,7 +6642,7 @@
           "x": 220,
           "y": 140.3125,
           "fill": "#7b3f00",
-          "content": "Cocoa",
+          "content": "Data",
           "fontFamily": "Inter",
           "fontSize": 42,
           "fontWeight": "700"
@@ -6709,7 +6709,7 @@
               "id": "uQtp6",
               "name": "titleText",
               "fill": "#3a2410",
-              "content": "ThinkCocoa Color Palette",
+              "content": "KuanaData Color Palette",
               "fontFamily": "Inter",
               "fontSize": 28,
               "fontWeight": "700"
@@ -58817,7 +58817,7 @@
                                       "type": "text",
                                       "id": "gFqC7",
                                       "fill": "$--muted-foreground",
-                                      "content": "kofi.admin@thinkcocoa...",
+                                      "content": "kofi.admin@kuanadata...",
                                       "fontFamily": "Inter",
                                       "fontSize": 11,
                                       "fontWeight": "normal"
@@ -59052,7 +59052,7 @@
                                       "type": "text",
                                       "id": "Mbb4R",
                                       "fill": "$--muted-foreground",
-                                      "content": "ama.staff@thinkcocoa...",
+                                      "content": "ama.staff@kuanadata...",
                                       "fontFamily": "Inter",
                                       "fontSize": 11,
                                       "fontWeight": "normal"
@@ -59276,7 +59276,7 @@
                                       "type": "text",
                                       "id": "Smmhe",
                                       "fill": "$--muted-foreground",
-                                      "content": "system@thinkcocoa...",
+                                      "content": "system@kuanadata...",
                                       "fontFamily": "Inter",
                                       "fontSize": 11,
                                       "fontWeight": "normal"
@@ -59511,7 +59511,7 @@
                                       "type": "text",
                                       "id": "iMZ1x",
                                       "fill": "$--muted-foreground",
-                                      "content": "kofi.admin@thinkcocoa...",
+                                      "content": "kofi.admin@kuanadata...",
                                       "fontFamily": "Inter",
                                       "fontSize": 11,
                                       "fontWeight": "normal"
@@ -86383,7 +86383,7 @@
                                   "type": "text",
                                   "id": "d0yxcP",
                                   "fill": "$--foreground",
-                                  "content": "y.osei@thinkcocoa.com",
+                                  "content": "y.osei@kuanadata.com",
                                   "fontFamily": "Inter",
                                   "fontSize": 12,
                                   "fontWeight": "normal"
@@ -101689,7 +101689,7 @@
                           "id": "C9kwJB",
                           "name": "Sub",
                           "fill": "$--muted-foreground",
-                          "content": "Generate and export ThinkCocoa reports · select a report type, choose filters, then export",
+                          "content": "Generate and export KuanaData reports · select a report type, choose filters, then export",
                           "fontFamily": "Inter",
                           "fontSize": 14,
                           "fontWeight": "normal"
@@ -102040,7 +102040,7 @@
                                       "id": "A8ijbz",
                                       "name": "F",
                                       "fill": "$--muted-foreground",
-                                      "content": "ThinkCocoa_Certification_Status_Report",
+                                      "content": "KuanaData_Certification_Status_Report",
                                       "fontFamily": "Inter",
                                       "fontSize": 12,
                                       "fontWeight": "normal"
@@ -102651,7 +102651,7 @@
                                   "id": "zizCM",
                                   "name": "L",
                                   "fill": "#1d4ed8",
-                                  "content": "ThinkCocoa_Certification_Status_Report_Asankrangwa_2024-25.xlsx",
+                                  "content": "KuanaData_Certification_Status_Report_Asankrangwa_2024-25.xlsx",
                                   "fontFamily": "Inter",
                                   "fontSize": 13,
                                   "fontWeight": "500"
@@ -102757,7 +102757,7 @@
                                   "id": "NHLry",
                                   "name": "L",
                                   "fill": "#1d4ed8",
-                                  "content": "ThinkCocoa_Certification_Status_Report_Wassa-Amenfi_2024-25.xlsx",
+                                  "content": "KuanaData_Certification_Status_Report_Wassa-Amenfi_2024-25.xlsx",
                                   "fontFamily": "Inter",
                                   "fontSize": 13,
                                   "fontWeight": "500"
@@ -102863,7 +102863,7 @@
                                   "id": "M9t4eA",
                                   "name": "L",
                                   "fill": "#1d4ed8",
-                                  "content": "ThinkCocoa_Certification_Status_Report_Asankrangwa_2023-24.xlsx",
+                                  "content": "KuanaData_Certification_Status_Report_Asankrangwa_2023-24.xlsx",
                                   "fontFamily": "Inter",
                                   "fontSize": 13,
                                   "fontWeight": "500"
@@ -102969,7 +102969,7 @@
                                   "id": "fJ28l",
                                   "name": "L",
                                   "fill": "#1d4ed8",
-                                  "content": "ThinkCocoa_Certification_Status_Report_Sefwi-Wiawso_2023-24.xlsx",
+                                  "content": "KuanaData_Certification_Status_Report_Sefwi-Wiawso_2023-24.xlsx",
                                   "fontFamily": "Inter",
                                   "fontSize": 13,
                                   "fontWeight": "500"
@@ -103070,7 +103070,7 @@
                                   "id": "iJdNg",
                                   "name": "L",
                                   "fill": "#1d4ed8",
-                                  "content": "ThinkCocoa_Certification_Status_Report_Juaboso_2022-23.xlsx",
+                                  "content": "KuanaData_Certification_Status_Report_Juaboso_2022-23.xlsx",
                                   "fontFamily": "Inter",
                                   "fontSize": 13,
                                   "fontWeight": "500"

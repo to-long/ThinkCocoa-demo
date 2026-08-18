@@ -43,7 +43,7 @@ for (const c of choices) {
 
 const wb = new ExcelJS.Workbook();
 await wb.xlsx.readFile(
-  '/Users/long.to/Documents/PRIVATE/ThinkCocoa-Project/docs/Internal_Inspection_Form updated 2026 - feedback Richard.xlsx',
+  '/Users/long.to/Documents/PRIVATE/KuanaData-Project/docs/Internal_Inspection_Form updated 2026 - feedback Richard.xlsx',
 );
 const sheet = wb.worksheets[0];
 interface ExcelQ {
@@ -240,7 +240,7 @@ const pg = new Client({
   port: 5539,
   user: 'postgres',
   password: 'postgres',
-  database: 'thinkcocoa',
+  database: 'kuanadata',
 });
 await pg.connect();
 const r = await pg.query(

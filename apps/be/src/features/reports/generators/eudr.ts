@@ -7,7 +7,7 @@
  * volume + linked secondary waybill + sourcing partner).
  *
  * Mirrors the Demo Cocoa template
- * `apps/be/reports/ThinkCocoa_EUDR_Compliance_Report.xlsx` (columns
+ * `apps/be/reports/KuanaData_EUDR_Compliance_Report.xlsx` (columns
  * A-S). Two columns stay blank in v1 because they need an external
  * GIS / Global Forest Watch raster analysis we don't yet import:
  *   M — Deforestation Status (post-2020 polygon overlap check)
@@ -342,7 +342,7 @@ const CELL_MAP: ReadonlyArray<{ col: string; value: (row: EudrRow) => unknown }>
 ];
 
 async function buildXlsx(rows: EudrRow[]): Promise<Buffer> {
-  const tplBuf = await readReportTemplate('ThinkCocoa_EUDR_Compliance_Report.xlsx');
+  const tplBuf = await readReportTemplate('KuanaData_EUDR_Compliance_Report.xlsx');
   const wb = new ExcelJS.Workbook();
   // biome-ignore lint/suspicious/noExplicitAny: typedef bridge — see farmer-coaching-v3.ts
   await wb.xlsx.load(tplBuf as any);
@@ -467,13 +467,13 @@ export async function generateEudrReport(params: EudrReportParams): Promise<Gene
   if (params.outputFormat === 'csv') {
     return {
       buffer: buildCsv(rows),
-      fileName: `ThinkCocoa_EUDR_Compliance_${slug}_${stamp}.csv`,
+      fileName: `KuanaData_EUDR_Compliance_${slug}_${stamp}.csv`,
       mimeType: CSV_MIME,
     };
   }
   return {
     buffer: await buildXlsx(rows),
-    fileName: `ThinkCocoa_EUDR_Compliance_${slug}_${stamp}.xlsx`,
+    fileName: `KuanaData_EUDR_Compliance_${slug}_${stamp}.xlsx`,
     mimeType: XLSX_MIME,
   };
 }

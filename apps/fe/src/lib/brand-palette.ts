@@ -1,5 +1,5 @@
 /**
- * ThinkCocoa brand palette — single source of truth for the design
+ * KuanaData brand palette — single source of truth for the design
  * tokens sourced from Pencil node `STuuC`. Reading the gradient
  * top→bottom flows espresso → cocoa → sienna → olive → leaf → lime
  * → golden yellow.

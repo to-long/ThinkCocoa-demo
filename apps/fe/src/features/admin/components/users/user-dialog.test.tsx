@@ -73,7 +73,7 @@ describe('UserDialog — create mode', () => {
       target: { value: 'a'.repeat(201) },
     });
     fireEvent.change(screen.getByPlaceholderText('Minimum 8 characters'), {
-      target: { value: 'ThinkData2026!' },
+      target: { value: 'KuanaData2026!' },
     });
 
     fireEvent.click(screen.getByRole('button', { name: /create user/i }));
@@ -90,7 +90,7 @@ describe('UserDialog — create mode', () => {
       target: { value: 'someone@example.com' },
     });
     fireEvent.change(screen.getByPlaceholderText('Minimum 8 characters'), {
-      target: { value: 'ThinkData2026!' },
+      target: { value: 'KuanaData2026!' },
     });
 
     fireEvent.click(screen.getByRole('button', { name: /create user/i }));

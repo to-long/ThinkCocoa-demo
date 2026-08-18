@@ -1,6 +1,6 @@
 import { useCallback, useSyncExternalStore } from 'react';
 
-const STORAGE_KEY = 'thinkcocoa-theme';
+const STORAGE_KEY = 'kuanadata-theme';
 
 export type ThemePreference = 'light' | 'dark' | 'system';
 

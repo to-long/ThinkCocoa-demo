@@ -75,7 +75,7 @@ function sofficeBin(): string {
  * fewer trap to document.
  */
 function workRoot(): string {
-  return process.platform === 'darwin' ? path.join(homedir(), '.thinkcocoa-tmp') : tmpdir();
+  return process.platform === 'darwin' ? path.join(homedir(), '.kuanadata-tmp') : tmpdir();
 }
 /** Generous: a cold LibreOffice start is ~1s, a big sheet ~2s more. */
 const TIMEOUT_MS = 60_000;

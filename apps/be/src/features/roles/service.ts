@@ -11,7 +11,7 @@
  * through as a typed `actor` param so the service stays Hono-free.
  */
 
-import type { CreateRoleInput, SetRolePermissionsInput, UpdateRoleInput } from '@thinkcocoa/shared';
+import type { CreateRoleInput, SetRolePermissionsInput, UpdateRoleInput } from '@kuanadata/shared';
 import { asc, desc, sql as dsql, eq, ilike, inArray, or } from 'drizzle-orm';
 import { db } from '../../db/client';
 import { permissions, rolePermissions, roles, userRoles } from '../../db/schema/iam';

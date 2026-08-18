@@ -8,7 +8,7 @@
  * shapes.
  */
 
-import type { CreateParcelInput, UpdateParcelInput } from '@thinkcocoa/shared';
+import type { CreateParcelInput, UpdateParcelInput } from '@kuanadata/shared';
 import type { FeatureCollection, GeoJsonObject } from 'geojson';
 import useSWR, { mutate as globalMutate } from 'swr';
 import { apiFetch, quietFetch, warm } from './fetcher';

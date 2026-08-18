@@ -1,5 +1,5 @@
 /**
- * One-shot configuration for the generated `think-cocoa-client` SDK.
+ * One-shot configuration for the generated `kuana-data-client` SDK.
  *
  * Imported for side effect from `src/index.tsx` BEFORE any component is
  * rendered, so every SDK call goes out with the right `baseUrl` and
@@ -15,7 +15,7 @@
  *     loudly rather than silently target localhost in production.
  */
 
-import { client } from '@thinkcocoa/shared/think-cocoa-client';
+import { client } from '@kuanadata/shared/kuana-data-client';
 import { isRefreshable, refreshAccessToken } from './fetcher';
 
 const isDev = import.meta.env.MODE === 'development';

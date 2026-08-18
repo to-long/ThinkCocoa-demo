@@ -52,7 +52,7 @@ export const auth = betterAuth({
     // request, its `kid` is unknown to our JWKS, verification fails, and
     // the client treats it as a dead login. Our own prefix keeps the two
     // jars apart.
-    cookiePrefix: 'thinkcocoa',
+    cookiePrefix: 'kuanadata',
     database: {
       // Let Postgres generate UUIDs via the column default.
       generateId: false,

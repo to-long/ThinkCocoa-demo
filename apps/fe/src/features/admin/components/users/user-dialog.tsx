@@ -4,7 +4,7 @@ import {
   isOrgWideRole,
   PASSWORD_POLICY_RULES,
   updateUserFormSchema,
-} from '@thinkcocoa/shared';
+} from '@kuanadata/shared';
 import { Check, Eye, EyeOff } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, type Resolver, useForm } from 'react-hook-form';

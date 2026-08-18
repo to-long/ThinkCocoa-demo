@@ -5,7 +5,7 @@
  * bytecode compiled on CI (`/home/runner/work/...`) points at the CI
  * checkout when it runs on the droplet — ENOENT. We instead resolve
  * relative to `process.cwd()`, trying both the deploy layout
- * (droplet cwd = `/opt/thinkcocoa`, templates in `apps/be/reports/`)
+ * (droplet cwd = `/opt/kuanadata`, templates in `apps/be/reports/`)
  * and the dev layout (`bun run dev` from `apps/be/`, templates in
  * `reports/`). `REPORTS_DIR` env var overrides everything for the
  * unusual deploy targets.

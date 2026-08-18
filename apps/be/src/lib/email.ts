@@ -18,8 +18,8 @@
 import { Resend } from 'resend';
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const EMAIL_FROM = process.env.EMAIL_FROM ?? 'ThinkData <no-reply@thinkdata.com>';
-const APP_NAME = 'Think!Cocoa';
+const EMAIL_FROM = process.env.EMAIL_FROM ?? 'Kuana Data <no-reply@kuanadata.com>';
+const APP_NAME = 'Kuana Data';
 
 // Instantiate lazily so importing this module doesn't crash at boot
 // when the key is absent (dev machines without email creds).

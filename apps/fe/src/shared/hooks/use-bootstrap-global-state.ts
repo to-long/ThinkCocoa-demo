@@ -13,7 +13,7 @@
  * that need them load them into feature-local stores on mount.
  */
 
-import { getApiUsersMe } from '@thinkcocoa/shared/think-cocoa-client';
+import { getApiUsersMe } from '@kuanadata/shared/kuana-data-client';
 import { useEffect } from 'react';
 import { unwrap } from '@/shared/api/fetcher';
 import type { ApiUserDetail } from '@/shared/api/types';

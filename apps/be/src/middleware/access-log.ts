@@ -9,8 +9,8 @@
  *   - PM2 already manages `out.log` / `error.log`. Routing access there
  *     would double-rotate (PM2's `pm2-logrotate` + system logrotate)
  *     and mix unrelated streams.
- *   - System logrotate's `/etc/logrotate.d/think-cocoa` matches
- *     `/var/log/think-cocoa/*.log` so `access.log` rotates daily with
+ *   - System logrotate's `/etc/logrotate.d/kuana-data` matches
+ *     `/var/log/kuana-data/*.log` so `access.log` rotates daily with
  *     30-day retention out of the box — no extra config.
  *
  * Trade-offs we made:

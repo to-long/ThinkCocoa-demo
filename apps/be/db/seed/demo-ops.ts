@@ -9,7 +9,7 @@
  * so it runs alongside the farmer CSV seed. Opt out with SEED_OPS=false.
  */
 
-import { coopFarmerCodePrefix } from '@thinkcocoa/shared';
+import { coopFarmerCodePrefix } from '@kuanadata/shared';
 import { eq, sql } from 'drizzle-orm';
 import type { Db } from '../../src/db/client';
 import { cooperatives } from '../../src/db/schema/iam';
@@ -429,7 +429,7 @@ export async function seedDemoOps(db: Db): Promise<void> {
           beanGrade: pick(['Grade I', 'Grade II']),
           beanCategory: pick(['Main crop', 'Light crop']),
           sealNumber: `SEAL-${int(100000, 999999)}`,
-          sourcingPartner: 'ThinkData Trading Ltd',
+          sourcingPartner: 'Kuana Data Trading Ltd',
           bagsLoaded: bags,
           portDestination: pick(PORTS),
           driverFirstName: pick(['James', 'Lucas', 'Omar', 'David']),

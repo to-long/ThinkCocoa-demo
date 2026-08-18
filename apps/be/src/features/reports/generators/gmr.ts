@@ -1,9 +1,9 @@
 /**
  * Generator for `gmr_template` — Group Member Registry export per the
- * Rainforest Alliance Annex S13 v1.3 spec, adapted for ThinkCocoa.
+ * Rainforest Alliance Annex S13 v1.3 spec, adapted for KuanaData.
  *
  * Mirrors the Demo Cocoa template
- * `apps/be/reports/ThinkCocoa_GMR_Template.xlsx`. Three data sheets
+ * `apps/be/reports/KuanaData_GMR_Template.xlsx`. Three data sheets
  * all keyed by `plot_id`:
  *   • Tab 1 "1. Farm Information"   — 28 cols, one row per parcel
  *   • Tab 2 "2. Certified Crop"     — 17 cols, one row per parcel
@@ -518,7 +518,7 @@ function writeDashboard(sheet: ExcelJS.Worksheet, rows: PlotRow[]): void {
 }
 
 async function buildXlsx(rows: PlotRow[]): Promise<Buffer> {
-  const tplBuf = await readReportTemplate('ThinkCocoa_GMR_Template.xlsx');
+  const tplBuf = await readReportTemplate('KuanaData_GMR_Template.xlsx');
   const wb = new ExcelJS.Workbook();
   // biome-ignore lint/suspicious/noExplicitAny: typedef bridge — see farmer-coaching-v3.ts
   await wb.xlsx.load(tplBuf as any);
@@ -613,13 +613,13 @@ export async function generateGmrReport(params: GmrReportParams): Promise<Genera
   if (params.outputFormat === 'csv') {
     return {
       buffer: buildCsv(rows),
-      fileName: `ThinkCocoa_GMR_${slug}_${stamp}.csv`,
+      fileName: `KuanaData_GMR_${slug}_${stamp}.csv`,
       mimeType: CSV_MIME,
     };
   }
   return {
     buffer: await buildXlsx(rows),
-    fileName: `ThinkCocoa_GMR_${slug}_${stamp}.xlsx`,
+    fileName: `KuanaData_GMR_${slug}_${stamp}.xlsx`,
     mimeType: XLSX_MIME,
   };
 }

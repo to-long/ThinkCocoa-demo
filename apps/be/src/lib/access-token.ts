@@ -35,7 +35,7 @@ import { accessTokenTtlSeconds } from './token-ttl';
  *  devtools — and, more importantly, so a different better-auth app on
  *  another `localhost` port cannot overwrite it: cookies are keyed by
  *  host, and the port is not part of the key. */
-export const COOKIE_PREFIX = 'thinkcocoa';
+export const COOKIE_PREFIX = 'kuanadata';
 export const SESSION_COOKIE = `${COOKIE_PREFIX}.session_token`;
 export const ACCESS_COOKIE = `${COOKIE_PREFIX}.access_token`;
 

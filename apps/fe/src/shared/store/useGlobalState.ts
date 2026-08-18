@@ -20,7 +20,7 @@
  * the next login re-bootstraps with fresh data.
  */
 
-import type { PermissionCode } from '@thinkcocoa/shared';
+import type { PermissionCode } from '@kuanadata/shared';
 import { createStore } from '@/lib/zustand/createStore';
 import type { ApiUserDetail } from '@/shared/api/types';
 

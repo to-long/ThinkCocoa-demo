@@ -14,7 +14,7 @@
  *   - Certification filter currently boolean (RA vs non-RA).
  */
 
-import type { CreateFarmerInput, UpdateFarmerInput } from '@thinkcocoa/shared';
+import type { CreateFarmerInput, UpdateFarmerInput } from '@kuanadata/shared';
 import {
   Building2,
   CalendarClock,

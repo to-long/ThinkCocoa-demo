@@ -13,7 +13,7 @@
  * cooperative, place, or organisation.
  */
 
-import { coopFarmerCodePrefix } from '@thinkcocoa/shared';
+import { coopFarmerCodePrefix } from '@kuanadata/shared';
 import { eq } from 'drizzle-orm';
 import type { Db } from '../../src/db/client';
 import { cooperatives, users } from '../../src/db/schema/iam';
@@ -127,7 +127,7 @@ export async function seedCooperatives(db: Db, opts: { withChairs?: boolean } = 
 
 /**
  * Stamp one `cooperative_chair` test user per demo coop:
- * `chair.{coopcode}@thinkdata.com` → chair of `{COOP_CODE}`.
+ * `chair.{coopcode}@kuanadata.com` → chair of `{COOP_CODE}`.
  * Skips silently if the chair user doesn't exist (e.g. the test-user
  * seed was disabled) — every coop falls back to chair-less. In prod
  * the chair gets reassigned via the admin UI after election.
@@ -135,7 +135,7 @@ export async function seedCooperatives(db: Db, opts: { withChairs?: boolean } = 
 async function stampChairs(db: Db): Promise<void> {
   let assigned = 0;
   for (const c of DEMO_COOPERATIVES) {
-    const chairEmail = `chair.${c.code.toLowerCase().replace(/_/g, '')}@thinkdata.com`;
+    const chairEmail = `chair.${c.code.toLowerCase().replace(/_/g, '')}@kuanadata.com`;
     const [chair] = await db
       .select({ id: users.id })
       .from(users)

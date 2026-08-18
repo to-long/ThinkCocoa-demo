@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 
 export type Locale = 'en' | 'fr' | 'es';
 
-const STORAGE_KEY = 'thinkcocoa-locale';
+const STORAGE_KEY = 'kuanadata-locale';
 
 export const locales: Locale[] = ['en', 'fr', 'es'];
 

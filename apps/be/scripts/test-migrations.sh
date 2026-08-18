@@ -17,7 +17,7 @@
 # fails, so re-runs don't pile up containers.
 set -euo pipefail
 
-CONTAINER="thinkcocoa-demo-migration-test"
+CONTAINER="kuanadata-demo-migration-test"
 PORT="5540"
 IMAGE="imresamu/postgis:17-3.5"
 
@@ -35,7 +35,7 @@ echo "🐘 starting throwaway Postgres on port $PORT…"
 docker run -d --name "$CONTAINER" \
   -e POSTGRES_PASSWORD=postgres \
   -e POSTGRES_USER=postgres \
-  -e POSTGRES_DB=thinkcocoa \
+  -e POSTGRES_DB=kuanadata \
   -p "${PORT}:5432" \
   "$IMAGE" >/dev/null
 
@@ -48,7 +48,7 @@ echo "⏳ waiting for Postgres to accept connections on host port $PORT…"
 # isn't bound yet, and the migrator's connection gets killed when the
 # postmaster bounces. Polling host:port waits for phase 2 specifically.
 for _ in $(seq 1 90); do
-  if PGPASSWORD=postgres psql -h localhost -p "$PORT" -U postgres -d thinkcocoa -c 'select 1' >/dev/null 2>&1; then
+  if PGPASSWORD=postgres psql -h localhost -p "$PORT" -U postgres -d kuanadata -c 'select 1' >/dev/null 2>&1; then
     break
   fi
   sleep 0.5
@@ -63,7 +63,7 @@ cd "$SCRIPT_DIR/.."
 # `migrate.ts` reads `dotenv/config` first, so we need to override at
 # the shell level too — env vars on the bun command line take
 # precedence over `.env` values.
-export DATABASE_URL="postgresql://postgres:postgres@localhost:${PORT}/thinkcocoa"
+export DATABASE_URL="postgresql://postgres:postgres@localhost:${PORT}/kuanadata"
 
 echo "▶️  pass 1/2: migrate + seed against empty DB"
 SEED_TEST_USERS=false bun db/migrate.ts

@@ -1,7 +1,7 @@
 /**
  * `defaultHook` for OpenAPIHono — turns zod validation failures into the
  * compact `{ error, issues: [{ path, code, params }] }` shape defined in
- * `@thinkcocoa/shared` (ValidationErrorBody).
+ * `@kuanadata/shared` (ValidationErrorBody).
  *
  * Each zod schema is declared with an error code from `ValidatorErrorCode`
  * (see `validators/validator-error-code.ts`). That code becomes the
@@ -9,7 +9,7 @@
  * The FE maps the code to a localized message at runtime.
  */
 
-import type { ValidationErrorBody } from '@thinkcocoa/shared';
+import type { ValidationErrorBody } from '@kuanadata/shared';
 import type { Context } from 'hono';
 
 /**

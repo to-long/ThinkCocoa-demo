@@ -5,7 +5,7 @@
  */
 
 import { z } from '@hono/zod-openapi';
-import { updateCorrectiveActionSchema } from '@thinkcocoa/shared';
+import { updateCorrectiveActionSchema } from '@kuanadata/shared';
 
 export const errorResponse = z
   .object({ error: z.string(), code: z.string().optional() })

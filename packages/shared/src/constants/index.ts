@@ -1,5 +1,5 @@
-export const APP_NAME = 'ThinkCocoa';
-export const APP_DESCRIPTION = 'ThinkCocoa Data Management Platform';
+export const APP_NAME = 'KuanaData';
+export const APP_DESCRIPTION = 'KuanaData Data Management Platform';
 
 export const LOCALES = ['en', 'fr'] as const;
 export const DEFAULT_LOCALE = 'en';

@@ -14,7 +14,7 @@
  *
  * Setup:
  *   - Requires the dev Postgres + test users seeded (`SEED_TEST_USERS=true`,
- *     default in seed flow). Login uses `system.admin@thinkdata.com`.
+ *     default in seed flow). Login uses `system.admin@kuanadata.com`.
  *   - Tests create entities with random suffixes so they don't collide
  *     with each other or with seeded data on re-runs.
  *   - No global cleanup. Audit log is append-only; soft-deletable

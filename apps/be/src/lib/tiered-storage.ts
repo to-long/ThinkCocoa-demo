@@ -47,7 +47,7 @@
  *   - brotli q=6:   ~1100 MB/s compress, ~1500 MB/s decompress
  *   - gzip -9:      ~240 MB/s compress, ~1900 MB/s decompress
  * zstd wins both directions by 2-15× while staying within ~10% of
- * brotli's ratio. Storage cost savings of brotli at ThinkCocoa
+ * brotli's ratio. Storage cost savings of brotli at KuanaData
  * scale (< $0.01/mo difference) are too small to justify slower
  * codecs. Built into node:zlib (Node 22.15+, Bun): no external dep.
  */
@@ -71,7 +71,7 @@ export type DateKey = string; // YYYY-MM-DD, always UTC
 
 export interface TieredStorageConfig {
   /** Local directory under which every day's folder lives.
-   *  e.g. `/var/lib/think-cocoa/storage`. */
+   *  e.g. `/var/lib/kuana-data/storage`. */
   root: string;
   /** S3 key prefix for archive tarballs. No trailing slash. The
    *  env-aware factory `tieredStorageFromEnv()` prepends the
@@ -88,7 +88,7 @@ export interface TieredStorageConfig {
  *
  *  Only ONE env var is read directly:
  *    STORAGE_ROOT — local disk root. Default
- *    `/var/lib/think-cocoa/storage` (the deploy workflow creates it).
+ *    `/var/lib/kuana-data/storage` (the deploy workflow creates it).
  *    Dev overrides to a writable path via `.env`.
  *
  *  Everything else is either inferred or hardcoded:
@@ -105,7 +105,7 @@ const HOT_DAYS = 30;
 const BASE_PREFIX = 'storage';
 
 export function tieredStorageFromEnv(): TieredStorage {
-  const root = process.env.STORAGE_ROOT ?? '/var/lib/think-cocoa/storage';
+  const root = process.env.STORAGE_ROOT ?? '/var/lib/kuana-data/storage';
   const envLabel = process.env.NODE_ENV ?? 'development';
   return new TieredStorage({
     root,

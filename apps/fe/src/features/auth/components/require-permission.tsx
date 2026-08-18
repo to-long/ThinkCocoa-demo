@@ -26,7 +26,7 @@
  *   </Route>
  */
 
-import type { PermissionCode } from '@thinkcocoa/shared';
+import type { PermissionCode } from '@kuanadata/shared';
 import { Outlet } from 'react-router-dom';
 import { Forbidden } from '@/shared/components/composed/forbidden';
 import { selectCurrentUserPermissions, useGlobalState } from '@/shared/store/useGlobalState';

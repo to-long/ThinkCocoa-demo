@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createRoleFormSchema, updateRoleFormSchema } from '@thinkcocoa/shared';
+import { createRoleFormSchema, updateRoleFormSchema } from '@kuanadata/shared';
 import { useEffect, useMemo, useRef } from 'react';
 import { Controller, type Resolver, useForm } from 'react-hook-form';
 import { useIntl } from 'react-intl';

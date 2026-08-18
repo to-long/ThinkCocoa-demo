@@ -4,7 +4,7 @@
  * by season (cocoa year Oct→Sep) and an optional society.
  *
  * XLSX path clones the curated template at
- * `apps/be/reports/ThinkCocoa_Farmer_Coaching_Report_v3.xlsx` so all
+ * `apps/be/reports/KuanaData_Farmer_Coaching_Report_v3.xlsx` so all
  * styling, merged header rows, frozen panes, and the row-2 summary
  * formulas (`COUNTA(A5:A1004)`, `COUNTIF(S5:S1004,"Yes")`, …) are
  * preserved exactly. Data is written cell-by-cell from row 5 onward —
@@ -350,7 +350,7 @@ const CELL_MAP: ReadonlyArray<{ col: string; value: (row: Row) => unknown }> = [
 ];
 
 async function buildXlsx(rows: Row[]): Promise<Buffer> {
-  const tplBuf = await readReportTemplate('ThinkCocoa_Farmer_Coaching_Report_v3.xlsx');
+  const tplBuf = await readReportTemplate('KuanaData_Farmer_Coaching_Report_v3.xlsx');
   const wb = new ExcelJS.Workbook();
   // Bun's `readFile` returns `NonSharedBuffer` and exceljs's `.load()`
   // typing wants a different `Buffer` variant — same bytes either way,
@@ -507,13 +507,13 @@ export async function generateFarmerCoachingV3(
   if (params.outputFormat === 'csv') {
     return {
       buffer: buildCsv(rows),
-      fileName: `ThinkCocoa_Farmer_Coaching_Report_v3_${slug}_${stamp}.csv`,
+      fileName: `KuanaData_Farmer_Coaching_Report_v3_${slug}_${stamp}.csv`,
       mimeType: CSV_MIME,
     };
   }
   return {
     buffer: await buildXlsx(rows),
-    fileName: `ThinkCocoa_Farmer_Coaching_Report_v3_${slug}_${stamp}.xlsx`,
+    fileName: `KuanaData_Farmer_Coaching_Report_v3_${slug}_${stamp}.xlsx`,
     mimeType: XLSX_MIME,
   };
 }

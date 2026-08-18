@@ -3,7 +3,7 @@
  * active cooperative, surfacing their latest inspection's score,
  * derived certification tier, and (placeholder) corrective-action
  * counters. Mirrors the Demo Cocoa template
- * `apps/be/reports/ThinkCocoa_Certification_Status_Report.xlsx`:
+ * `apps/be/reports/KuanaData_Certification_Status_Report.xlsx`:
  *   • Row 1: title
  *   • Row 2: summary formulas — COUNTIF/Approved + Approved with
  *     Conditions + Not Approved + Overdue CAs + % Approved
@@ -216,7 +216,7 @@ const CELL_MAP: ReadonlyArray<{ col: string; value: (row: Row) => unknown }> = [
 ];
 
 async function buildXlsx(rows: Row[]): Promise<Buffer> {
-  const tplBuf = await readReportTemplate('ThinkCocoa_Certification_Status_Report.xlsx');
+  const tplBuf = await readReportTemplate('KuanaData_Certification_Status_Report.xlsx');
   const wb = new ExcelJS.Workbook();
   // biome-ignore lint/suspicious/noExplicitAny: typedef bridge — see farmer-coaching-v3.ts
   await wb.xlsx.load(tplBuf as any);
@@ -332,13 +332,13 @@ export async function generateCertificationReport(
   if (params.outputFormat === 'csv') {
     return {
       buffer: buildCsv(rows),
-      fileName: `ThinkCocoa_Certification_Status_${slug}_${stamp}.csv`,
+      fileName: `KuanaData_Certification_Status_${slug}_${stamp}.csv`,
       mimeType: CSV_MIME,
     };
   }
   return {
     buffer: await buildXlsx(rows),
-    fileName: `ThinkCocoa_Certification_Status_${slug}_${stamp}.xlsx`,
+    fileName: `KuanaData_Certification_Status_${slug}_${stamp}.xlsx`,
     mimeType: XLSX_MIME,
   };
 }

@@ -1,4 +1,4 @@
-# ThinkCocoa — ThinkCocoa Data Management Platform
+# KuanaData — KuanaData Data Management Platform
 
 Full-stack cocoa supply-chain management platform: **React + Hono + PostgreSQL (PostGIS) + better-auth**, ingesting field data from **Kobo Toolbox** and covering the chain from farmer registration through inspections, purchases and evacuation to EUDR due-diligence.
 
@@ -42,7 +42,7 @@ Dev seed creates a system admin — see `apps/be/db/seed/` for the credentials/r
 | **Frontend** | [React 19](https://react.dev) + [Rsbuild](https://rsbuild.dev) | Rspack bundler |
 | **UI** | [Tailwind v4](https://tailwindcss.com) + [shadcn/ui](https://ui.shadcn.com) (Radix) | + [Lucide](https://lucide.dev) icons, [Sonner](https://sonner.emilkowal.ski) toasts |
 | **Data/state** | [SWR](https://swr.vercel.app) + [Zustand](https://zustand-demo.pmnd.rs) | Fetch/cache + global (user, active coop) |
-| **Forms** | [react-hook-form](https://react-hook-form.com) + [Zod](https://zod.dev) | Schemas shared FE⇄BE via `@thinkcocoa/shared` |
+| **Forms** | [react-hook-form](https://react-hook-form.com) + [Zod](https://zod.dev) | Schemas shared FE⇄BE via `@kuanadata/shared` |
 | **Charts** | [Chart.js](https://www.chartjs.org) | Dashboard donuts / bars / trend lines |
 | **i18n** | [react-intl](https://formatjs.github.io/docs/react-intl) | EN / FR / VI |
 | **Typed SDK** | [`@hey-api/openapi-ts`](https://heyapi.dev) | FE client auto-generated from the live OpenAPI spec |
@@ -118,10 +118,10 @@ apps/
         components/composed/            # coop-switcher · app-sidebar (permission-filtered) · notification-menu · ...
 
 packages/
-  shared/                               # @thinkcocoa/shared
+  shared/                               # @kuanadata/shared
     src/validators/                     # Zod schemas reused on FE + BE
     src/constants/permissions.ts        # PERMISSION_CATALOG → PermissionCode union
-    src/openApi/think-cocoa-client/    # auto-generated typed SDK
+    src/openApi/kuana-data-client/    # auto-generated typed SDK
 
 docker-compose.yml · ecosystem.config.cjs (PM2) · Makefile · biome.json · CLAUDE.md (repo playbook)
 ```

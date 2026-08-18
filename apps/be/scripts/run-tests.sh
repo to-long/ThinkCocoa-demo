@@ -23,7 +23,7 @@
 # the test run fails.
 set -euo pipefail
 
-CONTAINER="thinkcocoa-demo-test-db"
+CONTAINER="kuanadata-demo-test-db"
 PORT="5541"
 IMAGE="imresamu/postgis:17-3.5"
 
@@ -41,7 +41,7 @@ echo "🐘 starting throwaway Postgres on port $PORT…"
 docker run -d --name "$CONTAINER" \
   -e POSTGRES_PASSWORD=postgres \
   -e POSTGRES_USER=postgres \
-  -e POSTGRES_DB=thinkcocoa \
+  -e POSTGRES_DB=kuanadata \
   -p "${PORT}:5432" \
   "$IMAGE" >/dev/null
 
@@ -51,7 +51,7 @@ echo "⏳ waiting for Postgres to accept connections on host port $PORT…"
 # while loading PostGIS, then a restart with IPv4 listener), so
 # `docker exec pg_isready` succeeds before the host port is bound.
 for _ in $(seq 1 90); do
-  if PGPASSWORD=postgres psql -h localhost -p "$PORT" -U postgres -d thinkcocoa -c 'select 1' >/dev/null 2>&1; then
+  if PGPASSWORD=postgres psql -h localhost -p "$PORT" -U postgres -d kuanadata -c 'select 1' >/dev/null 2>&1; then
     break
   fi
   sleep 0.5
@@ -65,10 +65,10 @@ cd "$SCRIPT_DIR/.."
 # Override the dev-pointed `DATABASE_URL` from `.env` for the migrate
 # + test passes. `migrate.ts` and the test suite both read
 # `dotenv/config` first, so we override at the shell level.
-export DATABASE_URL="postgresql://postgres:postgres@localhost:${PORT}/thinkcocoa"
+export DATABASE_URL="postgresql://postgres:postgres@localhost:${PORT}/kuanadata"
 # TieredStorage hot tier — use a tmp dir so audit-diff offload during
 # tests doesn't try to write under /var/lib (prod default).
-export STORAGE_ROOT="${STORAGE_ROOT:-/tmp/think-cocoa-storage-test}"
+export STORAGE_ROOT="${STORAGE_ROOT:-/tmp/kuana-data-storage-test}"
 
 echo "▶️  migrating + seeding test DB…"
 # SEED_TEST_USERS=true (default) creates the `system.admin@…` account

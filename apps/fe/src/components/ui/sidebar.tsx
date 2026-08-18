@@ -31,7 +31,7 @@ import { useIsMobile } from '@/shared/hooks/use-mobile';
  * lifetime for a layout toggle; the cookie also travelled on every request
  * to the API for no reason.
  */
-const SIDEBAR_STORAGE_KEY = 'thinkcocoa:sidebar-open';
+const SIDEBAR_STORAGE_KEY = 'kuanadata:sidebar-open';
 
 function readStoredOpen(): boolean | null {
   try {

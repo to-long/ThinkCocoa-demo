@@ -42,7 +42,7 @@ module.exports = {
     '/node_modules/(?!(?:.*[/@])?(react-intl|@formatjs|intl-messageformat|intl-messageformat-parser)([/.@]|$))',
   ],
   setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
-  // Resolve `@thinkcocoa/shared` workspace import — the package
+  // Resolve `@kuanadata/shared` workspace import — the package
   // ships compiled `dist/`; point Jest there so it doesn't try to
   // type-resolve the source `.ts` files.
   moduleDirectories: ['node_modules', '<rootDir>/../../node_modules'],

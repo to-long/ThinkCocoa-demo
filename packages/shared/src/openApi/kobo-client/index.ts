@@ -2,8 +2,8 @@
  * Public facade for the KoboToolbox API client.
  *
  * Usage:
- *   import { client, <sdkFn> } from '@thinkcocoa/shared/kobo-client';
- *   import type { ... } from '@thinkcocoa/shared/kobo-client';
+ *   import { client, <sdkFn> } from '@kuanadata/shared/kobo-client';
+ *   import type { ... } from '@kuanadata/shared/kobo-client';
  *
  * The default `client` from the generated code carries Kobo's base URL
  * (https://kf.kobotoolbox.org). Callers who need a different deployment can

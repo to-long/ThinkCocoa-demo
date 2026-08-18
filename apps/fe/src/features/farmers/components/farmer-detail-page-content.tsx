@@ -14,7 +14,7 @@
  * remain dropped; parcels get their own page when GeoJSON import ships.
  */
 
-import type { CreateFarmerInput, UpdateFarmerInput } from '@thinkcocoa/shared';
+import type { CreateFarmerInput, UpdateFarmerInput } from '@kuanadata/shared';
 import {
   Check,
   Copy,

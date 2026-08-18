@@ -6,14 +6,14 @@
  * after the server confirms so the list and detail caches stay in sync.
  */
 
-import type { CreateCooperativeInput, UpdateCooperativeInput } from '@thinkcocoa/shared';
+import type { CreateCooperativeInput, UpdateCooperativeInput } from '@kuanadata/shared';
 import {
   deleteApiCooperativesById,
   getApiCooperatives,
   getApiCooperativesById,
   patchApiCooperativesById,
   postApiCooperatives,
-} from '@thinkcocoa/shared/think-cocoa-client';
+} from '@kuanadata/shared/kuana-data-client';
 import useSWR, { mutate as globalMutate } from 'swr';
 import { apiFetch, unwrap } from './fetcher';
 

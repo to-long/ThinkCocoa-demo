@@ -1,5 +1,5 @@
 /**
- * Idempotent IAM baseline — matches the ThinkCocoa product spec.
+ * Idempotent IAM baseline — matches the KuanaData product spec.
  *
  * Roles (6):
  *   field_officer      — primary field data collection. Scope: own district.
@@ -16,13 +16,13 @@
  * keeps the flag in lock-step with the role taxonomy at the end —
  * see `syncIsAllCooperativeFlag()`.
  *
- * Permission catalog lives in `@thinkcocoa/shared` (FE + BE share
+ * Permission catalog lives in `@kuanadata/shared` (FE + BE share
  * the union); obsolete-data cleanup lives in `cleanup.ts`. This
  * module is responsible for: permissions upsert, role upsert,
  * role_permissions rebuild, and the org-wide flag sync.
  */
 
-import { ORG_WIDE_ROLE_CODES, PERMISSION_CATALOG, type PermissionCode } from '@thinkcocoa/shared';
+import { ORG_WIDE_ROLE_CODES, PERMISSION_CATALOG, type PermissionCode } from '@kuanadata/shared';
 import { sql as dsql, inArray } from 'drizzle-orm';
 import type { Db } from '../../src/db/client';
 import { permissions, rolePermissions, roles } from '../../src/db/schema/index';

@@ -23,7 +23,7 @@ import {
   parcelGeometrySchema,
   type UpdateParcelInput,
   updateParcelSchema,
-} from '@thinkcocoa/shared';
+} from '@kuanadata/shared';
 import {
   Check,
   ChevronsUpDown,

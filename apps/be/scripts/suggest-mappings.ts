@@ -30,7 +30,7 @@ for (const item of survey) {
 }
 const wb = new ExcelJS.Workbook();
 await wb.xlsx.readFile(
-  '/Users/long.to/Documents/PRIVATE/ThinkCocoa-Project/docs/Internal_Inspection_Form updated 2026 - feedback Richard.xlsx',
+  '/Users/long.to/Documents/PRIVATE/KuanaData-Project/docs/Internal_Inspection_Form updated 2026 - feedback Richard.xlsx',
 );
 const sheet = wb.worksheets[0];
 const STOP = new Set([

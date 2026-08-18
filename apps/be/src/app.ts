@@ -53,7 +53,7 @@ export const app = new OpenAPIHono({ defaultHook: validationHook });
 // Access log — first thing so we capture every request, including
 // those that bail out early in auth/CORS/body-limit. The middleware
 // itself is non-blocking: it runs `await next()`, then appends one
-// NDJSON line to `/var/log/think-cocoa/access.log` after the route
+// NDJSON line to `/var/log/kuana-data/access.log` after the route
 // has finished. See `middleware/access-log.ts` for the format.
 app.use('*', accessLog);
 
@@ -286,9 +286,9 @@ if (process.env.NODE_ENV === 'development') {
   app.doc('/doc', {
     openapi: '3.0.0',
     info: {
-      title: 'Think!Cocoa API',
+      title: 'Kuana Data API',
       version: '1.0.0',
-      description: 'Think!Cocoa — Cocoa Traceability Platform API',
+      description: 'Kuana Data — Cocoa Traceability Platform API',
     },
     servers: docServerUrl ? [{ url: docServerUrl, description: 'Backend' }] : [],
   });
@@ -297,7 +297,7 @@ if (process.env.NODE_ENV === 'development') {
     '/reference',
     apiReference({
       url: '/doc',
-      title: 'ThinkCocoa API Reference',
+      title: 'KuanaData API Reference',
       theme: 'kepler',
     }),
   );
@@ -337,7 +337,7 @@ app.notFound((c) => c.json({ error: 'Not Found' }, 404));
 
 // Catch-all error handler — anything that throws past a route handler
 // lands here. Logs an NDJSON line to stderr (PM2 routes that to
-// `/var/log/think-cocoa/error.log`) with route + user context so it's
+// `/var/log/kuana-data/error.log`) with route + user context so it's
 // greppable later, then returns a generic 500 to the client.
 //
 // `console.error` is used instead of a write-stream because PM2 already

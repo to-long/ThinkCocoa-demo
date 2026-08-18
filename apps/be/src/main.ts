@@ -19,7 +19,7 @@ Sentry.init({
   enabled: !!process.env.SENTRY_DSN && process.env.NODE_ENV !== 'development',
   release: process.env.SENTRY_RELEASE, // = git SHA, set by deploy.yml
   // Trace 10% of requests — keeps us under the 10k spans/mo free-tier
-  // quota at realistic ThinkCocoa traffic.
+  // quota at realistic KuanaData traffic.
   tracesSampleRate: 0.1,
   beforeSend(event) {
     // Skip 4xx — those are client errors, not bugs worth alerting on.
@@ -40,7 +40,7 @@ import { startTokenRevocationListener } from './lib/token-revocation';
 // `PORT`. Dev: default 8100.
 //
 // nginx in front of the Droplet owns :80/:443 and load-balances
-// between the two slots (see /etc/nginx/sites-enabled/think-cocoa).
+// between the two slots (see /etc/nginx/sites-enabled/kuana-data).
 // One slot is always serving; deploys start the NEW slot, health-check,
 // then kill OLD. nginx's `max_fails=1 fail_timeout=5s` handles the
 // instant when OLD dies — new connections fall back to NEW automatically.

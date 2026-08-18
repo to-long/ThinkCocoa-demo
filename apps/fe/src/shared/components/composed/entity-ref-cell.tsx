@@ -24,7 +24,7 @@
  *     handler (double navigation).
  */
 
-import type { PermissionCode } from '@thinkcocoa/shared';
+import type { PermissionCode } from '@kuanadata/shared';
 import { SquareArrowOutUpRight } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';

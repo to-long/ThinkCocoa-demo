@@ -33,7 +33,7 @@ const codesAt = (body: ValidationFailure, path: string) =>
 
 const VALID_CREATE = () => ({
   email: `validation.${SUFFIX}@example.test`,
-  password: 'ThinkData2026!',
+  password: 'KuanaData2026!',
   name: 'Validation Probe',
   cooperativeIds: [],
   isAllCooperative: true,

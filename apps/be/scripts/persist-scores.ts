@@ -6,7 +6,7 @@ const pg = new Client({
   port: 5539,
   user: 'postgres',
   password: 'postgres',
-  database: 'thinkcocoa',
+  database: 'kuanadata',
 });
 await pg.connect();
 await pg.query('BEGIN');

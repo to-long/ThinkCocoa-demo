@@ -5,7 +5,7 @@
  * inside the selected season for the per-parcel harvest figures.
  *
  * Mirrors the Demo Cocoa template
- * `apps/be/reports/ThinkCocoa_Traceability_Report_Template.xlsx`:
+ * `apps/be/reports/KuanaData_Traceability_Report_Template.xlsx`:
  *   • Row 1: title (preserved as-is)
  *   • Row 2: summary formulas — COUNTA / SUM / COUNTIF over the data range
  *   • Row 3: section headings (Geometry / Farmer / Location / Yield / GPS)
@@ -56,7 +56,7 @@ const DATA_END_ROW = 10004;
  *  the same value the spec workbook stamps in column L row 5. */
 const MAX_YIELD_KG_PER_HA = 800;
 
-/** Planting year that flips the ThinkCocoa risk classification to
+/** Planting year that flips the KuanaData risk classification to
  *  "HIGH RISK" (any parcel planted after this is past the EUDR cut-off
  *  for forest-conversion-free declarations). */
 const HIGH_RISK_PLANTING_YEAR = 2020;
@@ -197,7 +197,7 @@ const CELL_MAP: ReadonlyArray<{ col: string; value: (row: Row) => unknown }> = [
 ];
 
 async function buildXlsx(rows: Row[]): Promise<Buffer> {
-  const tplBuf = await readReportTemplate('ThinkCocoa_Traceability_Report_Template.xlsx');
+  const tplBuf = await readReportTemplate('KuanaData_Traceability_Report_Template.xlsx');
   const wb = new ExcelJS.Workbook();
   // biome-ignore lint/suspicious/noExplicitAny: typedef bridge — see farmer-coaching-v3.ts
   await wb.xlsx.load(tplBuf as any);
@@ -291,7 +291,7 @@ const CSV_COLUMNS: ReadonlyArray<{ header: string; pick: (r: Row) => string | nu
   { header: 'Maximum Capacity (Kg)', pick: (r) => maxCapacityKg(r) },
   { header: 'Longitude (WGS84 DD)', pick: (r) => r.longitude },
   { header: 'Latitude (WGS84 DD)', pick: (r) => r.latitude },
-  { header: 'ThinkCocoa Risk', pick: (r) => riskLabel(r) },
+  { header: 'KuanaData Risk', pick: (r) => riskLabel(r) },
 ];
 
 function buildCsv(rows: Row[]): Buffer {
@@ -319,13 +319,13 @@ export async function generateTraceabilityReport(
   if (params.outputFormat === 'csv') {
     return {
       buffer: buildCsv(rows),
-      fileName: `ThinkCocoa_Traceability_Report_${slug}_${stamp}.csv`,
+      fileName: `KuanaData_Traceability_Report_${slug}_${stamp}.csv`,
       mimeType: CSV_MIME,
     };
   }
   return {
     buffer: await buildXlsx(rows),
-    fileName: `ThinkCocoa_Traceability_Report_${slug}_${stamp}.xlsx`,
+    fileName: `KuanaData_Traceability_Report_${slug}_${stamp}.xlsx`,
     mimeType: XLSX_MIME,
   };
 }

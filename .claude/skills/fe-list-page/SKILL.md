@@ -1,6 +1,6 @@
 ---
 name: fe-list-page
-description: ThinkCocoa FE convention for any admin list page (users, farmers, cooperatives, roles, permissions, audit). Use when adding a new list page, refactoring an existing one, or reviewing one. Codifies the four mandatory pillars — stats cards, URL-backed pagination, multi-column sort, multi-select filters — plus the SWR + URL state pattern.
+description: KuanaData FE convention for any admin list page (users, farmers, cooperatives, roles, permissions, audit). Use when adding a new list page, refactoring an existing one, or reviewing one. Codifies the four mandatory pillars — stats cards, URL-backed pagination, multi-column sort, multi-select filters — plus the SWR + URL state pattern.
 ---
 
 # FE list page — the four pillars
@@ -148,7 +148,7 @@ cd apps/fe && bun run build   # rsbuild + tsc
 
 If FE talks to a new BE endpoint, regenerate the SDK first:
 ```bash
-bun run think-cocoa-client:refresh
+bun run kuana-data-client:refresh
 ```
 
 ## Reference files (read before writing new pages)

@@ -23,7 +23,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-const STORAGE_KEY = 'thinkcocoa:lastMenuRoute';
+const STORAGE_KEY = 'kuanadata:lastMenuRoute';
 
 /** Pathname prefixes that should NOT be recorded as "last menu". */
 const SKIP_PREFIXES = ['/notifications'];

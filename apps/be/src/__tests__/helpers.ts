@@ -11,8 +11,8 @@
 import { app } from '../app';
 
 const SYSTEM_ADMIN = {
-  email: 'system.admin@thinkdata.com',
-  password: 'ThinkData2026!',
+  email: 'system.admin@kuanadata.com',
+  password: 'KuanaData2026!',
 };
 
 export interface AuthSession {
@@ -38,7 +38,7 @@ export async function signInAs(
   if (!res.ok) {
     throw new Error(`Sign-in failed for ${email}: ${res.status} ${await res.text()}`);
   }
-  // better-auth uses `Set-Cookie` to install `thinkcocoa.session_token=...`
+  // better-auth uses `Set-Cookie` to install `kuanadata.session_token=...`
   // (the prefix is ours — see `auth.ts`).
   // We accumulate every Set-Cookie header into one Cookie value.
   const setCookies = res.headers.getSetCookie?.() ?? [];
@@ -105,13 +105,13 @@ export function uniqueSuffix(): string {
 
 export const TEST_USERS = {
   systemAdmin: {
-    email: 'system.admin@thinkdata.com',
-    password: 'ThinkData2026!',
+    email: 'system.admin@kuanadata.com',
+    password: 'KuanaData2026!',
   },
   imsManager: {
     // Per-coop split — use the Sankofa IMS manager since the test
     // suite already homes data fixtures to that coop.
-    email: 'ims.manager.sankofa@thinkdata.com',
-    password: 'ThinkData2026!',
+    email: 'ims.manager.sankofa@kuanadata.com',
+    password: 'KuanaData2026!',
   },
 } as const;

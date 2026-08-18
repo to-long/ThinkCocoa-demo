@@ -6,7 +6,7 @@
  */
 
 import { z } from '@hono/zod-openapi';
-import { createParcelSchema, listParcelsQuerySchema, updateParcelSchema } from '@thinkcocoa/shared';
+import { createParcelSchema, listParcelsQuerySchema, updateParcelSchema } from '@kuanadata/shared';
 
 // ── Response schemas ─────────────────────────────────────────
 export const parcelCoreSchema = z

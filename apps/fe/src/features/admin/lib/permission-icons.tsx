@@ -1,5 +1,5 @@
 /**
- * Icon mapping for ThinkCocoa permissions.
+ * Icon mapping for KuanaData permissions.
  *
  * Keys mirror the 13 resources in `PERMISSION_CATALOG` (see
  * `packages/shared/src/constants/permissions.ts`). If the catalog grows

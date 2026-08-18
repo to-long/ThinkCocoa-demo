@@ -85,7 +85,7 @@ export async function readAuditChanges<T>(date: string, relPath: string): Promis
  * accumulate orphans no code can ever reach again.
  *
  * The directory is preserved rather than removed and recreated — on the
- * droplet it lives at `/var/lib/think-cocoa/storage` with ownership the app
+ * droplet it lives at `/var/lib/kuana-data/storage` with ownership the app
  * user may not be able to reproduce.
  */
 export async function clearStorageContents(): Promise<number> {

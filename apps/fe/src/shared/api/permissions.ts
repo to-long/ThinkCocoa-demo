@@ -18,7 +18,7 @@ import {
   postApiPermissions,
   postApiPermissionsGroups,
   putApiPermissionsGroupsByResource,
-} from '@thinkcocoa/shared/think-cocoa-client';
+} from '@kuanadata/shared/kuana-data-client';
 import useSWR, { mutate as globalMutate } from 'swr';
 import { unwrap } from './fetcher';
 import type { ApiPermission, CreatePermissionInput, UpdatePermissionInput } from './types';

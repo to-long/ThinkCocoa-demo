@@ -8,7 +8,7 @@
  * See `useUserDialogCatalog` for the parallel rationale on the users page.
  */
 
-import { getApiPermissions } from '@thinkcocoa/shared/think-cocoa-client';
+import { getApiPermissions } from '@kuanadata/shared/kuana-data-client';
 import useSWR from 'swr';
 import { unwrap } from './fetcher';
 import type { ApiPermission } from './types';

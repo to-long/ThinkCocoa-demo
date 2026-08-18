@@ -1,5 +1,5 @@
 /**
- * IAM schema — ThinkCocoa's identity + access tables.
+ * IAM schema — KuanaData's identity + access tables.
  *
  * This schema is also the home of the better-auth-managed tables:
  *   - iam.users          (better-auth "user"  model)

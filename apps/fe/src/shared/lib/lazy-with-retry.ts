@@ -46,7 +46,7 @@ const CHUNK_ERROR_RE =
   //                     as a generic crash with an unusable Retry.
   /loading chunk|chunkloaderror|loading css chunk|failed to fetch dynamically imported module|error loading dynamically imported module|importing a module script failed|failed to fetch|factory is undefined|cannot read propert(?:y|ies) of undefined \(reading 'call'\)/i;
 
-const STAMP_KEY = 'thinkcocoa-chunk-reload-at';
+const STAMP_KEY = 'kuanadata-chunk-reload-at';
 /** Two reloads closer together than this are a loop, not a retry. */
 const COOLDOWN_MS = 10_000;
 

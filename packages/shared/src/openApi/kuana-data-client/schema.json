@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Think!Cocoa API",
+    "title": "Kuana Data API",
     "version": "1.0.0",
-    "description": "Think!Cocoa — Cocoa Traceability Platform API"
+    "description": "Kuana Data — Cocoa Traceability Platform API"
   },
   "servers": [
     {

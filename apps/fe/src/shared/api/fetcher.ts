@@ -1,14 +1,14 @@
 /**
  * Shared ApiError + helper used by every SWR hook in this folder.
  *
- * The HTTP layer is the generated `think-cocoa-client` SDK (hey-api). Its
+ * The HTTP layer is the generated `kuana-data-client` SDK (hey-api). Its
  * calls resolve to `{ data, error, response }` — this module provides
  * `unwrap()` which turns that shape into either a resolved value or an
  * `ApiError` throw. That keeps `useApiErrorMessage` — and every caller that
  * already catches `ApiError` — working unchanged.
  */
 
-import type { ValidationErrorBody } from '@thinkcocoa/shared';
+import type { ValidationErrorBody } from '@kuanadata/shared';
 import { type Arguments, mutate as globalMutate } from 'swr';
 import { authClient } from '@/lib/auth-client';
 

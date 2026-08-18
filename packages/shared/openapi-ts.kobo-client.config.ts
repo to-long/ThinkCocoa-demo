@@ -7,7 +7,7 @@ import { defineConfig } from '@hey-api/openapi-ts';
  * `bun run kobo-client:snapshot`).
  * Output: `src/openApi/kobo-client/generated/` — do not hand-edit.
  *
- * Consumers import from `@thinkcocoa/shared/kobo-client`.
+ * Consumers import from `@kuanadata/shared/kobo-client`.
  */
 export default defineConfig({
   input: './src/openApi/kobo-client/schema.yaml',

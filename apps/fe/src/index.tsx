@@ -1,5 +1,5 @@
 import './index.css';
-// Side-effect import: configures the think-cocoa-client SDK (baseUrl +
+// Side-effect import: configures the kuana-data-client SDK (baseUrl +
 // credentials) before any component renders or issues a request.
 import './shared/api/client-config';
 import { StrictMode, Suspense, useEffect, useState } from 'react';

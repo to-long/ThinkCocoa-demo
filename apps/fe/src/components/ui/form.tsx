@@ -145,7 +145,7 @@ function FormDescription({ className, ...props }: React.ComponentProps<'p'>) {
 
 // Translate the error message text through react-intl with two
 // patterns:
-//   1. SCREAMING_SNAKE_CASE codes from `@thinkcocoa/shared` zod
+//   1. SCREAMING_SNAKE_CASE codes from `@kuanadata/shared` zod
 //      validators (e.g. `ROLE_CODE_PATTERN`) → look up
 //      `validator.<CODE>`.
 //   2. Dotted intl keys (e.g. `users.userDialog.scope.required`)

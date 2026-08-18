@@ -80,7 +80,7 @@ let listenerOtherSession: AuthSession;
 beforeAll(async () => {
   actorSession = await signInAs(TEST_USERS.systemAdmin.email, TEST_USERS.systemAdmin.password);
   listenerSameSession = await signInAs(TEST_USERS.imsManager.email, TEST_USERS.imsManager.password);
-  listenerOtherSession = await signInAs('ims.manager.adwuma@thinkdata.com', 'ThinkData2026!');
+  listenerOtherSession = await signInAs('ims.manager.adwuma@kuanadata.com', 'KuanaData2026!');
 
   [sankofaCoopId, adwumaCoopId] = await Promise.all([
     db

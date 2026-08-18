@@ -17,15 +17,18 @@ export function AuthLayout({ locale, onLocaleChange }: AuthLayoutProps) {
       <header className="flex items-center justify-between border-border border-b px-8 py-4">
         <Link to="/" className="flex items-center gap-2.5">
           <img
-            src="/ThinkCocoaLogo.webp"
-            alt="Think!Cocoa"
+            src="/kuana-logo.svg"
+            alt="Kuana Data"
             className="size-7"
             width={28}
             height={28}
             decoding="async"
           />
           <div className="flex flex-col">
-            <span className="font-semibold text-sm leading-tight text-foreground">Think!Cocoa</span>
+            <span className="font-semibold text-sm leading-tight">
+              <span style={{ color: '#524a47' }}>Kuana</span>{' '}
+              <span style={{ color: '#468530' }}>Data</span>
+            </span>
             <span className="text-[10px] leading-tight text-muted-foreground">
               {intl.formatMessage({ id: 'brand.slogan' })}
             </span>

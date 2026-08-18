@@ -6,7 +6,7 @@
  * fired here so route handlers stay thin.
  */
 
-import type { CreateParcelInput, UpdateParcelInput } from '@thinkcocoa/shared';
+import type { CreateParcelInput, UpdateParcelInput } from '@kuanadata/shared';
 import { and, asc, count, desc, sql as dsql, eq, ilike, inArray, isNull, or } from 'drizzle-orm';
 import type { Context } from 'hono';
 import { db } from '../../db/client';

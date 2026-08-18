@@ -146,8 +146,8 @@ export function AppSidebar() {
           className="flex min-w-0 items-center gap-2.5 group-data-[collapsible=icon]:justify-center"
         >
           <img
-            src="/ThinkCocoaLogo.webp"
-            alt="Think!Cocoa"
+            src="/kuana-logo.svg"
+            alt="Kuana Data"
             // `shrink-0` — the mark is a flex child, so without it the
             // cramped collapsed row squeezes its width while the height
             // stays, stretching a square (512×512) source.
@@ -162,8 +162,9 @@ export function AppSidebar() {
               contract: the brand name must never wrap, and the slogan is
               longer than the 200px rail at most locales, so it ellipsises. */}
           <div className="flex min-w-0 flex-col group-data-[collapsible=icon]:hidden">
-            <span className="truncate font-semibold text-sm leading-tight text-sidebar-foreground">
-              Think!Cocoa
+            <span className="truncate font-semibold text-sm leading-tight">
+              <span style={{ color: '#524a47' }}>Kuana</span>{' '}
+              <span style={{ color: '#468530' }}>Data</span>
             </span>
             <span className="truncate text-[10px] leading-tight text-muted-foreground">
               {t('brand.slogan')}

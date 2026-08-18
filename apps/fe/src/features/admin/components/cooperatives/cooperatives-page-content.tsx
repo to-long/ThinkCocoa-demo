@@ -18,7 +18,7 @@
  * Stats are derived from the loaded list — no separate stats endpoint.
  */
 
-import type { CreateCooperativeInput, UpdateCooperativeInput } from '@thinkcocoa/shared';
+import type { CreateCooperativeInput, UpdateCooperativeInput } from '@kuanadata/shared';
 import {
   BadgeCheck,
   Building2,

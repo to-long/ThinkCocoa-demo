@@ -11,7 +11,7 @@ import {
   getApiAuditLogs,
   getApiAuditLogsById,
   getApiAuditLogsStats,
-} from '@thinkcocoa/shared/think-cocoa-client';
+} from '@kuanadata/shared/kuana-data-client';
 import useSWR from 'swr';
 import { unwrap } from './fetcher';
 

@@ -1,7 +1,7 @@
 /**
  * Users — request/response schemas + OpenAPI registrations.
  *
- * Request bodies and the list query come from `@thinkcocoa/shared`
+ * Request bodies and the list query come from `@kuanadata/shared`
  * (so the FE / generated SDK pick up the same Zod shape). Response
  * shapes and the slim-stats schema are owned here so changes don't
  * leak across the package boundary unnecessarily.
@@ -16,7 +16,7 @@ import {
   setUserRolesSchema,
   USER_STATUSES,
   updateUserSchema,
-} from '@thinkcocoa/shared';
+} from '@kuanadata/shared';
 
 // ── Response schemas ─────────────────────────────────────────
 export const userCoreSchema = z

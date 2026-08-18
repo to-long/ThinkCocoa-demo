@@ -28,8 +28,8 @@ import {
   type CreateCooperativeInput,
   cooperativeFormSchema,
   type UpdateCooperativeInput,
-} from '@thinkcocoa/shared';
-import { getApiUsers } from '@thinkcocoa/shared/think-cocoa-client';
+} from '@kuanadata/shared';
+import { getApiUsers } from '@kuanadata/shared/kuana-data-client';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useIntl } from 'react-intl';

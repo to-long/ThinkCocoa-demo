@@ -133,7 +133,7 @@ jobs:
           # BE Sentry project — the numeric project id the backend DSN posts
           # events to. Must be THIS project (not the FE one) or the uploaded
           # source maps live in the wrong project and never symbolicate the
-          # backend traces. (Was the guessed slug 'think-cocoa-be', which
+          # backend traces. (Was the guessed slug 'kuana-data-be', which
           # pointed at the wrong project.)
           SENTRY_PROJECT: '4511391320309840'
         run: |
@@ -147,7 +147,7 @@ jobs:
           # the upload. Warn loudly instead so it's visible + fixable.
           bunx @sentry/cli sourcemaps inject ./dist || echo "::warning::sourcemaps inject failed"
           bunx @sentry/cli sourcemaps upload ./dist --release "${{ github.sha }}" \
-            || echo "::warning::BE source map upload failed — check SENTRY_PROJECT slug ('think-cocoa-be'?) / SENTRY_ORG. Deploy continues; BE traces stay minified until fixed."
+            || echo "::warning::BE source map upload failed — check SENTRY_PROJECT slug ('kuana-data-be'?) / SENTRY_ORG. Deploy continues; BE traces stay minified until fixed."
 
       - name: Build FE
         env:
@@ -181,7 +181,7 @@ jobs:
           # the message is loud and actionable, not silently skipped.
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ vars.SENTRY_ORG }}
-          SENTRY_PROJECT: think-cocoa-fe
+          SENTRY_PROJECT: kuana-data-fe
         run: |
           if [[ -z "$SENTRY_AUTH_TOKEN" ]]; then
             echo "::warning::PUBLIC_SENTRY_DSN is set but SENTRY_AUTH_TOKEN secret is missing — skipping source map upload. Stack traces will be minified in Sentry."
@@ -254,14 +254,14 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<'EOF'
             set -e
-            cd /opt/thinkcocoa
+            cd /opt/kuanadata
             tar xzf /tmp/deploy-bundle.tar.gz
             rm /tmp/deploy-bundle.tar.gz
           EOF
 
       - name: 📁 Ensure persistent dirs exist
         # TieredStorage hot tier + PM2 log dir. Both MUST live outside
-        # /opt/thinkcocoa so the next deploy's `tar xzf` doesn't wipe
+        # /opt/kuanadata so the next deploy's `tar xzf` doesn't wipe
         # them. Idempotent — `mkdir -p` is a no-op when the dir
         # already exists. Running as root via the deploy SSH user, so
         # ownership/permissions are root:root by default — fine
@@ -270,8 +270,8 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<'EOF'
             set -e
-            mkdir -p /var/lib/think-cocoa/storage
-            mkdir -p /var/log/think-cocoa
+            mkdir -p /var/lib/kuana-data/storage
+            mkdir -p /var/log/kuana-data
           EOF
 
       - name: 🏷️ Stamp release SHA + DSN + secrets into BE .env
@@ -332,11 +332,11 @@ jobs:
           # is identical on a developer's laptop and here. Set the
           # SOFFICE_BIN variable to a host path to opt out. Nothing else
           # uses it, and XLSX/CSV exports keep working if it is missing.
-          SOFFICE_BIN_VAR: ${{ vars.SOFFICE_BIN || '/opt/thinkcocoa/apps/be/scripts/soffice-docker.sh' }}
+          SOFFICE_BIN_VAR: ${{ vars.SOFFICE_BIN || '/opt/kuanadata/apps/be/scripts/soffice-docker.sh' }}
         run: |
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<EOF
             set -e
-            cd /opt/thinkcocoa/apps/be
+            cd /opt/kuanadata/apps/be
             # SENTRY_RELEASE = git SHA (overwritten each deploy).
             if grep -q "^SENTRY_RELEASE=" .env 2>/dev/null; then
               sed -i "s|^SENTRY_RELEASE=.*|SENTRY_RELEASE=${{ github.sha }}|" .env
@@ -419,7 +419,7 @@ jobs:
             fi
             # EMAIL_FROM = repo variable (public, non-secret). Domain
             # portion must be a verified sender on Resend (DKIM/SPF
-            # records live on the thinkcocoa.net zone). Same value on
+            # records live on the kuanadata.com zone). Same value on
             # both envs unless staging vs prod use different domains.
             # sed -i's | delimiter avoids escaping the < > angles in
             # the display-name portion of "Name <mailbox@domain>".
@@ -468,7 +468,7 @@ jobs:
       - name: 📚 Install dependencies on Droplet
         run: |
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
-            'export PATH=/usr/local/bin:/root/.bun/bin:$PATH && cd /opt/thinkcocoa && bun install --frozen-lockfile --production'
+            'export PATH=/usr/local/bin:/root/.bun/bin:$PATH && cd /opt/kuanadata && bun install --frozen-lockfile --production'
 
       # The shim builds this image on first use, which takes ~2 minutes —
       # far past the converter's 60s timeout, so the first PDF request of a
@@ -482,7 +482,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<'EOF'
             set -e
-            IMAGE=thinkcocoa/libreoffice:bookworm
+            IMAGE=kuanadata/libreoffice:bookworm
             if ! command -v docker >/dev/null 2>&1; then
               echo "⚠️  docker not installed — PDF export will fail, XLSX/CSV unaffected"
               exit 1
@@ -500,7 +500,7 @@ jobs:
               echo "⚠️  only ${AVAIL}MB free on /var/lib/docker — need ~1500MB, skipping"
               exit 1
             fi
-            cd /opt/thinkcocoa/apps/be
+            cd /opt/kuanadata/apps/be
             echo "building $IMAGE (${AVAIL}MB free)…"
             docker build -t "$IMAGE" -f docker/libreoffice.Dockerfile .
             docker image inspect "$IMAGE" --format '✅ built, {{.Size}} bytes'
@@ -518,7 +518,7 @@ jobs:
           # that's cheaper than a failed deploy + manual re-tag.
           OLD_PORT=${{ steps.detect.outputs.active }}
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
-            "export PATH=/usr/local/bin:/root/.bun/bin:\$PATH && pm2 restart think-cocoa-$OLD_PORT"
+            "export PATH=/usr/local/bin:/root/.bun/bin:\$PATH && pm2 restart kuana-data-$OLD_PORT"
           # Give pm2 a beat to actually kill sockets + let the DB
           # register the drop before drizzle attempts to connect.
           sleep 3
@@ -549,7 +549,7 @@ jobs:
             # indent on `          EOF` below.
             ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<'EOF' || true
               set -e
-              cd /opt/thinkcocoa/apps/be
+              cd /opt/kuanadata/apps/be
               DB_URL=$(grep -E '^DATABASE_URL=' .env | head -1 | cut -d= -f2-)
               if [ -n "$DB_URL" ]; then
                 killed=$(psql "$DB_URL" -tA -c "SELECT count(pg_terminate_backend(pid)) FROM pg_stat_activity WHERE usename = session_user AND state IN ('idle', 'idle in transaction') AND pid != pg_backend_pid();" 2>/dev/null || echo 0)
@@ -557,7 +557,7 @@ jobs:
               fi
           EOF
             if ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
-              'export PATH=/usr/local/bin:/root/.bun/bin:$PATH && cd /opt/thinkcocoa/apps/be && bun run db:migrate'; then
+              'export PATH=/usr/local/bin:/root/.bun/bin:$PATH && cd /opt/kuanadata/apps/be && bun run db:migrate'; then
               echo "✅ migrations applied on attempt $attempt"
               exit 0
             fi
@@ -573,7 +573,7 @@ jobs:
         run: |
           # Full demo seed via `apps/be/db/seed/index.ts`. This replaced the
           # old `real-users.ts` staff-roster seed, which was DELETED in the
-          # ThinkData demo rebrand — the step used to run it and started
+          # Kuana Data demo rebrand — the step used to run it and started
           # failing every deploy with `Module not found "db/seed/real-users.ts"`.
           #
           # The orchestrator is idempotent (its `cleanup` step only prunes
@@ -582,7 +582,7 @@ jobs:
           # droplet always ends up with the complete dataset.
           #
           # Seeds (with SEED_FARMERS_FROM_CSV=true):
-          #   - test-users : login accounts, all @thinkdata.com / ThinkData2026!
+          #   - test-users : login accounts, all @kuanadata.com / KuanaData2026!
           #   - cooperatives + iam + reference baseline + coop chairs
           #   - farmers (synthetic CSV fixture) + inspections + coaching/CLMRS
           #   - demo-ops (purchases/evacuations) + audit-logs
@@ -596,7 +596,7 @@ jobs:
           # (dotenv resolves from cwd); from the repo root there is no .env
           # → `DATABASE_URL is required` → exit 1 → deploy blocked.
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
-            'export PATH=/usr/local/bin:/root/.bun/bin:$PATH && cd /opt/thinkcocoa/apps/be && SEED_FARMERS_FROM_CSV=true bun db/seed/index.ts'
+            'export PATH=/usr/local/bin:/root/.bun/bin:$PATH && cd /opt/kuanadata/apps/be && SEED_FARMERS_FROM_CSV=true bun db/seed/index.ts'
 
       - name: 🚀 Start NEW instance
         env:
@@ -607,9 +607,9 @@ jobs:
         run: |
           # `pm2 start ecosystem.config.cjs` runs the slot picker —
           # auto-binds the FREE port (8001 or 8002) and registers under
-          # name `think-cocoa-<NEW>`.
+          # name `kuana-data-<NEW>`.
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
-            "export PATH=/usr/local/bin:/root/.bun/bin:\$PATH && cd /opt/thinkcocoa && pm2 start ecosystem.config.cjs --env $PM2_ENV && pm2 list"
+            "export PATH=/usr/local/bin:/root/.bun/bin:\$PATH && cd /opt/kuanadata && pm2 start ecosystem.config.cjs --env $PM2_ENV && pm2 list"
 
       - name: 🏥 Health check NEW (internal)
         id: health-internal
@@ -627,7 +627,7 @@ jobs:
           done
           echo "::error::NEW :$NEW_PORT failed health check after 30 attempts"
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
-            "pm2 logs think-cocoa-$NEW_PORT --err --nostream --lines 30" || true
+            "pm2 logs kuana-data-$NEW_PORT --err --nostream --lines 30" || true
           exit 1
 
       - name: 🛑 Stop OLD instance
@@ -637,7 +637,7 @@ jobs:
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<EOF
             set -e
             export PATH=/usr/local/bin:/root/.bun/bin:\$PATH
-            pm2 delete think-cocoa-$OLD_PORT
+            pm2 delete kuana-data-$OLD_PORT
             pm2 save
           EOF
           echo "::notice::✓ Killed OLD :$OLD_PORT"
@@ -665,7 +665,7 @@ jobs:
         run: |
           NEW_PORT=${{ steps.detect.outputs.new }}
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} \
-            "export PATH=/usr/local/bin:/root/.bun/bin:\$PATH && pm2 delete think-cocoa-$NEW_PORT 2>/dev/null || true" || true
+            "export PATH=/usr/local/bin:/root/.bun/bin:\$PATH && pm2 delete kuana-data-$NEW_PORT 2>/dev/null || true" || true
           echo "::warning::Cleaned up NEW :$NEW_PORT. OLD (${{ steps.detect.outputs.active || 'none' }}) should still be serving."
 
       - name: 📊 Deployment summary

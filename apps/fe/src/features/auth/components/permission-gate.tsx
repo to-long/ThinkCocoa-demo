@@ -44,7 +44,7 @@
  *   - Compose-friendly — nests cleanly with other JSX guards.
  */
 
-import type { PermissionCode } from '@thinkcocoa/shared';
+import type { PermissionCode } from '@kuanadata/shared';
 import type { ReactNode } from 'react';
 import { selectCurrentUserPermissions, useGlobalState } from '@/shared/store/useGlobalState';
 

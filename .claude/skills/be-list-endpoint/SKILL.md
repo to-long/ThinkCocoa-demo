@@ -1,6 +1,6 @@
 ---
 name: be-list-endpoint
-description: ThinkCocoa BE convention for any list/index API endpoint. Use when adding a new feature router, refactoring an existing one, or reviewing a list endpoint. Codifies the four mandatory pillars — stats, pagination, sort, filter — and the 4-file feature structure (routes/service/projection/schemas).
+description: KuanaData BE convention for any list/index API endpoint. Use when adding a new feature router, refactoring an existing one, or reviewing a list endpoint. Codifies the four mandatory pillars — stats, pagination, sort, filter — and the 4-file feature structure (routes/service/projection/schemas).
 ---
 
 # BE list endpoint — the four pillars

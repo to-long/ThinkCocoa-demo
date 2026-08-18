@@ -16,7 +16,7 @@
  * populated, so `perms` is trustworthy by the time this renders.
  */
 
-import type { PermissionCode } from '@thinkcocoa/shared';
+import type { PermissionCode } from '@kuanadata/shared';
 import { LogOut, ShieldOff } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useIntl } from 'react-intl';

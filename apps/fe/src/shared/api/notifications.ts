@@ -15,7 +15,7 @@ import {
   getApiNotificationsPreferences,
   getApiNotificationsUnreadCount,
   putApiNotificationsPreferences,
-} from '@thinkcocoa/shared/think-cocoa-client';
+} from '@kuanadata/shared/kuana-data-client';
 import { useEffect } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
 import { ApiError, apiFetch, unwrap } from './fetcher';
