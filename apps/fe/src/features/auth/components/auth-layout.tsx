@@ -17,7 +17,7 @@ export function AuthLayout({ locale, onLocaleChange }: AuthLayoutProps) {
       <header className="flex items-center justify-between border-border border-b px-8 py-4">
         <Link to="/" className="flex items-center gap-2.5">
           <img
-            src="/kuana-logo.svg"
+            src="/kuana-data-logo.png"
             alt="Kuana Data"
             className="size-7"
             width={28}

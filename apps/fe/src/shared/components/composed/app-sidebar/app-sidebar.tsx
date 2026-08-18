@@ -146,7 +146,7 @@ export function AppSidebar() {
           className="flex min-w-0 items-center gap-2.5 group-data-[collapsible=icon]:justify-center"
         >
           <img
-            src="/kuana-logo.svg"
+            src="/kuana-data-logo.png"
             alt="Kuana Data"
             // `shrink-0` — the mark is a flex child, so without it the
             // cramped collapsed row squeezes its width while the height

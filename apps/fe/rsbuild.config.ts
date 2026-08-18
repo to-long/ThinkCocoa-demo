@@ -92,7 +92,7 @@ export default defineConfig({
   },
   html: {
     title: 'Kuana Data',
-    favicon: 'public/kuana-logo.svg',
+    favicon: 'public/kuana-data-logo.png',
     // Meta-tag versions of the same headers — applies in any host
     // setup, including bare static servers without nginx in front.
     // X-Content-Type-Options + Strict-Transport-Security CANNOT be
@@ -102,6 +102,11 @@ export default defineConfig({
       { tag: 'meta', attrs: { 'http-equiv': 'Content-Security-Policy', content: CSP } },
       { tag: 'meta', attrs: { 'http-equiv': 'X-Frame-Options', content: 'DENY' } },
       { tag: 'meta', attrs: { name: 'referrer', content: 'strict-origin-when-cross-origin' } },
+      { tag: 'meta', attrs: { name: 'description', content: 'Kuana Data — Cocoa Traceability Platform' } },
+      { tag: 'meta', attrs: { property: 'og:title', content: 'Kuana Data' } },
+      { tag: 'meta', attrs: { property: 'og:description', content: 'Kuana Data — Cocoa Traceability Platform' } },
+      { tag: 'meta', attrs: { property: 'og:image', content: '/kuana-data-logo-full.png' } },
+      { tag: 'meta', attrs: { property: 'og:type', content: 'website' } },
       ...preconnectTags,
     ],
   },
