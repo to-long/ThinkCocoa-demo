@@ -288,7 +288,7 @@ if (process.env.NODE_ENV === 'development') {
     info: {
       title: 'Kuana Data API',
       version: '1.0.0',
-      description: 'Kuana Data — Cocoa Traceability Platform API',
+      description: 'Kuana Data — Farm Data & Compliance API',
     },
     servers: docServerUrl ? [{ url: docServerUrl, description: 'Backend' }] : [],
   });

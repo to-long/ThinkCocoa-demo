@@ -104,12 +104,15 @@ export default defineConfig({
       { tag: 'meta', attrs: { name: 'referrer', content: 'strict-origin-when-cross-origin' } },
       {
         tag: 'meta',
-        attrs: { name: 'description', content: 'Kuana Data — Cocoa Traceability Platform' },
+        attrs: { name: 'description', content: 'Kuana Data — Farm Data & Compliance' },
       },
       { tag: 'meta', attrs: { property: 'og:title', content: 'Kuana Data' } },
       {
         tag: 'meta',
-        attrs: { property: 'og:description', content: 'Kuana Data — Cocoa Traceability Platform' },
+        attrs: {
+          property: 'og:description',
+          content: 'Kuana Data — Farm Data & Compliance',
+        },
       },
       { tag: 'meta', attrs: { property: 'og:image', content: '/kuana-data-logo-full.png' } },
       { tag: 'meta', attrs: { property: 'og:type', content: 'website' } },
