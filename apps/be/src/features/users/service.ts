@@ -250,12 +250,16 @@ export async function listUsers(query: ListUsersQuery): Promise<ListUsersResult>
       )!,
     );
   } else if (query.scope) {
-    // Any other value is treated as a cooperative UUID. Org-wide
-    // access subsumes any specific coop, so `is_all_cooperative` also
-    // counts as a match.
+    // Any other value is treated as a cooperative UUID. Show ONLY users
+    // explicitly assigned to this coop — org-wide ("All cooperatives")
+    // accounts are deliberately EXCLUDED when filtering by a single coop.
+    // Although their access subsumes every coop, mixing them into a
+    // per-coop view drowns that coop's own members under every admin /
+    // buyer / project-leader who spans all coops, which isn't what the
+    // filter is for. (Org-wide accounts remain reachable via `scope=all`.)
     whereClauses.push(
-      or(
-        eq(users.isAllCooperative, true),
+      and(
+        eq(users.isAllCooperative, false),
         dsql`EXISTS (
           SELECT 1 FROM iam.user_cooperative_assignments a
           WHERE a.user_id = ${users.id} AND a.cooperative_id = ${query.scope}::uuid
