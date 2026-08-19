@@ -33,6 +33,7 @@ import type { CertOutcomeBucket } from '@/shared/api';
 import { useFarmerFullStats, useParcelStats } from '@/shared/api';
 import { useClmrsRecords } from '@/shared/api/clmrs';
 import { selectActiveCoop, useActiveCoop } from '@/shared/store/useActiveCoop';
+import { usePermission } from '@/shared/store/useGlobalState';
 
 // Register Chart.js building blocks once per module load. Doughnut needs
 // ArcElement; Bar needs BarElement + both scales. Tooltip + Legend are
@@ -126,8 +127,11 @@ export function FarmerStatsSection() {
   // CLMRS case status across every observed child — derived from the
   // coaching visits carrying a CLMRS verdict (`/api/clmrs-records`),
   // scoped to the active cooperative.
+  // Only fetch CLMRS when the user can read it — a farmer:read role without
+  // clmrs:read (e.g. Buyer) would otherwise fire a 403 for the CLMRS donut.
   const activeCoop = useActiveCoop(selectActiveCoop);
-  const { data: clmrsData } = useClmrsRecords(activeCoop?.cooperativeCode ?? null);
+  const canReadClmrs = usePermission('clmrs:read');
+  const { data: clmrsData } = useClmrsRecords(activeCoop?.cooperativeCode ?? null, canReadClmrs);
   const clmrsRecords = clmrsData?.records ?? [];
   const CLMRS_ORDER = ['pending', 'open', 'closed'] as const;
   const CLMRS_TONE: Record<(typeof CLMRS_ORDER)[number], StatusTone> = {
@@ -165,7 +169,9 @@ export function FarmerStatsSection() {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <DonutCard title={t('farmers.stats.raCertified')} items={certifiedSlices} showEmpty />
           <DonutCard title={t('dashboard.breakdown.eudrTitle')} items={eudrSlices} showEmpty />
-          <DonutCard title={t('dashboard.breakdown.clmrsTitle')} items={clmrsSlices} showEmpty />
+          {canReadClmrs && (
+            <DonutCard title={t('dashboard.breakdown.clmrsTitle')} items={clmrsSlices} showEmpty />
+          )}
           <DonutCard
             title={t('farmers.stats.bySex')}
             // Sex labels are localized (`farmers.sex.*`). Canonical

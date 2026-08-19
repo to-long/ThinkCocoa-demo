@@ -84,17 +84,15 @@ function maybeForceSignOut(status: number): void {
 }
 
 // 403 = permission-denied (authz): the session is fine, the user just
-// isn't allowed to touch this resource. Send them to the /403 landing
-// (rendered inside the shell so the sidebar stays for navigation).
-// Guarded so a burst of 403s redirects once, and skipped when already
-// on /403 to avoid a reload loop.
-let handlingForbidden = false;
-function maybeRedirectForbidden(status: number): void {
-  if (status !== 403 || handlingForbidden) return;
-  if (typeof window === 'undefined' || window.location.pathname === '/403') return;
-  handlingForbidden = true;
-  window.location.assign('/403');
-}
+// isn't allowed to touch THIS resource. We deliberately do NOT navigate on
+// a 403 — page-level authorization is the router's job (`RequirePermission`
+// renders <Forbidden/> inline from the user's cached permission set, no API
+// call needed). A 403 here therefore only ever comes from a *data* call —
+// often a secondary/background one on a page the user is legitimately
+// allowed to view (a dashboard widget, a filter dropdown). Redirecting the
+// whole app to /403 for such a call was the root cause of pages the user
+// COULD see getting yanked to "Access denied". A 403 now just throws an
+// ApiError the calling hook/component handles locally (usually: show empty).
 
 function isValidationError(body: unknown): body is ValidationErrorBody {
   return (
@@ -115,10 +113,11 @@ function isValidationError(body: unknown): body is ValidationErrorBody {
  */
 export function toApiError(error: unknown, response?: Response): ApiError {
   const status = response?.status ?? 0;
-  // Side-effects: bounce to /login if the session went invalid (401),
-  // or to /403 if it's a permission-denied (403).
+  // Side-effect: bounce to /login if the session went invalid (401). A 403
+  // is intentionally NOT redirected — see the note above `toApiError`'s
+  // helpers: authz is enforced at the route layer, and a data-call 403 must
+  // fail locally instead of hijacking navigation.
   maybeForceSignOut(status);
-  maybeRedirectForbidden(status);
   const validation = isValidationError(error) ? error : undefined;
 
   let message: string;
@@ -291,12 +290,13 @@ export async function apiFetch<TData = unknown>(
 
 /**
  * Speculative fetch for PREFETCH only. Same wire call as `apiFetch` but it
- * deliberately does NOT run the shared 401→/login and 403→/403 redirect
- * side-effects (it throws a plain Error, never an ApiError): a speculative
- * prefetch that gets rejected — a forbidden endpoint, a transient blip on
- * tab-resume — must stay silent and never navigate the app. Returns parsed
- * JSON on success so an SWR cache hit matches exactly what the page's own
- * `apiFetch` hook would have produced.
+ * deliberately does NOT run the shared 401→/login sign-out side-effect (it
+ * throws a plain Error, never an ApiError): a speculative prefetch that gets
+ * rejected — a forbidden endpoint, a transient blip on tab-resume — must
+ * stay silent and never sign the user out. (A 403 never navigates from
+ * `apiFetch` either, so there is nothing extra to suppress there.) Returns
+ * parsed JSON on success so an SWR cache hit matches exactly what the page's
+ * own `apiFetch` hook would have produced.
  */
 export async function quietFetch<TData = unknown>(path: string): Promise<TData> {
   const res = await fetch(`${API_BASE}${path}`, {
