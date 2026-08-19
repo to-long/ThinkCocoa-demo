@@ -35,6 +35,20 @@ export interface PermissionDefinition {
 // The tuple must stay `as const` so TypeScript infers literal types for
 // every `code`, from which we derive the `PermissionCode` union below.
 export const PERMISSION_CATALOG = [
+  // ── clmrs ── (child-labour monitoring & remediation; distinct from
+  // coaching — a role can oversee CLMRS cases without touching coaching
+  // visits and vice versa)
+  {
+    code: 'clmrs:create',
+    name: 'Create',
+    description: 'Open a CLMRS remediation case for a flagged child',
+  },
+  {
+    code: 'clmrs:read',
+    name: 'Read',
+    description: 'View the CLMRS child-labour register and cases',
+  },
+  { code: 'clmrs:update', name: 'Update', description: 'Update a CLMRS case status' },
   // ── coaching ──
   { code: 'coaching:create', name: 'Create', description: 'Record a new coaching visit' },
   { code: 'coaching:delete', name: 'Delete', description: 'Soft-delete a coaching visit' },

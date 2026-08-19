@@ -40,9 +40,14 @@ export async function setClmrsCaseStatus(
   });
 }
 
-export function useClmrsRecords(coopCode?: string | null) {
+// `enabled` — pass false to skip the fetch entirely (null SWR key). Call
+// sites that only need CLMRS data for a secondary widget (e.g. the farmers
+// list's CLMRS column) gate this on `usePermission('clmrs:read')` so a role
+// without it never fires the `/api/clmrs-records` call — which would 403
+// and, via the global fetcher, bounce the whole page to /403.
+export function useClmrsRecords(coopCode?: string | null, enabled = true) {
   return useSWR<ClmrsRecordsResponse>(
-    ['/api/clmrs-records', coopCode ?? ''],
+    enabled ? ['/api/clmrs-records', coopCode ?? ''] : null,
     () => apiFetch<ClmrsRecordsResponse>('/api/clmrs-records'),
     { keepPreviousData: true },
   );

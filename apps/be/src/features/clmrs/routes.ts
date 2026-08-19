@@ -2,7 +2,7 @@
  * CLMRS — HTTP wiring (read-only).
  *
  *   GET /api/clmrs-records            — child-labour register for the
- *                                       active coop (coaching:read)
+ *                                       active coop (clmrs:read)
  *   GET /api/clmrs-records/:childId   — single record
  *
  * Records are derived from `coaching.coaching_visits` (see service).
@@ -65,7 +65,7 @@ clmrsRoutes.openapi(
     responses: {
       200: { description: 'List', content: { 'application/json': { schema: listResponse } } },
     },
-    middleware: [requirePermission('coaching:read')],
+    middleware: [requirePermission('clmrs:read')],
   }),
   async (c) => {
     const records = await listClmrsRecords(c.get('activeCoopId'));
@@ -83,7 +83,7 @@ clmrsRoutes.openapi(
       200: { description: 'Detail', content: { 'application/json': { schema: recordSchema } } },
       404: { description: 'Not found', content: { 'application/json': { schema: errorResponse } } },
     },
-    middleware: [requirePermission('coaching:read')],
+    middleware: [requirePermission('clmrs:read')],
   }),
   async (c) => {
     const { childId } = c.req.valid('param');
@@ -115,7 +115,7 @@ clmrsRoutes.openapi(
         content: { 'application/json': { schema: errorResponse } },
       },
     },
-    middleware: [requirePermission('coaching:create')],
+    middleware: [requirePermission('clmrs:create')],
   }),
   async (c) => {
     const { childId } = c.req.valid('param');
@@ -151,7 +151,7 @@ clmrsRoutes.openapi(
         content: { 'application/json': { schema: errorResponse } },
       },
     },
-    middleware: [requirePermission('coaching:update')],
+    middleware: [requirePermission('clmrs:update')],
   }),
   async (c) => {
     const { childId } = c.req.valid('param');

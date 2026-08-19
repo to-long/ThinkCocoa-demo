@@ -282,11 +282,11 @@ function Root() {
                       <Route path="farms/map" element={<FarmMapPage />} />
                       <Route path="farms/:parcelId" element={<FarmDetailPage />} />
                     </Route>
-                    <Route element={<RequirePermission codes={['farmer:read']} />}>
+                    <Route element={<RequirePermission codes={['clmrs:read']} />}>
                       <Route path="clmrs" element={<ClmrsPage />} />
                       <Route path="clmrs/:childId" element={<ClmrsRecordDetailPage />} />
                     </Route>
-                    <Route element={<RequirePermission codes={['farmer:read']} />}>
+                    <Route element={<RequirePermission codes={['vsla:read']} />}>
                       <Route path="vsla" element={<VslaPage />} />
                       <Route path="vsla/:id" element={<VslaDetailPage />} />
                     </Route>

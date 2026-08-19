@@ -107,8 +107,13 @@ function normalizeListParams(p: UsersListParams) {
 
 // ── Queries ───────────────────────────────────────────────────────────────
 
-export function useUsersList(params: UsersListParams = {}) {
-  return useSWR<UsersListResponse>(usersListKey(params), async () => {
+// `enabled` — pass false to skip the fetch (null SWR key). Non-admin
+// surfaces that only need the user list for a secondary filter (e.g. the
+// reports page's field-officer dropdown) gate this on
+// `usePermission('user:read')` so a role without it never fires the
+// `/api/users` call — which would 403 and bounce the whole page to /403.
+export function useUsersList(params: UsersListParams = {}, enabled = true) {
+  return useSWR<UsersListResponse>(enabled ? usersListKey(params) : null, async () => {
     // BE query validator uses `z.string()` for every paginated field — cast
     // here so the SDK serializes them correctly.
     const query: Record<string, string> = {};

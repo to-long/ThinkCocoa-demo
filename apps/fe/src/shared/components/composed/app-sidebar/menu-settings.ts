@@ -140,9 +140,11 @@ export const menuSections: MenuSection[] = [
         href: '/vsla',
         icon: PiggyBank,
         iconColor: GROUP_TINT.operations,
-        // VSLA reuses `farmer:read` for now — same audience as farmers/
-        // parcels. When a dedicated `vsla:read` lands we'll swap this.
-        permission: 'farmer:read',
+        // Gated on `vsla:read` — the SAME perm every `/api/vsla` route
+        // requires. Was borrowing `farmer:read` (which every role has), so
+        // the item showed for everyone but the page's own list/stats calls
+        // 403'd and bounced them to /403.
+        permission: 'vsla:read',
       },
     ],
   },
@@ -187,15 +189,17 @@ export const menuSections: MenuSection[] = [
       },
       // CLMRS lands under Compliance next to Inspections. The single
       // /clmrs page has two internal tabs — Pending Flags (Modules B/C
-      // output) and Case Register (Module D). Gated on `farmer:read`
-      // for the initial rollout — swap to a dedicated `clmrs:read`
-      // when the BE lands.
+      // output) and Case Register (Module D). Gated on `clmrs:read`, the
+      // SAME perm the BE `/api/clmrs-records` routes require — so the item
+      // only shows to roles that can actually read the register (it used
+      // to borrow `farmer:read`, which every role has, so the menu showed
+      // for everyone but the data 403'd and bounced them to /403).
       {
         labelKey: 'navigation.clmrs',
         href: '/clmrs',
         icon: ShieldAlert,
         iconColor: GROUP_TINT.compliance,
-        permission: 'farmer:read',
+        permission: 'clmrs:read',
       },
     ],
   },

@@ -92,6 +92,10 @@ export const ROLE_GRANTS: Record<RoleCode, readonly PermissionCode[]> = {
     'training:create',
     'training:update',
     'training:notification',
+    // CLMRS read only — field officers surface child-labour flags on
+    // household/farm visits, so they see the register for their district;
+    // opening/updating remediation cases stays with IMS/admin.
+    'clmrs:read',
   ],
 
   ims_manager: [
@@ -124,6 +128,9 @@ export const ROLE_GRANTS: Record<RoleCode, readonly PermissionCode[]> = {
     'coaching:update',
     'coaching:delete',
     'coaching:notification',
+    'clmrs:read',
+    'clmrs:create',
+    'clmrs:update',
     'purchase:read',
     'purchase:create',
     'purchase:update',
@@ -162,6 +169,8 @@ export const ROLE_GRANTS: Record<RoleCode, readonly PermissionCode[]> = {
     'inspection:notification',
     'training:read',
     'training:notification',
+    // CLMRS read for oversight of child-labour compliance across districts.
+    'clmrs:read',
     'report:read',
     'report:export',
     // No `cooperative:read` — header CoopSwitcher reads its options
@@ -208,6 +217,9 @@ export const ROLE_GRANTS: Record<RoleCode, readonly PermissionCode[]> = {
     'inspection:notification',
     'training:read',
     'training:notification',
+    // CLMRS read — the chair oversees child-labour compliance in their own
+    // cooperative (view-only, like every other resource on this role).
+    'clmrs:read',
   ],
 };
 

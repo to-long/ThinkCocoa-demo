@@ -37,6 +37,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { ErrorBanner } from '@/components/ui/error-banner';
 import { StatusTag, type StatusTone } from '@/components/ui/status-tag';
+import { PermissionGate } from '@/features/auth';
 import { setClmrsCaseStatus, useClmrsRecord } from '@/shared/api/clmrs';
 import { BackButton } from '@/shared/components/composed/back-button';
 import { useBreadcrumb } from '@/shared/contexts/breadcrumb-context';
@@ -275,17 +276,21 @@ export function ClmrsRecordDetailPageContent() {
             </p>
           </div>
           {caseRow ? (
-            <Button
-              size="sm"
-              variant={isOpen ? 'default' : 'outline'}
-              onClick={() => setStatusDialogOpen(true)}
-            >
-              {isOpen ? t('clmrs.action.closeCase') : t('clmrs.action.reopenCase')}
-            </Button>
+            <PermissionGate codes={['clmrs:update']}>
+              <Button
+                size="sm"
+                variant={isOpen ? 'default' : 'outline'}
+                onClick={() => setStatusDialogOpen(true)}
+              >
+                {isOpen ? t('clmrs.action.closeCase') : t('clmrs.action.reopenCase')}
+              </Button>
+            </PermissionGate>
           ) : (
-            <Button size="sm" onClick={() => setDialogOpen(true)}>
-              {t('clmrs.action.createCase')}
-            </Button>
+            <PermissionGate codes={['clmrs:create']}>
+              <Button size="sm" onClick={() => setDialogOpen(true)}>
+                {t('clmrs.action.createCase')}
+              </Button>
+            </PermissionGate>
           )}
         </div>
         {caseRow ? (

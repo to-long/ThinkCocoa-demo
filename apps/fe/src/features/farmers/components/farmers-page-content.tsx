@@ -85,6 +85,7 @@ import { ListSearch } from '@/shared/components/composed/list-search';
 import { useBreadcrumb } from '@/shared/contexts/breadcrumb-context';
 import { useTableSort } from '@/shared/hooks/use-table-sort';
 import { selectActiveCoop, useActiveCoop } from '@/shared/store/useActiveCoop';
+import { usePermission } from '@/shared/store/useGlobalState';
 import { type FarmerStatusBucket, farmerStatusBucket } from '../types/farmers';
 import { CertificationOutcomeBadge } from './certification-outcome-badge';
 import { FarmerDialog } from './farmer-dialog';
@@ -275,8 +276,14 @@ export function FarmersPageContent() {
 
   // Worst CLMRS status per farmer, derived from `/api/clmrs-records`
   // (coaching-visit-backed). open > pending > closed > none.
+  // Only fetched when the user holds `clmrs:read` — this is a secondary
+  // column on the farmer LIST (gated on `farmer:read`), so a role with
+  // farmer:read but not clmrs:read (e.g. Cooperative Chair) must NOT fire
+  // this cross-domain call: it would 403 and bounce the whole page to /403.
+  // Without the data the column falls back to 'none' per farmer.
   const activeCoop = useActiveCoop(selectActiveCoop);
-  const { data: clmrsData } = useClmrsRecords(activeCoop?.cooperativeCode ?? null);
+  const canReadClmrs = usePermission('clmrs:read');
+  const { data: clmrsData } = useClmrsRecords(activeCoop?.cooperativeCode ?? null, canReadClmrs);
   const clmrsStatusByFarmer = useMemo(() => {
     const rank: Record<ClmrsFarmerStatus, number> = { none: 0, closed: 1, pending: 2, open: 3 };
     const m = new Map<string, ClmrsFarmerStatus>();

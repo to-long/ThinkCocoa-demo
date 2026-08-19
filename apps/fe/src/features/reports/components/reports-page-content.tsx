@@ -56,6 +56,7 @@ import {
   useUsersList,
 } from '@/shared/api';
 import { useBreadcrumb } from '@/shared/contexts/breadcrumb-context';
+import { usePermission } from '@/shared/store/useGlobalState';
 
 interface ReportType {
   id: string;
@@ -250,10 +251,19 @@ export function ReportsPageContent() {
   // Field Officer options — users with the field_officer role, so the
   // report can be scoped to a single officer's contribution. Label
   // adapts per report — see fieldOfficerLabelKey below.
-  const { data: fieldOfficerData } = useUsersList({
-    roleCode: 'field_officer',
-    pageSize: 100,
-  });
+  // Field-officer filter options. Reports is gated on `report:read`, but
+  // `/api/users` requires `user:read` — so only fetch when the user has it.
+  // A report-only role (e.g. Cooperative Chair) otherwise fires a
+  // cross-domain call that 403s and bounces the whole page to /403; without
+  // it the field-officer dropdown simply has no options.
+  const canReadUsers = usePermission('user:read');
+  const { data: fieldOfficerData } = useUsersList(
+    {
+      roleCode: 'field_officer',
+      pageSize: 100,
+    },
+    canReadUsers,
+  );
   const fieldOfficerOptions = (fieldOfficerData?.items ?? []).map((u) => ({
     id: u.id,
     name: u.fullName || u.email,

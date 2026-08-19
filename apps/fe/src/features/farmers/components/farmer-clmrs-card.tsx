@@ -10,8 +10,8 @@
  *   • Row has a case → eye icon → `/clmrs/cases/:id`
  *   • Row is pending → "Create case" button opens the dialog.
  *
- * The card self-gates on `farmer:read` (temporary permission —
- * swap to `clmrs:read` when the BE lands). Empty state shows a
+ * The card self-gates on `clmrs:read` — the same perm the CLMRS
+ * register/routes require. Empty state shows a
  * quiet muted line rather than removing the card, so ops can
  * distinguish "no records" from "component missing".
  */
@@ -43,7 +43,7 @@ interface Props {
 
 export function FarmerClmrsCard({ farmerId, cardClass, cardHeaderClass, cardContentClass }: Props) {
   return (
-    <PermissionGate codes={['farmer:read']}>
+    <PermissionGate codes={['clmrs:read']}>
       <FarmerClmrsCardInner
         farmerId={farmerId}
         cardClass={cardClass}
