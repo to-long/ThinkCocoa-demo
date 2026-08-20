@@ -35,6 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { formatDate } from '@/lib/datetime';
 import { LIST_SUB_LINK } from '@/lib/link-styles';
 import { useClmrsRecords } from '@/shared/api/clmrs';
 import { FarmerRefCell } from '@/shared/components/composed/entity-ref-cell';
@@ -52,24 +53,6 @@ type StatusFilter = '' | 'pending' | 'open' | 'closed';
 function recordStatus(r: ClmrsRecord): 'pending' | 'open' | 'closed' {
   if (!r.case) return 'pending';
   return r.case.status;
-}
-
-function formatDate(iso: string | null | undefined): string {
-  if (!iso) return '—';
-  return new Date(iso).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-}
-
-function formatDob(iso: string | null): string {
-  if (!iso) return '';
-  return new Date(iso).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: '2-digit',
-  });
 }
 
 export function ClmrsPageContent() {
@@ -108,10 +91,13 @@ export function ClmrsPageContent() {
   // biome-ignore lint/correctness/useExhaustiveDependencies: see above
   const filtered = useMemo(() => {
     const trimmed = q.trim().toLowerCase();
-    const scopeCode = activeCoop?.cooperativeCode?.toUpperCase() ?? null;
+    // No client-side cooperative filter: `/api/clmrs-records` already scopes
+    // to the active coop (the `active-coop-id` cookie) server-side. Re-filtering
+    // here by the store's `activeCoop.cooperativeCode` double-gated the data and
+    // silently emptied the list whenever the store and the cookie disagreed —
+    // a leftover from when this page ran on client-side mock data.
     return records.filter((r) => {
       const f = r.flag;
-      if (scopeCode && f.cooperativeCode.toUpperCase() !== scopeCode) return false;
       if (source && f.source !== source) return false;
       if (status && recordStatus(r) !== status) return false;
       if (trimmed) {
@@ -121,7 +107,7 @@ export function ClmrsPageContent() {
       }
       return true;
     });
-  }, [q, status, source, activeCoop, clmrsData]);
+  }, [q, status, source, clmrsData]);
 
   // Client-side sort over the mock records, URL-backed via the shared
   // sort hook so behaviour matches every other list screen.
@@ -296,7 +282,7 @@ export function ClmrsPageContent() {
                               onClick={(e) => e.stopPropagation()}
                               className={LIST_SUB_LINK}
                             >
-                              {formatDob(f.childDob)}
+                              {formatDate(f.childDob)}
                               <SquareArrowOutUpRight className="size-3" />
                             </Link>
                           )}
