@@ -255,6 +255,17 @@ jobs:
           ssh -i ~/.ssh/deploy_key root@${{ vars.DROPLET_HOST }} bash <<'EOF'
             set -e
             cd /opt/kuanadata
+            # Wipe the FE dist BEFORE extracting. `tar xzf` only overlays —
+            # it never removes files absent from the archive, so every
+            # deploy's content-hashed JS/CSS chunks (index.<hash>.js, …)
+            # piled up in apps/fe/dist/static forever. Nginx always serves
+            # the chunk index.html points at, so the stragglers were inert,
+            # but they also made it impossible to tell the live bundle from
+            # dead ones when debugging. The tar recreates apps/fe/dist in
+            # full, so this leaves the deploy result identical minus the
+            # cruft. (BE dist is intentionally left for tar to overlay: the
+            # OLD instance is still running from it during this window.)
+            rm -rf apps/fe/dist
             tar xzf /tmp/deploy-bundle.tar.gz
             rm /tmp/deploy-bundle.tar.gz
           EOF
