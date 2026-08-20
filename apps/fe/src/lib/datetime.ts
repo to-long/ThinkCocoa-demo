@@ -68,7 +68,13 @@ export function formatDateTime(
   return DATETIME.format(d).replace(', ', ' ');
 }
 
-/** Date only, ISO style (`YYYY-MM-DD`). */
+/**
+ * THE canonical date-only formatter — day-first with dashes, `DD-MM-YYYY`
+ * (e.g. `"23-07-2026"`). Every plain date in the app must go through this
+ * one function so the format is consistent and locale-stable. For a
+ * date + time pair, use the `StackedDateTime` component (time above, date
+ * below) rather than formatting a datetime string here.
+ */
 export function formatDate(
   value: string | number | Date | null | undefined,
   placeholder = '—',
@@ -76,7 +82,9 @@ export function formatDate(
   if (value === null || value === undefined) return placeholder;
   const d = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(d.getTime())) return placeholder;
-  return DATE.format(d);
+  // DATE emits ISO `YYYY-MM-DD`; flip to `DD-MM-YYYY`.
+  const [y, m, day] = DATE.format(d).split('-');
+  return `${day}-${m}-${y}`;
 }
 
 /** Time only, e.g. `"23:53"`. */
@@ -99,19 +107,6 @@ export function formatClock(
   const d = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(d.getTime())) return placeholder;
   return CLOCK.format(d);
-}
-
-/** Date, day-first with dashes, e.g. `"19-04-2026"`. */
-export function formatDateDMY(
-  value: string | number | Date | null | undefined,
-  placeholder = '—',
-): string {
-  if (value === null || value === undefined) return placeholder;
-  const d = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(d.getTime())) return placeholder;
-  // DATE emits ISO `YYYY-MM-DD`; flip to `DD-MM-YYYY`.
-  const [y, m, day] = DATE.format(d).split('-');
-  return `${day}-${m}-${y}`;
 }
 
 export const APP_TIME_ZONE = APP_TZ;

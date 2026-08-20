@@ -7,16 +7,8 @@
 import { AlertTriangle, Building2, User } from 'lucide-react';
 import { useIntl } from 'react-intl';
 import { StatusTag } from '@/components/ui/status-tag';
+import { formatDate } from '@/lib/datetime';
 import type { ClmrsFlag } from '../lib/mock';
-
-function formatDate(iso: string | null): string {
-  if (!iso) return '—';
-  return new Date(iso).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-}
 
 export function CaseFlagSummary({ flag }: { flag: ClmrsFlag }) {
   const intl = useIntl();

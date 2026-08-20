@@ -10,7 +10,7 @@
  * table.
  */
 
-import { formatClock, formatDateDMY } from '@/lib/datetime';
+import { formatClock, formatDate } from '@/lib/datetime';
 import { RefCell } from './entity-ref-cell';
 
 export function StackedDateTime({
@@ -26,7 +26,7 @@ export function StackedDateTime({
   return (
     <RefCell
       name={<span className="tabular-nums">{formatClock(value)}</span>}
-      code={<span className="tabular-nums">{formatDateDMY(value)}</span>}
+      code={<span className="tabular-nums">{formatDate(value)}</span>}
     />
   );
 }

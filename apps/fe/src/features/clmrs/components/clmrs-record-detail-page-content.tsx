@@ -38,6 +38,7 @@ import { Button } from '@/components/ui/button';
 import { ErrorBanner } from '@/components/ui/error-banner';
 import { StatusTag, type StatusTone } from '@/components/ui/status-tag';
 import { PermissionGate } from '@/features/auth';
+import { formatDate } from '@/lib/datetime';
 import { setClmrsCaseStatus, useClmrsRecord } from '@/shared/api/clmrs';
 import { BackButton } from '@/shared/components/composed/back-button';
 import { useBreadcrumb } from '@/shared/contexts/breadcrumb-context';
@@ -46,15 +47,6 @@ import type { ClmrsFlag } from '../lib/mock';
 import { CaseCreateDialog } from './case-create-dialog';
 import { CaseStatusDialog } from './case-status-dialog';
 import { ClmrsStatusPill } from './clmrs-status-pill';
-
-function formatDate(iso: string | null | undefined): string {
-  if (!iso) return '—';
-  return new Date(iso).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-}
 
 export function ClmrsRecordDetailPageContent() {
   const { childId } = useParams<{ childId: string }>();
