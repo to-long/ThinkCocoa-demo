@@ -120,7 +120,11 @@ clmrsRoutes.openapi(
   async (c) => {
     const { childId } = c.req.valid('param');
     const { followUpDate } = c.req.valid('json');
-    const created = await createClmrsCase(childId, followUpDate ?? null);
+    const user = c.get('user');
+    const created = await createClmrsCase(childId, followUpDate ?? null, {
+      id: user.id,
+      name: user.name,
+    });
     if (!created) return c.json({ error: 'CLMRS flag not found' }, 404);
     return c.json(created, 201);
   },

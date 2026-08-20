@@ -34,14 +34,17 @@ interface SendArgs {
   text?: string;
 }
 
-/** Fire-and-forget send. Never throws — errors are logged so a mail
- *  provider outage can't break the auth flow (better-auth still
- *  returns success to the client, but the user won't get the link). */
-export async function sendEmail({ to, subject, html, text }: SendArgs): Promise<void> {
+/** Never throws — errors are logged so a mail provider outage can't break
+ *  the auth flow (better-auth still returns success to the client, but the
+ *  user won't get the link). Returns `true` when the message was handed off
+ *  (or logged in the dev fallback) and `false` on a real send failure, so
+ *  callers that care — e.g. the CLMRS reminder scan — can decide whether to
+ *  retry. Callers that don't care can ignore the return. */
+export async function sendEmail({ to, subject, html, text }: SendArgs): Promise<boolean> {
   if (!resend) {
     console.log(`[email:fallback] to=${to} subject=${JSON.stringify(subject)}`);
     console.log(html);
-    return;
+    return true;
   }
   try {
     const { error } = await resend.emails.send({
@@ -53,9 +56,12 @@ export async function sendEmail({ to, subject, html, text }: SendArgs): Promise<
     });
     if (error) {
       console.error(`[email:resend] send failed to=${to}`, error);
+      return false;
     }
+    return true;
   } catch (err) {
     console.error(`[email:resend] throw to=${to}`, err);
+    return false;
   }
 }
 
@@ -131,6 +137,32 @@ export function renderMagicLinkEmail(args: { url: string }): {
   `);
   const text = `Sign in to ${APP_NAME}:\n${args.url}\n\nThe link expires in 5 minutes.`;
   return { subject: `Your ${APP_NAME} sign-in link`, html, text };
+}
+
+/** CLMRS follow-up reminder — sent to the case creator 5 days before the
+ *  case's follow-up date. */
+export function renderClmrsReminderEmail(args: {
+  recipientName?: string | null;
+  clmrsCode: string;
+  farmerName: string;
+  followUpDate: string; // pre-formatted, DD-MM-YYYY
+  daysUntil: number;
+  url: string;
+}): { subject: string; html: string; text: string } {
+  const greeting = args.recipientName ? `Hi ${escapeHtml(args.recipientName)},` : 'Hi,';
+  const code = escapeHtml(args.clmrsCode);
+  const farmer = escapeHtml(args.farmerName);
+  const html = shell(`
+    <p style="margin:0 0 12px 0;">${greeting}</p>
+    <p style="margin:0 0 8px 0;">
+      The CLMRS case <strong>${code}</strong> (farmer ${farmer}) has a follow-up due on
+      <strong>${escapeHtml(args.followUpDate)}</strong> — in ${args.daysUntil} days.
+      Please review the case and record the follow-up visit.
+    </p>
+    ${ctaButton(args.url, 'Open the case')}
+  `);
+  const text = `${greeting}\n\nCLMRS case ${args.clmrsCode} (farmer ${args.farmerName}) has a follow-up due on ${args.followUpDate} (in ${args.daysUntil} days).\n\nOpen the case: ${args.url}`;
+  return { subject: `Follow-up due in ${args.daysUntil} days — ${args.clmrsCode}`, html, text };
 }
 
 // ── Helpers ──────────────────────────────────────────────────────

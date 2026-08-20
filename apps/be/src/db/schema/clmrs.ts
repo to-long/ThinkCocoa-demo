@@ -24,6 +24,14 @@ export const clmrsCases = clmrsSchema.table(
     lastVisitDate: date('last_visit_date'),
     followUpDate: date('follow_up_date'),
     createdByName: text('created_by_name'),
+    /** User id of whoever opened the case — used to email the follow-up
+     *  reminder to its creator. Nullable for legacy rows opened before
+     *  this column existed. */
+    createdBy: uuid('created_by'),
+    /** Stamp set when the T-5 follow-up reminder email has been sent, so
+     *  the daily scan never double-sends. Reset to NULL whenever
+     *  `follow_up_date` changes (reschedule/reopen) to re-arm the reminder. */
+    reminderSentAt: timestamp('reminder_sent_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },

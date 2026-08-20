@@ -220,7 +220,7 @@ function baseQuery() {
 export async function createClmrsCase(
   childId: string,
   followUpDate: string | null,
-  createdByName = 'You',
+  createdBy: { id: string; name: string | null } | null = null,
 ): Promise<ClmrsCase | null> {
   const [visit] = await db
     .select({
@@ -242,11 +242,19 @@ export async function createClmrsCase(
       status: 'open',
       lastVisitDate: visit.visitDate ?? null,
       followUpDate: followUpDate ?? null,
-      createdByName,
+      createdByName: createdBy?.name ?? 'You',
+      createdBy: createdBy?.id ?? null,
     })
     .onConflictDoUpdate({
       target: clmrsCases.childId,
-      set: { followUpDate: followUpDate ?? null, status: 'open', updatedAt: sql`now()` },
+      // Re-opening an existing case: refresh the follow-up date + status and
+      // clear reminder_sent_at so the T-5 reminder re-arms for the new date.
+      set: {
+        followUpDate: followUpDate ?? null,
+        status: 'open',
+        reminderSentAt: null,
+        updatedAt: sql`now()`,
+      },
     })
     .returning();
 
@@ -278,6 +286,9 @@ export async function setClmrsCaseStatus(
       status,
       // Closing clears the recheck date; open/processing keeps/sets it.
       followUpDate: status === 'closed' ? null : (followUpDate ?? null),
+      // The follow-up context changed — re-arm the T-5 reminder so a
+      // rescheduled/reopened case can send a fresh notice.
+      reminderSentAt: null,
       updatedAt: sql`now()`,
     })
     .where(eq(clmrsCases.childId, childId))
