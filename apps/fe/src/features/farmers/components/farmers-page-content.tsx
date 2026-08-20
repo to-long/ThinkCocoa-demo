@@ -493,7 +493,7 @@ export function FarmersPageContent() {
         <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
           <div className="grid min-w-0 flex-1 grid-cols-1 items-center gap-2 xs:grid-cols-2 lg:grid-cols-6">
             <ListSearch
-              className="col-span-1 lg:col-span-2"
+              className="col-span-1"
               value={urlQ}
               onValueChange={(next) => updateUrl({ q: next || null, page: null })}
               placeholder={t('farmers.filters.searchPlaceholder')}
