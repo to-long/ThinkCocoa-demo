@@ -161,6 +161,12 @@ usersRoutes.openapi(
   async (c) => {
     const profile = await loadUserProfile(c.get('user').id);
     if (!profile) return c.json({ error: 'User not found' }, 404);
+    // Never let a browser (heuristically) cache the self-profile: it
+    // carries the user's live permission set that the FE bootstrap reads
+    // to build the sidebar + route guards. A stale cached copy kept the
+    // sidebar showing a pre-change permission set after a role/permission
+    // update until a full re-login — exactly the CLMRS-menu-missing bug.
+    c.header('Cache-Control', 'no-store');
     return c.json(profile, 200);
   },
 );
