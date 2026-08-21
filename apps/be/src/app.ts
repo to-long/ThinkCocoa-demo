@@ -181,15 +181,24 @@ app.use('/api/auth/magic-link', rateLimit({ keyPrefix: 'auth-magic', limit: 5, w
 // carries the CURRENT permission set — which is how a revoked token turns
 // back into a working one after a role change.
 app.post('/api/auth/refresh', async (c) => {
-  const token = await mintAccessToken(c.req.raw.headers);
-  if (!token) {
-    // Refresh credential is gone/invalid → the client must sign in again.
-    // Clear the stale access cookie so it stops being sent.
+  const result = await mintAccessToken(c.req.raw.headers);
+  if (result.ok) {
+    c.header('Set-Cookie', accessCookie(result.token), { append: true });
+    return c.json({ ok: true, expiresIn: accessTokenTtlSeconds() }, 200);
+  }
+  if (result.reason === 'no_session') {
+    // Refresh credential is genuinely gone/invalid → the client must sign in
+    // again. Clear the stale access cookie so it stops being sent.
     c.header('Set-Cookie', clearedAccessCookie(), { append: true });
     return c.json({ error: 'Unauthorized', code: 'refresh_failed' }, 401);
   }
-  c.header('Set-Cookie', accessCookie(token), { append: true });
-  return c.json({ ok: true, expiresIn: accessTokenTtlSeconds() }, 200);
+  // Transient mint failure while a live session still exists (DB / iam.jwks
+  // blip, or a burst of concurrent refreshes racing). Do NOT clear the cookie
+  // and do NOT 401 — a 401 makes the FE sign the user out and hard-redirect to
+  // /login, which behind the Basic-auth gate also re-pops the browser
+  // credential dialog. 503 is retryable: the FE treats any non-401/403 as
+  // 'unavailable', keeps the user signed in, and retries.
+  return c.json({ error: 'Refresh temporarily unavailable', code: 'refresh_unavailable' }, 503);
 });
 
 // Better Auth routes — use Hono's wildcard matcher (`*`) not `**`; the
@@ -237,11 +246,11 @@ app.on(['POST', 'GET'], '/api/auth/*', async (c) => {
     .getSetCookie()
     .map((ck) => ck.split(';')[0])
     .join('; ');
-  const token = await mintAccessToken(new Headers({ cookie: sessionCookie }));
-  if (!token) return res;
+  const result = await mintAccessToken(new Headers({ cookie: sessionCookie }));
+  if (!result.ok) return res;
 
   const out = new Response(res.body, res);
-  out.headers.append('Set-Cookie', accessCookie(token));
+  out.headers.append('Set-Cookie', accessCookie(result.token));
   return out;
 });
 

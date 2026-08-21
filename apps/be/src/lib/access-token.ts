@@ -69,36 +69,69 @@ export function clearedAccessCookie(): string {
 }
 
 /**
- * Mint an access token for whoever owns the session in `headers`.
- * Returns null when there is no live session — the caller decides whether
- * that's a 401 (refresh) or simply "nothing to attach" (sign-out).
+ * Outcome of a mint attempt. Three cases, NOT two — collapsing them is what
+ * logged users out on a transient blip:
+ *
+ *   ok         — token minted, attach it
+ *   no_session — there is genuinely no live session (signed out, deleted,
+ *                deactivated). The caller SHOULD treat this as a logout (401).
+ *   error      — a session exists (or we couldn't even check) but the mint
+ *                failed — a momentary DB / `iam.jwks` hiccup. This says
+ *                NOTHING about whether the user is logged in, so the caller
+ *                must NOT sign them out; surface a retryable error instead.
  */
-export async function mintAccessToken(headers: Headers): Promise<string | null> {
+export type MintResult =
+  | { ok: true; token: string }
+  | { ok: false; reason: 'no_session' }
+  | { ok: false; reason: 'error' };
+
+/**
+ * Mint an access token for whoever owns the session in `headers`.
+ *
+ * Never throws — a mint failure must not turn a successful sign-in into a
+ * 500, and the refresh route needs to tell "logged out" apart from "try
+ * again" so a transient failure can't masquerade as a dead session and kick
+ * the user to /login (which, behind the Basic-auth gate, also re-pops the
+ * browser credential dialog).
+ */
+export async function mintAccessToken(headers: Headers): Promise<MintResult> {
   try {
     const res = await auth.api.getToken({ headers });
-    if (!res?.token) return null;
-    // The mint just re-read status + permissions from the database, so this
-    // token supersedes anything the blacklist was holding against the user.
-    const sub = decodeSubject(res.token);
-    if (sub) {
-      clearRevocation(sub);
-      // Last-login stamp. The old per-request UPDATE lived in `requireAuth`
-      // and went away when that stopped touching the database — leaving the
-      // users list's "Last Login" column frozen. Minting is the better home:
-      // it happens on sign-in and on refresh, so it means "last login", not
-      // "last request", and costs one write per token instead of per call.
-      void db
-        .update(users)
-        .set({ lastLoginAt: new Date() })
-        .where(eq(users.id, sub))
-        .catch((err) => console.error('[access-token] lastLoginAt update failed:', err));
+    if (res?.token) {
+      // The mint just re-read status + permissions from the database, so this
+      // token supersedes anything the blacklist was holding against the user.
+      const sub = decodeSubject(res.token);
+      if (sub) {
+        clearRevocation(sub);
+        // Last-login stamp. The old per-request UPDATE lived in `requireAuth`
+        // and went away when that stopped touching the database — leaving the
+        // users list's "Last Login" column frozen. Minting is the better home:
+        // it happens on sign-in and on refresh, so it means "last login", not
+        // "last request", and costs one write per token instead of per call.
+        void db
+          .update(users)
+          .set({ lastLoginAt: new Date() })
+          .where(eq(users.id, sub))
+          .catch((err) => console.error('[access-token] lastLoginAt update failed:', err));
+      }
+      return { ok: true, token: res.token };
     }
-    return res.token;
+    // getToken produced no token. That is ambiguous — no session at all, or a
+    // live session the plugin momentarily couldn't sign for. Fall through to
+    // the session probe to tell the two apart.
   } catch {
-    // No session, deleted user, or the plugin failed to reach `iam.jwks`.
-    // Never throw from here: a mint failure must not turn a successful
-    // sign-in into a 500 — the client can still refresh.
-    return null;
+    // getToken threw (DB / `iam.jwks` blip). Don't conclude "logged out";
+    // probe the session below.
+  }
+
+  // Ask the session directly. A live session here means the mint failure was
+  // transient (→ retryable `error`), NOT a logout.
+  try {
+    const session = await auth.api.getSession({ headers });
+    return session ? { ok: false, reason: 'error' } : { ok: false, reason: 'no_session' };
+  } catch {
+    // Couldn't even read the session → infrastructure blip, not a logout.
+    return { ok: false, reason: 'error' };
   }
 }
 
