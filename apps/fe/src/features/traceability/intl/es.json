@@ -1,7 +1,6 @@
 {
-  "traceability.title": "Evacuación secundaria",
-  "traceability.subtitle": "Lotes de evacuación secundaria — envíos depósito → puerto listos para exportación, incluyendo grado del grano, socio de abastecimiento y composición de lotes primarios",
-
+  "traceability.title": "Transferencia secundaria",
+  "traceability.subtitle": "Lotes de transferencia secundaria — envíos depósito → puerto listos para exportación, incluyendo grado del grano, socio de abastecimiento y composición de lotes primarios",
   "traceability.stats.totalLots": "Lotes totales",
   "traceability.stats.lotCount": "Número de lotes",
   "traceability.stats.totalWeight": "Peso total",
@@ -13,7 +12,6 @@
   "traceability.stats.primaryLinked": "Lotes primarios vinculados",
   "traceability.stats.topBuyer": "Comprador principal",
   "traceability.stats.activeTrucks": "Camiones activos",
-
   "traceability.filters.searchPlaceholder": "Buscar n.º de guía, depósito, puerto, conductor, matrícula…",
   "traceability.filters.depotAll": "Almacén de origen",
   "traceability.filters.portAll": "Puerto",
@@ -21,7 +19,6 @@
   "traceability.filters.dateRangeAll": "Todas las fechas",
   "traceability.filters.reset": "Restablecer",
   "traceability.history": "Historial",
-
   "traceability.col.waybill": "N.º de guía",
   "traceability.col.date": "Fecha",
   "traceability.col.origin": "Almacén de origen",
@@ -31,19 +28,16 @@
   "traceability.col.weight": "Peso",
   "traceability.col.primaries": "Guías primarias",
   "traceability.col.actions": "Acciones",
-
   "traceability.primariesTitle": "{matched} coincididos / {total} lotes primarios vinculados a este envío",
   "traceability.primariesShort": "{count, plural, one {# primario} other {# primarios}}",
   "traceability.action.open": "Abrir",
   "traceability.action.lineage": "Ver linaje",
-
-  "traceability.detail.title": "Detalle de evacuación secundaria",
+  "traceability.detail.title": "Detalle de transferencia secundaria",
   "traceability.detail.subtitle": "Cacao enviado del almacén de distrito al puerto de exportación",
-  "traceability.detail.notFound": "Lote de evacuación secundaria no encontrado",
-  "traceability.detail.evacuatedAt": "Evacuado el {date}",
+  "traceability.detail.notFound": "Lote de transferencia secundaria no encontrado",
+  "traceability.detail.evacuatedAt": "Transferido el {date}",
   "traceability.detail.warehouseLabel": "Almacén:",
   "traceability.detail.portLabel": "Puerto:",
-
   "traceability.detail.bags": "Sacos",
   "traceability.detail.bagsSub": "recibidos del depósito",
   "traceability.detail.weight": "Peso",
@@ -52,14 +46,12 @@
   "traceability.detail.avgBagSub": "vs. promedio de red 67.5",
   "traceability.detail.evacDate": "Fecha de evac.",
   "traceability.detail.evacDateSub": "depósito → puerto",
-
   "traceability.detail.transportTitle": "Detalle de transporte",
   "traceability.detail.transportSubtitle": "Origen · destino · conductor · camión · licencia · sello",
   "traceability.detail.driverName": "Nombre del conductor",
   "traceability.detail.truck": "Matrícula del camión",
   "traceability.detail.license": "Licencia del conductor",
   "traceability.detail.seal": "Sello",
-
   "traceability.detail.composition.title": "Composición del lote",
   "traceability.detail.composition.expandAll": "Expandir todo",
   "traceability.detail.composition.collapseAll": "Contraer todo",
@@ -68,7 +60,7 @@
   "traceability.detail.composition.empty": "No hay lotes primarios vinculados a este envío.",
   "traceability.detail.composition.unresolvedPrimaryWbBanner": "Guía primaria sin resolver",
   "traceability.detail.composition.unmatchedTooltip": "Esta compra no pudo resolverse a un registro del maestro de compras.",
-  "traceability.detail.composition.openPrimaryEvac": "Abrir evacuación primaria {wb}",
+  "traceability.detail.composition.openPrimaryEvac": "Abrir transferencia primaria {wb}",
   "traceability.detail.composition.unmatchedBanner": "{count} compra(s) sin resolver",
   "traceability.detail.composition.unresolvedPrefix": "Sin resolver:",
   "traceability.detail.composition.unresolvedPurchases": "{count} compras",
@@ -86,7 +78,6 @@
   "traceability.detail.composition.col.plot": "Parcela",
   "traceability.detail.composition.col.date": "Fecha",
   "traceability.detail.composition.col.qty": "Cant.",
-
   "traceability.empty": "Ningún lote de exportación coincide con los filtros actuales.",
   "traceability.pagination.showing": "Mostrando {from}-{to} de {total} lotes"
 }

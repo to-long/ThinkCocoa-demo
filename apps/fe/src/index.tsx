@@ -128,6 +128,11 @@ const TraceabilityDetailPage = lazyRoute(
   () => import('./features/traceability/pages/traceability-detail-page'),
   'TraceabilityDetailPage',
 ); // prettier-ignore
+const ExportPage = lazyRoute(
+  () => import('./features/export/pages/export-page'),
+  'ExportPage',
+  '/export',
+); // prettier-ignore
 const ReportsPage = lazyRoute(
   () => import('./features/reports/pages/reports-page'),
   'ReportsPage',
@@ -313,6 +318,7 @@ function Root() {
                     <Route element={<RequirePermission codes={['secondary_evac:read']} />}>
                       <Route path="secondary-evacuation" element={<TraceabilityPage />} />
                       <Route path="secondary-evacuation/:id" element={<TraceabilityDetailPage />} />
+                      <Route path="export" element={<ExportPage />} />
                     </Route>
                     <Route element={<RequirePermission codes={['report:read']} />}>
                       <Route path="reports" element={<ReportsPage />} />

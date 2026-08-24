@@ -1,9 +1,7 @@
 {
-  "navigation.primaryEvac": "Primary Evacuation",
-
-  "primaryEvac.title": "Primary Evacuation",
-  "primaryEvac.subtitle": "Lots evacuated from buying stations to district warehouses · 1 row = 1 primary waybill · child purchases linked per lot",
-
+  "navigation.primaryEvac": "Primary Transfer",
+  "primaryEvac.title": "Primary Transfer",
+  "primaryEvac.subtitle": "Lots transferred from buying stations to district warehouses · 1 row = 1 primary waybill · child purchases linked per lot",
   "primaryEvac.stats.totalLots": "Total Lots",
   "primaryEvac.stats.lotCount": "Lot count",
   "primaryEvac.stats.totalWeight": "Total Weight",
@@ -15,7 +13,6 @@
   "primaryEvac.stats.purchasesLinked": "Purchases linked",
   "primaryEvac.stats.activeDrivers": "Active drivers",
   "primaryEvac.stats.activeTrucks": "Active trucks",
-
   "primaryEvac.filters.searchPlaceholder": "Search waybill #, station mark, driver name, truck reg…",
   "primaryEvac.filters.warehouseAll": "Warehouse",
   "primaryEvac.filters.societyAll": "Society",
@@ -27,7 +24,6 @@
   "primaryEvac.filters.dateRangeThisYear": "This year",
   "primaryEvac.filters.reset": "Reset",
   "primaryEvac.history": "History",
-
   "primaryEvac.col.date": "Date",
   "primaryEvac.col.waybill": "Waybill #",
   "primaryEvac.col.source": "Source · Station mark",
@@ -38,19 +34,16 @@
   "primaryEvac.col.driver": "Driver · Truck",
   "primaryEvac.col.purchases": "Purchases",
   "primaryEvac.col.actions": "Actions",
-
   "primaryEvac.purchasesTitle": "{matched} matched / {total} entries linked to source purchases",
   "primaryEvac.action.open": "Open",
-  "primaryEvac.empty": "No primary evacuation lots match the current filters.",
+  "primaryEvac.empty": "No primary transfer lots match the current filters.",
   "primaryEvac.pagination.showing": "Showing {from}-{to} of {total} lots",
-
-  "primaryEvac.detail.title": "Primary Evacuation Detail",
+  "primaryEvac.detail.title": "Primary Transfer Detail",
   "primaryEvac.detail.subtitle": "Captured from Kobo · primary_evacuation_depot form",
-  "primaryEvac.detail.evacuatedAt": "Evacuated on {date}",
+  "primaryEvac.detail.evacuatedAt": "Transferred on {date}",
   "primaryEvac.detail.sourceLabel": "Society:",
   "primaryEvac.detail.destLabel": "Warehouse:",
-  "primaryEvac.detail.notFound": "Primary evacuation lot not found",
-
+  "primaryEvac.detail.notFound": "Primary transfer lot not found",
   "primaryEvac.detail.receiptTitle": "Receipt",
   "primaryEvac.detail.receiptSubtitle": "{bags} bags · {kg} accepted at destination warehouse",
   "primaryEvac.detail.bags": "Bags",
@@ -60,12 +53,10 @@
   "primaryEvac.detail.avgBagSub": "weight per bag this lot",
   "primaryEvac.detail.evacDate": "Evac date",
   "primaryEvac.detail.evacDateSub": "driver delivered",
-
   "primaryEvac.detail.transportTitle": "Transport Detail",
   "primaryEvac.detail.transportSubtitle": "Origin · destination · driver · truck",
   "primaryEvac.detail.driverName": "Driver name",
   "primaryEvac.detail.truck": "Truck registration",
-
   "primaryEvac.detail.lineageTitle": "Traceability lineage",
   "primaryEvac.detail.lineageSubtitle": "Forward chain — what this lot rolls into next",
   "primaryEvac.detail.lineage.depotLot": "Depot lot",
@@ -74,7 +65,6 @@
   "primaryEvac.detail.lineage.notLinked": "Not yet linked",
   "primaryEvac.detail.lineage.ddsPending": "Pending",
   "primaryEvac.detail.lineage.notSubmitted": "Not submitted yet",
-
   "primaryEvac.detail.compositionTitle": "Lot composition",
   "primaryEvac.detail.compositionSubtitle": "{total} child purchase(s) listed · {matched} resolved to source purchase master",
   "primaryEvac.detail.compositionEmpty": "No child purchases linked to this lot.",

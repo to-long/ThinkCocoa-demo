@@ -1,18 +1,15 @@
 {
   "dashboard.title": "Dashboard",
   "dashboard.subtitle": "System-wide overview of cocoa farmers, compliance and activity.",
-
   "dashboard.tabs.farmers": "Farmers",
   "dashboard.tabs.farms": "Farms",
   "dashboard.tabs.traceability": "Traceability",
   "dashboard.tabs.vsla": "VSLA",
-
   "dashboard.farmers.sectionTitle": "Farmers",
   "dashboard.farms.sectionTitle": "Farm overview",
   "dashboard.purchases.sectionTitle": "Cocoa purchases",
-  "dashboard.primaryEvac.sectionTitle": "1st evacuation",
-  "dashboard.secondaryEvac.sectionTitle": "2nd evacuation",
-
+  "dashboard.primaryEvac.sectionTitle": "1st transfer",
+  "dashboard.secondaryEvac.sectionTitle": "2nd transfer",
   "dashboard.breakdown.eudrTitle": "EUDR compliance",
   "dashboard.breakdown.eudrSubtitle": "Share of parcels by EUDR status.",
   "dashboard.breakdown.clmrsTitle": "CLMRS cases",

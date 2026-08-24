@@ -1,9 +1,7 @@
 {
-  "navigation.primaryEvac": "Evacuación primaria",
-
-  "primaryEvac.title": "Evacuación primaria",
-  "primaryEvac.subtitle": "Lotes evacuados de las estaciones de compra a los almacenes de distrito · 1 fila = 1 guía primaria · compras hijas vinculadas por lote",
-
+  "navigation.primaryEvac": "Transferencia primaria",
+  "primaryEvac.title": "Transferencia primaria",
+  "primaryEvac.subtitle": "Lotes transferidos de las estaciones de compra a los almacenes de distrito · 1 fila = 1 guía primaria · compras hijas vinculadas por lote",
   "primaryEvac.stats.totalLots": "Lotes totales",
   "primaryEvac.stats.lotCount": "Número de lotes",
   "primaryEvac.stats.totalWeight": "Peso total",
@@ -15,7 +13,6 @@
   "primaryEvac.stats.purchasesLinked": "Compras vinculadas",
   "primaryEvac.stats.activeDrivers": "Conductores activos",
   "primaryEvac.stats.activeTrucks": "Camiones activos",
-
   "primaryEvac.filters.searchPlaceholder": "Buscar n.º de guía, marca de estación, nombre de conductor, matrícula…",
   "primaryEvac.filters.warehouseAll": "Almacén",
   "primaryEvac.filters.societyAll": "Sociedad",
@@ -27,7 +24,6 @@
   "primaryEvac.filters.dateRangeThisYear": "Este año",
   "primaryEvac.filters.reset": "Restablecer",
   "primaryEvac.history": "Historial",
-
   "primaryEvac.col.date": "Fecha",
   "primaryEvac.col.waybill": "N.º de guía",
   "primaryEvac.col.source": "Origen · Marca de estación",
@@ -38,19 +34,16 @@
   "primaryEvac.col.driver": "Conductor · Camión",
   "primaryEvac.col.purchases": "Compras",
   "primaryEvac.col.actions": "Acciones",
-
   "primaryEvac.purchasesTitle": "{matched} coincididas / {total} entradas vinculadas a compras de origen",
   "primaryEvac.action.open": "Abrir",
-  "primaryEvac.empty": "Ningún lote de evacuación primaria coincide con los filtros actuales.",
+  "primaryEvac.empty": "Ningún lote de transferencia primaria coincide con los filtros actuales.",
   "primaryEvac.pagination.showing": "Mostrando {from}-{to} de {total} lotes",
-
-  "primaryEvac.detail.title": "Detalle de evacuación primaria",
+  "primaryEvac.detail.title": "Detalle de transferencia primaria",
   "primaryEvac.detail.subtitle": "Capturado desde Kobo · formulario primary_evacuation_depot",
-  "primaryEvac.detail.evacuatedAt": "Evacuado el {date}",
+  "primaryEvac.detail.evacuatedAt": "Transferido el {date}",
   "primaryEvac.detail.sourceLabel": "Sociedad:",
   "primaryEvac.detail.destLabel": "Almacén:",
-  "primaryEvac.detail.notFound": "Lote de evacuación primaria no encontrado",
-
+  "primaryEvac.detail.notFound": "Lote de transferencia primaria no encontrado",
   "primaryEvac.detail.receiptTitle": "Recepción",
   "primaryEvac.detail.receiptSubtitle": "{bags} sacos · {kg} aceptados en el almacén de destino",
   "primaryEvac.detail.bags": "Sacos",
@@ -60,12 +53,10 @@
   "primaryEvac.detail.avgBagSub": "peso por saco de este lote",
   "primaryEvac.detail.evacDate": "Fecha de evac.",
   "primaryEvac.detail.evacDateSub": "conductor entregó",
-
   "primaryEvac.detail.transportTitle": "Detalle de transporte",
   "primaryEvac.detail.transportSubtitle": "Origen · destino · conductor · camión",
   "primaryEvac.detail.driverName": "Nombre del conductor",
   "primaryEvac.detail.truck": "Matrícula del camión",
-
   "primaryEvac.detail.lineageTitle": "Linaje de trazabilidad",
   "primaryEvac.detail.lineageSubtitle": "Cadena hacia adelante — en qué se integra este lote a continuación",
   "primaryEvac.detail.lineage.depotLot": "Lote de depósito",
@@ -74,7 +65,6 @@
   "primaryEvac.detail.lineage.notLinked": "Aún no vinculado",
   "primaryEvac.detail.lineage.ddsPending": "Pendiente",
   "primaryEvac.detail.lineage.notSubmitted": "Aún no enviado",
-
   "primaryEvac.detail.compositionTitle": "Composición del lote",
   "primaryEvac.detail.compositionSubtitle": "{total} compra(s) hija(s) listada(s) · {matched} resueltas al maestro de compras",
   "primaryEvac.detail.compositionEmpty": "No hay compras hijas vinculadas a este lote.",

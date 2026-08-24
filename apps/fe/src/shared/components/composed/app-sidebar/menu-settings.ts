@@ -13,6 +13,7 @@ import {
   RefreshCw,
   Shield,
   ShieldAlert,
+  Ship,
   ShoppingCart,
   Truck,
   UserCog,
@@ -173,6 +174,14 @@ export const menuSections: MenuSection[] = [
         href: '/secondary-evacuation',
         icon: TruckLeft,
         iconColor: GROUP_TINT.traceability,
+        permission: 'secondary_evac:read',
+      },
+      {
+        labelKey: 'navigation.export',
+        href: '/export',
+        icon: Ship,
+        iconColor: GROUP_TINT.traceability,
+        // End of the supply chain — same audience as secondary transfer.
         permission: 'secondary_evac:read',
       },
     ],

@@ -1,18 +1,15 @@
 {
   "dashboard.title": "Tableau de bord",
   "dashboard.subtitle": "Vue d'ensemble des agriculteurs de cacao, conformité et activité.",
-
   "dashboard.tabs.farmers": "Agriculteurs",
   "dashboard.tabs.farms": "Fermes",
   "dashboard.tabs.traceability": "Traçabilité",
   "dashboard.tabs.vsla": "VSLA",
-
   "dashboard.farmers.sectionTitle": "Agriculteurs",
   "dashboard.farms.sectionTitle": "Aperçu des fermes",
   "dashboard.purchases.sectionTitle": "Achats de cacao",
-  "dashboard.primaryEvac.sectionTitle": "1re évacuation",
-  "dashboard.secondaryEvac.sectionTitle": "2e évacuation",
-
+  "dashboard.primaryEvac.sectionTitle": "1er transfert",
+  "dashboard.secondaryEvac.sectionTitle": "2e transfert",
   "dashboard.breakdown.eudrTitle": "Conformité EUDR",
   "dashboard.breakdown.eudrSubtitle": "Part des parcelles par statut EUDR.",
   "dashboard.breakdown.clmrsTitle": "Cas CLMRS",
@@ -37,7 +34,7 @@
   "dashboard.breakdown.purchasesTrendTitle": "Achats par mois",
   "dashboard.breakdown.purchasesTrendSubtitle": "Nombre d'achats sur les 12 derniers mois.",
   "dashboard.breakdown.warehousesTitle": "Lots par entrepôt",
-  "dashboard.breakdown.warehousesSubtitle": "Volume de la 1re évacuation par dépôt.",
+  "dashboard.breakdown.warehousesSubtitle": "Volume de la 1er transfert par dépôt.",
   "dashboard.breakdown.societyLotsTitle": "Lots par société",
   "dashboard.breakdown.societyLotsSubtitle": "Lots de 1re évacuation par société.",
   "dashboard.breakdown.lotsPerMonthTitle": "Lots déplacés par mois",

@@ -1,9 +1,7 @@
 {
-  "navigation.primaryEvac": "Primary Evacuation",
-
-  "primaryEvac.title": "Évacuation primaire",
-  "primaryEvac.subtitle": "Lots évacués des stations d'achat vers les entrepôts de district · 1 ligne = 1 bordereau primaire · achats sources liés par lot",
-
+  "navigation.primaryEvac": "Transfert primaire",
+  "primaryEvac.title": "Transfert primaire",
+  "primaryEvac.subtitle": "Lots transférés des stations d'achat vers les entrepôts de district · 1 ligne = 1 bordereau primaire · achats sources liés par lot",
   "primaryEvac.stats.totalLots": "Total lots",
   "primaryEvac.stats.lotCount": "Nombre de lots",
   "primaryEvac.stats.totalWeight": "Poids total",
@@ -15,7 +13,6 @@
   "primaryEvac.stats.purchasesLinked": "Achats liés",
   "primaryEvac.stats.activeDrivers": "Chauffeurs actifs",
   "primaryEvac.stats.activeTrucks": "Camions actifs",
-
   "primaryEvac.filters.searchPlaceholder": "Rechercher bordereau, marque station, chauffeur, immat. camion…",
   "primaryEvac.filters.warehouseAll": "Entrepôt",
   "primaryEvac.filters.societyAll": "Société",
@@ -27,7 +24,6 @@
   "primaryEvac.filters.dateRangeThisYear": "Cette année",
   "primaryEvac.filters.reset": "Réinitialiser",
   "primaryEvac.history": "Historique",
-
   "primaryEvac.col.date": "Date",
   "primaryEvac.col.waybill": "Bordereau #",
   "primaryEvac.col.source": "Source · Marque station",
@@ -38,19 +34,16 @@
   "primaryEvac.col.driver": "Chauffeur · Camion",
   "primaryEvac.col.purchases": "Achats",
   "primaryEvac.col.actions": "Actions",
-
   "primaryEvac.purchasesTitle": "{matched} appariés / {total} entrées liées aux achats sources",
   "primaryEvac.action.open": "Ouvrir",
-  "primaryEvac.empty": "Aucun lot d'évacuation primaire ne correspond aux filtres.",
+  "primaryEvac.empty": "Aucun lot de transfert primaire ne correspond aux filtres.",
   "primaryEvac.pagination.showing": "{from}-{to} sur {total} lots",
-
-  "primaryEvac.detail.title": "Détail évacuation primaire",
+  "primaryEvac.detail.title": "Détail transfert primaire",
   "primaryEvac.detail.subtitle": "Synchronisé depuis Kobo · formulaire primary_evacuation_depot",
-  "primaryEvac.detail.evacuatedAt": "Évacué le {date}",
+  "primaryEvac.detail.evacuatedAt": "Transféré le {date}",
   "primaryEvac.detail.sourceLabel": "Société :",
   "primaryEvac.detail.destLabel": "Entrepôt :",
-  "primaryEvac.detail.notFound": "Lot d'évacuation primaire introuvable",
-
+  "primaryEvac.detail.notFound": "Lot de transfert primaire introuvable",
   "primaryEvac.detail.receiptTitle": "Réception",
   "primaryEvac.detail.receiptSubtitle": "{bags} sacs · {kg} acceptés à l'entrepôt destination",
   "primaryEvac.detail.bags": "Sacs",
@@ -60,12 +53,10 @@
   "primaryEvac.detail.avgBagSub": "poids par sac ce lot",
   "primaryEvac.detail.evacDate": "Date évac",
   "primaryEvac.detail.evacDateSub": "chauffeur livré",
-
   "primaryEvac.detail.transportTitle": "Détail transport",
   "primaryEvac.detail.transportSubtitle": "Origine · destination · chauffeur · camion",
   "primaryEvac.detail.driverName": "Nom chauffeur",
   "primaryEvac.detail.truck": "Immat. camion",
-
   "primaryEvac.detail.lineageTitle": "Lignée de traçabilité",
   "primaryEvac.detail.lineageSubtitle": "Chaîne avale — où ce lot continue ensuite",
   "primaryEvac.detail.lineage.depotLot": "Lot dépôt",
@@ -74,7 +65,6 @@
   "primaryEvac.detail.lineage.notLinked": "Non encore lié",
   "primaryEvac.detail.lineage.ddsPending": "En attente",
   "primaryEvac.detail.lineage.notSubmitted": "Non soumis",
-
   "primaryEvac.detail.compositionTitle": "Composition du lot",
   "primaryEvac.detail.compositionSubtitle": "{total} achat(s) enfant · {matched} résolus contre le maître",
   "primaryEvac.detail.compositionEmpty": "Aucun achat lié à ce lot.",

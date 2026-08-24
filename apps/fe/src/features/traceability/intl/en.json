@@ -1,7 +1,6 @@
 {
-  "traceability.title": "Secondary Evacuation",
-  "traceability.subtitle": "Secondary evacuation lots — depot → port shipments ready for export, including bean grade, sourcing partner and primary-lot composition",
-
+  "traceability.title": "Secondary Transfer",
+  "traceability.subtitle": "Secondary transfer lots — depot → port shipments ready for export, including bean grade, sourcing partner and primary-lot composition",
   "traceability.stats.totalLots": "Total Lots",
   "traceability.stats.lotCount": "Lot count",
   "traceability.stats.totalWeight": "Total Weight",
@@ -13,7 +12,6 @@
   "traceability.stats.primaryLinked": "Primary lots linked",
   "traceability.stats.topBuyer": "Top buyer",
   "traceability.stats.activeTrucks": "Active trucks",
-
   "traceability.filters.searchPlaceholder": "Search waybill #, depot, port, driver, truck reg…",
   "traceability.filters.depotAll": "Origin warehouse",
   "traceability.filters.portAll": "Port",
@@ -21,7 +19,6 @@
   "traceability.filters.dateRangeAll": "All dates",
   "traceability.filters.reset": "Reset",
   "traceability.history": "History",
-
   "traceability.col.waybill": "Waybill #",
   "traceability.col.date": "Date",
   "traceability.col.origin": "Origin warehouse",
@@ -31,19 +28,16 @@
   "traceability.col.weight": "Weight",
   "traceability.col.primaries": "Primary WBs",
   "traceability.col.actions": "Actions",
-
   "traceability.primariesTitle": "{matched} matched / {total} primary lots linked to this shipment",
   "traceability.primariesShort": "{count, plural, one {# primary} other {# primaries}}",
   "traceability.action.open": "Open",
   "traceability.action.lineage": "View lineage",
-
-  "traceability.detail.title": "Secondary Evacuation Detail",
+  "traceability.detail.title": "Secondary Transfer Detail",
   "traceability.detail.subtitle": "Cocoa shipped from district warehouse to export port",
-  "traceability.detail.notFound": "Secondary evacuation lot not found",
-  "traceability.detail.evacuatedAt": "Evacuated on {date}",
+  "traceability.detail.notFound": "Secondary transfer lot not found",
+  "traceability.detail.evacuatedAt": "Transferred on {date}",
   "traceability.detail.warehouseLabel": "Warehouse:",
   "traceability.detail.portLabel": "Port:",
-
   "traceability.detail.bags": "Bags",
   "traceability.detail.bagsSub": "received from depot",
   "traceability.detail.weight": "Weight",
@@ -52,14 +46,12 @@
   "traceability.detail.avgBagSub": "vs network avg 67.5",
   "traceability.detail.evacDate": "Evac date",
   "traceability.detail.evacDateSub": "depot → port",
-
   "traceability.detail.transportTitle": "Transport Detail",
   "traceability.detail.transportSubtitle": "Origin · destination · driver · truck · license · seal",
   "traceability.detail.driverName": "Driver name",
   "traceability.detail.truck": "Truck registration",
   "traceability.detail.license": "Driver license",
   "traceability.detail.seal": "Seal",
-
   "traceability.detail.composition.title": "Lot composition",
   "traceability.detail.composition.expandAll": "Expand all",
   "traceability.detail.composition.collapseAll": "Collapse all",
@@ -68,7 +60,7 @@
   "traceability.detail.composition.empty": "No primary lots linked to this shipment.",
   "traceability.detail.composition.unresolvedPrimaryWbBanner": "Unresolved primary wb",
   "traceability.detail.composition.unmatchedTooltip": "This purchase could not be resolved to a record in the purchase master.",
-  "traceability.detail.composition.openPrimaryEvac": "Open primary evacuation {wb}",
+  "traceability.detail.composition.openPrimaryEvac": "Open primary transfer {wb}",
   "traceability.detail.composition.unmatchedBanner": "{count} unresolved purchase(s)",
   "traceability.detail.composition.unresolvedPrefix": "Unresolved:",
   "traceability.detail.composition.unresolvedPurchases": "{count} purchases",
@@ -86,7 +78,6 @@
   "traceability.detail.composition.col.plot": "Plot",
   "traceability.detail.composition.col.date": "Date",
   "traceability.detail.composition.col.qty": "Qty",
-
   "traceability.empty": "No export lots match the current filters.",
   "traceability.pagination.showing": "Showing {from}-{to} of {total} lots"
 }

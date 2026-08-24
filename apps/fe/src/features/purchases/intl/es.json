@@ -1,9 +1,7 @@
 {
-  "navigation.purchases": "Compra de sociedad",
-
-  "purchases.title": "Compra de sociedad",
+  "navigation.purchases": "Compra de productor",
+  "purchases.title": "Compra de productor",
   "purchases.subtitle": "Compras de cacao a nivel de sociedad registradas por los PC en las estaciones de compra",
-
   "purchases.stats.totalPurchases": "Compras totales",
   "purchases.stats.purchaseCount": "Número de compras",
   "purchases.stats.totalWeight": "Peso total",
@@ -12,7 +10,6 @@
   "purchases.stats.totalSuffix": "total",
   "purchases.stats.payment": "Pago",
   "purchases.stats.districts": "Distritos",
-
   "purchases.filters.searchPlaceholder": "Buscar ID de compra, código de productor, marca de estación, parcela…",
   "purchases.filters.societyAll": "Sociedad",
   "purchases.filters.paymentAll": "Pago",
@@ -23,7 +20,6 @@
   "purchases.filters.dateRangeThisMonth": "Este mes",
   "purchases.filters.dateRangeThisYear": "Este año",
   "purchases.filters.reset": "Restablecer",
-
   "purchases.col.date": "Fecha",
   "purchases.col.purchaseId": "ID de compra",
   "purchases.col.farmer": "Productor",
@@ -34,23 +30,19 @@
   "purchases.col.amount": "Monto",
   "purchases.col.payment": "Pago",
   "purchases.col.actions": "Acciones",
-
   "purchases.payment.cash": "Efectivo",
   "purchases.payment.mobile_money": "Dinero móvil",
   "purchases.payment.cheque": "Cheque",
   "purchases.payment.card": "Tarjeta",
-
   "purchases.action.open": "Abrir",
   "purchases.empty": "Ninguna compra coincide con los filtros actuales.",
   "purchases.pagination.showing": "Mostrando {from}-{to} de {total} compras",
-
   "purchases.detail.title": "Detalle de compra",
   "purchases.detail.subtitle": "Capturado desde Kobo · formulario cocoa_purchases_society",
   "purchases.detail.orphanChip": "Huérfano (FK de productor sin resolver)",
   "purchases.table.orphan": "Huérfano",
   "purchases.detail.purchasedOn": "Comprado el {date}",
   "purchases.detail.notFound": "Compra no encontrada",
-
   "purchases.detail.weight": "Peso",
   "purchases.detail.weightSub": "peso bruto del día",
   "purchases.detail.amount": "Monto",
@@ -59,7 +51,6 @@
   "purchases.detail.impliedRateSub": "por kg · por debajo del promedio combinado 36.73",
   "purchases.detail.payment": "Pago",
   "purchases.detail.noReference": "Sin referencia (efectivo)",
-
   "purchases.detail.stationTitle": "Estación de compra (nivel PC)",
   "purchases.detail.stationSubtitle": "Derivable de station_mark_master + staff_master mediante el FK del número de marca de estación",
   "purchases.detail.stationMark": "Marca de estación",
@@ -67,7 +58,6 @@
   "purchases.detail.society": "Sociedad",
   "purchases.detail.district": "Distrito",
   "purchases.detail.cooperative": "Cooperativa",
-
   "purchases.detail.farmerTitle": "Productor y parcela",
   "purchases.detail.farmerSubtitle": "Referencias FK → farmer_master · plot_master",
   "purchases.detail.farmerName": "Nombre del productor",

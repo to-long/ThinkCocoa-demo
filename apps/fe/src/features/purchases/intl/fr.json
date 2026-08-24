@@ -1,9 +1,7 @@
 {
-  "navigation.purchases": "Achats Société",
-
-  "purchases.title": "Achats Société",
+  "navigation.purchases": "Achats producteur",
+  "purchases.title": "Achats producteur",
   "purchases.subtitle": "Achats de cacao au niveau société enregistrés par les PC aux stations d'achat",
-
   "purchases.stats.totalPurchases": "Total achats",
   "purchases.stats.purchaseCount": "Nombre d'achats",
   "purchases.stats.totalWeight": "Poids total",
@@ -12,7 +10,6 @@
   "purchases.stats.totalSuffix": "au total",
   "purchases.stats.payment": "Paiement",
   "purchases.stats.districts": "Districts",
-
   "purchases.filters.searchPlaceholder": "Rechercher ID achat, code producteur, marque station, parcelle…",
   "purchases.filters.societyAll": "Société",
   "purchases.filters.paymentAll": "Paiement",
@@ -23,7 +20,6 @@
   "purchases.filters.dateRangeThisMonth": "Ce mois",
   "purchases.filters.dateRangeThisYear": "Cette année",
   "purchases.filters.reset": "Réinitialiser",
-
   "purchases.col.date": "Date",
   "purchases.col.purchaseId": "ID achat",
   "purchases.col.farmer": "Producteur",
@@ -34,23 +30,19 @@
   "purchases.col.amount": "Montant",
   "purchases.col.payment": "Paiement",
   "purchases.col.actions": "Actions",
-
   "purchases.payment.cash": "Espèces",
   "purchases.payment.mobile_money": "Mobile Money",
   "purchases.payment.cheque": "Chèque",
   "purchases.payment.card": "Carte",
-
   "purchases.action.open": "Ouvrir",
   "purchases.empty": "Aucun achat ne correspond aux filtres.",
   "purchases.pagination.showing": "{from}-{to} sur {total} achats",
-
   "purchases.detail.title": "Détail de l'achat",
   "purchases.detail.subtitle": "Synchronisé depuis Kobo · formulaire cocoa_purchases_society",
   "purchases.detail.orphanChip": "Orphelin (producteur non résolu)",
   "purchases.table.orphan": "Orphelin",
   "purchases.detail.purchasedOn": "Acheté le {date}",
   "purchases.detail.notFound": "Achat introuvable",
-
   "purchases.detail.weight": "Poids",
   "purchases.detail.weightSub": "poids brut du jour",
   "purchases.detail.amount": "Montant",
@@ -59,7 +51,6 @@
   "purchases.detail.impliedRateSub": "par kg · sous moyenne 36.73",
   "purchases.detail.payment": "Paiement",
   "purchases.detail.noReference": "Aucune référence (espèces)",
-
   "purchases.detail.stationTitle": "Station d'achat (PC)",
   "purchases.detail.stationSubtitle": "Dérivé de station_mark_master + staff_master via la FK marque station",
   "purchases.detail.stationMark": "Marque station",
@@ -67,7 +58,6 @@
   "purchases.detail.society": "Société",
   "purchases.detail.district": "District",
   "purchases.detail.cooperative": "Coopérative",
-
   "purchases.detail.farmerTitle": "Producteur & parcelle",
   "purchases.detail.farmerSubtitle": "FK → farmer_master · plot_master",
   "purchases.detail.farmerName": "Nom producteur",

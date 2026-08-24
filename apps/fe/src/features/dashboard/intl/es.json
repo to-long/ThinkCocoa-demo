@@ -1,18 +1,15 @@
 {
   "dashboard.title": "Panel",
   "dashboard.subtitle": "Vista general del sistema de productores de cacao, cumplimiento y actividad.",
-
   "dashboard.tabs.farmers": "Productores",
   "dashboard.tabs.farms": "Fincas",
   "dashboard.tabs.traceability": "Trazabilidad",
   "dashboard.tabs.vsla": "VSLA",
-
   "dashboard.farmers.sectionTitle": "Productores",
   "dashboard.farms.sectionTitle": "Resumen de fincas",
   "dashboard.purchases.sectionTitle": "Compras de cacao",
-  "dashboard.primaryEvac.sectionTitle": "1.ª evacuación",
-  "dashboard.secondaryEvac.sectionTitle": "2.ª evacuación",
-
+  "dashboard.primaryEvac.sectionTitle": "1.ª transferencia",
+  "dashboard.secondaryEvac.sectionTitle": "2.ª transferencia",
   "dashboard.breakdown.eudrTitle": "Cumplimiento EUDR",
   "dashboard.breakdown.eudrSubtitle": "Proporción de parcelas por estado EUDR.",
   "dashboard.breakdown.clmrsTitle": "Casos CLMRS",
@@ -25,7 +22,7 @@
   "dashboard.breakdown.mapped": "Mapeadas",
   "dashboard.breakdown.unmapped": "No mapeadas",
   "dashboard.breakdown.gradesTitle": "Lotes por grado",
-  "dashboard.breakdown.gradesSubtitle": "Número de lotes de evacuación secundaria por grado de calidad.",
+  "dashboard.breakdown.gradesSubtitle": "Número de lotes de transferencia secundaria por grado de calidad.",
   "dashboard.breakdown.portsTitle": "Lotes por puerto",
   "dashboard.breakdown.portsSubtitle": "Hacia dónde se dirigen los lotes.",
   "dashboard.breakdown.traceMatchTitle": "Tasa de coincidencia de trazabilidad",
@@ -37,7 +34,7 @@
   "dashboard.breakdown.purchasesTrendTitle": "Compras por mes",
   "dashboard.breakdown.purchasesTrendSubtitle": "Número de compras en los últimos 12 meses.",
   "dashboard.breakdown.warehousesTitle": "Lotes por almacén",
-  "dashboard.breakdown.warehousesSubtitle": "Volumen del depósito de 1.ª evacuación.",
+  "dashboard.breakdown.warehousesSubtitle": "Volumen del depósito de 1.ª transferencia.",
   "dashboard.breakdown.societyLotsTitle": "Lotes por sociedad",
   "dashboard.breakdown.societyLotsSubtitle": "Lotes de 1.ª evacuación por sociedad.",
   "dashboard.breakdown.lotsPerMonthTitle": "Lotes movidos por mes",
