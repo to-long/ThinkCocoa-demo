@@ -6,17 +6,7 @@
  * primary-waybill children link upstream to primary_evacuation.lots.
  */
 
-import {
-  Anchor,
-  Award,
-  Eye,
-  History,
-  Loader2,
-  Package,
-  Ship,
-  Truck,
-  Warehouse,
-} from 'lucide-react';
+import { Anchor, Award, Eye, Loader2, Package, Ship, Truck, Warehouse } from 'lucide-react';
 import { useIntl } from 'react-intl';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ColumnSorter } from '@/components/ui/column-sorter';
@@ -126,18 +116,9 @@ export function TraceabilityPageContent() {
 
   return (
     <div className="flex flex-col gap-4">
-      <header className="flex items-start justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <h1 className="font-semibold text-2xl text-foreground">{t('traceability.title')}</h1>
-          <p className="text-muted-foreground text-sm">{t('traceability.subtitle')}</p>
-        </div>
-        <Link
-          to="/notifications?entityTable=secondary_evacuation_lots"
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-md border bg-background px-3 py-1.5 font-medium text-foreground text-sm shadow-sm hover:bg-accent"
-        >
-          <History className="size-3.5" />
-          {t('traceability.history')}
-        </Link>
+      <header className="flex flex-col gap-1">
+        <h1 className="font-semibold text-2xl text-foreground">{t('traceability.title')}</h1>
+        <p className="text-muted-foreground text-sm">{t('traceability.subtitle')}</p>
       </header>
 
       <TraceabilityStats stats={stats} filteredCount={total} />

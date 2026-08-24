@@ -7,7 +7,7 @@
  * URL-backed search + warehouse/society/date-range filters + pagination.
  */
 
-import { Building2, Eye, History, LandPlot, Loader2, ShoppingCart, Warehouse } from 'lucide-react';
+import { Building2, Eye, LandPlot, Loader2, ShoppingCart, Warehouse } from 'lucide-react';
 import { useIntl } from 'react-intl';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ColumnSorter } from '@/components/ui/column-sorter';
@@ -123,18 +123,9 @@ export function PrimaryEvacPageContent() {
 
   return (
     <div className="flex flex-col gap-4">
-      <header className="flex items-start justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <h1 className="font-semibold text-2xl text-foreground">{t('primaryEvac.title')}</h1>
-          <p className="text-muted-foreground text-sm">{t('primaryEvac.subtitle')}</p>
-        </div>
-        <Link
-          to="/notifications?entityTable=primary_evacuation_lots"
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-md border bg-background px-3 py-1.5 font-medium text-foreground text-sm shadow-sm hover:bg-accent"
-        >
-          <History className="size-3.5" />
-          {t('primaryEvac.history')}
-        </Link>
+      <header className="flex flex-col gap-1">
+        <h1 className="font-semibold text-2xl text-foreground">{t('primaryEvac.title')}</h1>
+        <p className="text-muted-foreground text-sm">{t('primaryEvac.subtitle')}</p>
       </header>
 
       <PrimaryEvacStats stats={stats} filteredCount={total} />
